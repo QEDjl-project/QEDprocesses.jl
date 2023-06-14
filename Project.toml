@@ -1,0 +1,7 @@
+name = "QEDprocesses"
+uuid = "46de9c38-1bb3-4547-a1ec-da24d767fdad"
+authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>", "Simeon Ehrig", "Klaus Steiniger", "Tom Jungnickel", "Anton Reinhard"]
+version = "0.1.0"
+
+[compat]
+julia = "1.9"
