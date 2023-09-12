@@ -3,5 +3,9 @@ using Test
 using SafeTestsets
 
 begin
-    @safetestset "particle interface" begin include("interfaces/particle_interface.jl") end
+    # Interfaces
+    @time @safetestset "particle interface" begin include("interfaces/particle_interface.jl") end
+
+    # modules
+    @time @safetestset "particles types" begin include("particle_types.jl") end
 end

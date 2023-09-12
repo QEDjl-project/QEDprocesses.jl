@@ -14,5 +14,4 @@ end
     struct TestParticle <: AbstractParticle end
     @test_throws Exception charge(TestParticle())
     @test_throws Exception mass(TestParticle())
-    # @test false
 end
