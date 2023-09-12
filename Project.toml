@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
 
 [compat]
 julia = "1.9"

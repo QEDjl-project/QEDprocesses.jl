@@ -64,27 +64,21 @@ The default implementation of `is_anti_particle` for every subtype of `AbstractP
 is_anti_particle(::AbstractParticle) = false
 
 """
-    $(TYPEDSIGNATURES)
+    
+    mass(particle::AbstractParticle)::Real
 
 Interface function for particles. Return the rest mass of a particle (in units of the electron mass).
 
-This needs to be implemented for each concrete subtype of `AbstractParticle` and will throw an error otherwise.
+This needs to be implemented for each concrete subtype of `AbstractParticle`.
 """
-function mass(particle::AbstractParticle)::Real
-    return error(
-        "The function mass($(typeof(particle))) is not implemented. You need to implement it to use the particle interface.",
-    )
-end
+function mass end
 
 """
-    $(TYPEDSIGNATURES)
+    
+    charge(::AbstractParticle)::Real
 
 Interface function for particles. Return the electric charge of a particle (in units of the elementary electric charge).
 
-This needs to be implemented for each concrete subtype of `AbstractParticle` and will throw an error otherwise.
+This needs to be implemented for each concrete subtype of `AbstractParticle`.
 """
-function charge(::AbstractParticle)::Real
-    return error(
-        "The function charge($(typeof(particle))) is not implemented. You need to implement it to use the particle interface.",
-    )
-end
+function charge end
