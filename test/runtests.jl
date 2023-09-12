@@ -1,6 +1,7 @@
 using QEDprocesses
-using Test
+using Test 
+using SafeTestsets
 
-@testset "QEDprocesses.jl" begin
-    # Write your tests here.
+begin
+    @safetestset "particle interface" begin include("interfaces/particle_interface.jl") end
 end
