@@ -12,7 +12,7 @@
     AbstractParticleType <: AbstractParticle
 
 This is the abstract base type for every species of particles. All functionalities defined on subtypes of `AbstractParticleType` should be static, i.e. known at compile time. 
-For adding runtime information, e.g. four-momenta or particle states, to a particle, consider implementing a concrete subtype of `AbstractParticle` instead, which may have a type parameter `P<:AbstractParticleType`. See the concrete type `Particle{P,ST,MT}`
+For adding runtime information, e.g. four-momenta or particle states, to a particle, consider implementing concrete subtype of `AbstractParticle` instead, which may has a type parameter `P<:AbstractParticleType`. See the concrete type `Particle{P,ST,MT}`
 
 Concrete built-in subtypes of `AbstractParticleType` are 
 
