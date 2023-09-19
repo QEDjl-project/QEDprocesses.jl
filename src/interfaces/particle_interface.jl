@@ -11,7 +11,7 @@
 
 
 """
-Abstract base type for every type which might be considered as a `particle` in the context of `QED.jl`. For every (concrete) subtype of `AbstractParticle`, there are two kinds of interface functions implemented: static functions and property functions. 
+Abstract base type for every type which might be considered a *particle* in the context of `QED.jl`. For every (concrete) subtype of `AbstractParticle`, there are two kinds of interface functions implemented: static functions and property functions. 
 The static functions provide information on what kind of particle it is (defaults are written in square brackets)
 
 ```julia
@@ -34,7 +34,7 @@ abstract type AbstractParticle end
 """
     $(TYPEDSIGNATURES)
 
-Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered as a *fermion* in the sense of particle statistics, and `false` otherwise.
+Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered a *fermion* in the sense of particle statistics, and `false` otherwise.
 
 The default implementation of `is_fermion` for every subtype of `AbstractParticle` will always return `false`.
 """
@@ -43,7 +43,7 @@ Base.@pure is_fermion(::AbstractParticle) = false
 """
     $(TYPEDSIGNATURES)
 
-Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered as a *boson* in the sense of particle statistics, and `false` otherwise.
+Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered a *boson* in the sense of particle statistics, and `false` otherwise.
 The default implementation of `is_boson` for every subtype of `AbstractParticle` will always return `false`.
 """
 Base.@pure is_boson(::AbstractParticle) = false
@@ -51,7 +51,7 @@ Base.@pure is_boson(::AbstractParticle) = false
 """
     $(TYPEDSIGNATURES)
     
-Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered as a *particle* as distinct from anti-particles, and `false` otherwise.
+Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered a *particle* as distinct from anti-particles, and `false` otherwise.
 The default implementation of `is_particle` for every subtype of `AbstractParticle` will always return `true`.
 """
 Base.@pure is_particle(::AbstractParticle) = true
@@ -59,7 +59,7 @@ Base.@pure is_particle(::AbstractParticle) = true
 """
     $(TYPEDSIGNATURES)
 
-Interface function for particles. Return true if the passed subtype of `AbstractParticle` can be considered as a *anti particle* as distinct from their particle counterpart, and `false` otherwise.
+Interface function for particles. Return true if the passed subtype of `AbstractParticle` can be considered a *anti particle* as distinct from their particle counterpart, and `false` otherwise.
 The default implementation of `is_anti_particle` for every subtype of `AbstractParticle` will always return `false`.
 """
 Base.@pure is_anti_particle(::AbstractParticle) = false
