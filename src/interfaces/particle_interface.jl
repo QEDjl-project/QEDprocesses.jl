@@ -1,7 +1,7 @@
 ###############
 # The paricle interface
 #
-# In this file, we define the interface of working with particles in a general
+# In this file, we define the interface for working with particles in a general
 # sense. 
 # 
 # This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
