@@ -72,7 +72,7 @@ Base.@pure is_particle(::AntiFermion) = false
 Base.@pure is_anti_particle(::AntiFermion) = true
 
 """
-Abstract base type for majorana-fermions, i.e. fermions which are their own anti-particles .
+Abstract base type for majorana-fermions, i.e. fermions which are their own anti-particles.
 
 !!! note "particle interface"
     All subtypes of `MajoranaFermion` have 
