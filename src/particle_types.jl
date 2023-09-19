@@ -154,7 +154,7 @@ Abstract base type for anti-bosons as distinct from its particle counterpart `Bo
     ```julia 
     is_boson(::AntiBoson) = true
     is_particle(::AntiBoson) = false
-    is_anti_particle(::AntiBoson) = false
+    is_anti_particle(::AntiBoson) = true
     ```
 
 """
