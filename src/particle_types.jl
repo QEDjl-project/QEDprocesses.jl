@@ -90,7 +90,7 @@ Base.@pure is_particle(::MajoranaFermion) = true
 Base.@pure is_anti_particle(::MajoranaFermion) = true
 
 """
-Concrete type for the *electrons* as a particle species. Mostly used for dispatch. 
+Concrete type for *electrons* as a particle species. Mostly used for dispatch. 
 
 !!! note "particle interface"
     Besides being a subtype of `Fermion`, `Electrons` have
