@@ -35,7 +35,6 @@ abstract type AbstractParticle end
     $(TYPEDSIGNATURES)
 
 Interface function for particles. Return `true` if the passed subtype of `AbstractParticle` can be considered a *fermion* in the sense of particle statistics, and `false` otherwise.
-
 The default implementation of `is_fermion` for every subtype of `AbstractParticle` will always return `false`.
 """
 Base.@pure is_fermion(::AbstractParticle) = false
