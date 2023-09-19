@@ -85,6 +85,6 @@ This needs to be implemented for each concrete subtype of `AbstractParticle` and
 """
 function charge(::AbstractParticle)::Real
     return error(
-        "The function mass($(typeof(particle))) is not implemented. You need to implement it to use the particle interface.",
+        "The function charge($(typeof(particle))) is not implemented. You need to implement it to use the particle interface.",
     )
 end
