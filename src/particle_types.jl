@@ -93,7 +93,7 @@ Base.@pure is_anti_particle(::MajoranaFermion) = true
 Concrete type for *electrons* as a particle species. Mostly used for dispatch. 
 
 !!! note "particle interface"
-    Besides being a subtype of `Fermion`, `Electrons` have
+    Besides being a subtype of `Fermion`, objects of type `Electron` have
 
     ```julia
     mass(::Electron) = 1.0
@@ -108,7 +108,7 @@ charge(::Electron) = -1.0
 Concrete type for *positrons* as a particle species. Mostly used for dispatch. 
 
 !!! note "particle interface"
-    Besides being a subtype of `AntiFermion`, `Positron` have
+    Besides being a subtype of `AntiFermion`, objects of type `Positron` have
 
     ```julia
     mass(::Positron) = 1.0
