@@ -105,7 +105,7 @@ mass(::Electron) = 1.0
 charge(::Electron) = -1.0
 
 """
-Concrete type for the *positrons* as a particle species. Mostly used for dispatch. 
+Concrete type for *positrons* as a particle species. Mostly used for dispatch. 
 
 !!! note "particle interface"
     Besides being a subtype of `AntiFermion`, `Positron` have
