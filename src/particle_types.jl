@@ -77,7 +77,7 @@ Abstract base type for majorana-fermions, i.e. fermions which are their own anti
 !!! note "particle interface"
     All subtypes of `MajoranaFermion` have 
     ```julia 
-    is_fermion(::Fermion) = true
+    is_fermion(::MajoranaFermion) = true
     is_particle(::MajoranaFermion) = true
     is_anti_particle(::MajoranaFermion) = true
     ```
