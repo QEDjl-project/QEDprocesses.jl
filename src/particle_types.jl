@@ -49,9 +49,9 @@ Abstract base type for fermions as distinct from anti-fermions.
 """
 abstract type Fermion <: FermionLike end
 
-Base.@pure is_particle(::Fermion) = true
+is_particle(::Fermion) = true
 
-Base.@pure is_anti_particle(::Fermion) = false
+is_anti_particle(::Fermion) = false
 
 """
 Abstract base type for anti-fermions as distinct from its particle counterpart `Fermion`.
@@ -67,9 +67,9 @@ Abstract base type for anti-fermions as distinct from its particle counterpart `
 """
 abstract type AntiFermion <: FermionLike end
 
-Base.@pure is_particle(::AntiFermion) = false
+is_particle(::AntiFermion) = false
 
-Base.@pure is_anti_particle(::AntiFermion) = true
+is_anti_particle(::AntiFermion) = true
 
 """
 Abstract base type for majorana-fermions, i.e. fermions which are their own anti-particles.
@@ -85,9 +85,9 @@ Abstract base type for majorana-fermions, i.e. fermions which are their own anti
 """
 abstract type MajoranaFermion <: FermionLike end
 
-Base.@pure is_particle(::MajoranaFermion) = true
+is_particle(::MajoranaFermion) = true
 
-Base.@pure is_anti_particle(::MajoranaFermion) = true
+is_anti_particle(::MajoranaFermion) = true
 
 """
 Concrete type for *electrons* as a particle species. Mostly used for dispatch. 
@@ -143,8 +143,8 @@ Abstract base type for bosons as distinct from its anti-particle counterpart `An
 
 """
 abstract type Boson <: BosonLike end
-Base.@pure is_particle(::Boson) = true
-Base.@pure is_anti_particle(::Boson) = false
+is_particle(::Boson) = true
+is_anti_particle(::Boson) = false
 
 """
 Abstract base type for anti-bosons as distinct from its particle counterpart `Bosons`. 
@@ -159,8 +159,8 @@ Abstract base type for anti-bosons as distinct from its particle counterpart `Bo
 
 """
 abstract type AntiBoson <: BosonLike end
-Base.@pure is_particle(::AntiBoson) = false
-Base.@pure is_anti_particle(::AntiBoson) = true
+is_particle(::AntiBoson) = false
+is_anti_particle(::AntiBoson) = true
 
 """
 Abstract base type for majorana-bosons, i.e. bosons which are their own anti-particles.
@@ -175,8 +175,8 @@ Abstract base type for majorana-bosons, i.e. bosons which are their own anti-par
     
 """
 abstract type MajoranaBoson <: BosonLike end
-Base.@pure is_particle(::MajoranaBoson) = true
-Base.@pure is_anti_particle(::MajoranaBoson) = true
+is_particle(::MajoranaBoson) = true
+is_anti_particle(::MajoranaBoson) = true
 
 """
 Concrete type for the *photons* as a particle species. Mostly used for dispatch. 
