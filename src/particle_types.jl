@@ -120,9 +120,6 @@ struct Positron <: AntiFermion end
 mass(::Positron) = 1.0
 charge(::Positron) = 1.0
 
-####
-# particle information carts - Bosons
-####
 """
 Abstract base types for particle species that act like bosons in the sense of particle statistics. 
     
