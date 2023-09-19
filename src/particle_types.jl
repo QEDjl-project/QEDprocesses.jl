@@ -59,7 +59,7 @@ Abstract base type for anti-fermions as distinct from its particle counterpart `
 !!! note "particle interface"
     All subtypes of `AntiFermion` have 
     ```julia 
-    is_fermion(::Fermion) = true
+    is_fermion(::AntiFermion) = true
     is_particle(::AntiFermion) = false
     is_anti_particle(::AntiFermion) = true
     ```
