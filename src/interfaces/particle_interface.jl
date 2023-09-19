@@ -59,7 +59,7 @@ Base.@pure is_particle(::AbstractParticle) = true
 """
     $(TYPEDSIGNATURES)
 
-Interface function for particles. Return true if the passed subtype of `AbstractParticle` can be considered a *anti particle* as distinct from their particle counterpart, and `false` otherwise.
+Interface function for particles. Return true if the passed subtype of `AbstractParticle` can be considered an *anti particle* as distinct from their particle counterpart, and `false` otherwise.
 The default implementation of `is_anti_particle` for every subtype of `AbstractParticle` will always return `false`.
 """
 Base.@pure is_anti_particle(::AbstractParticle) = false
