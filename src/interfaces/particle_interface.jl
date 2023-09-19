@@ -11,7 +11,7 @@
 
 
 """
-Abstract base type for every type which might be considered as a `particle` in the context of `QED.jl`. For every (concrete) subtype of `AbstractParticle`, there are two kinds of interface functions implemented: static functions and property functions. 
+Abstract base type for every type which might be considered a *particle* in the context of `QED.jl`. For every (concrete) subtype of `AbstractParticle`, there are two kinds of interface functions implemented: static functions and property functions. 
 The static functions provide information on what kind of particle it is (defaults are written in square brackets)
 
 ```julia
