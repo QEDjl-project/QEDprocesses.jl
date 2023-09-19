@@ -178,8 +178,6 @@ abstract type MajoranaBoson <: BosonLike end
 Base.@pure is_particle(::MajoranaBoson) = true
 Base.@pure is_anti_particle(::MajoranaBoson) = true
 
-# TODO: is traits for massless and uncharged particles
-# 		This makes the function calls more specialized
 """
 Concrete type for the *photons* as a particle species. Mostly used for dispatch. 
 
