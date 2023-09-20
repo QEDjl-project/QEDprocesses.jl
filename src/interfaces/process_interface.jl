@@ -187,7 +187,7 @@ end
 
 Interface function for the combination of scattering processes and models. Return the total cross section of a 
 given process and model for a passed initial phase space. The elements of the `AbstractVector` representing the initial phase space
-are the momenta of the respective paricles. The implementation of this function for a concrete process and model must not 
+are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
 check if the length of the passed initial phase spaces match number of incoming particles. 
 
 !!! note "cross section interface"
