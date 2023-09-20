@@ -72,7 +72,7 @@ end
 
 Interface function for the combination of scattering processes and models. Return the differential cross section of a 
 given process and model for a passed initial and final phase space. The elements of the `AbstractVector` representing the phase spaces 
-are the momenta of the respective paricles. The implementation of this function for a concrete process and model must not 
+are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
 check if the length of the passed phase spaces match the respective number of particles. 
 
 !!! note "differential cross section interface"
