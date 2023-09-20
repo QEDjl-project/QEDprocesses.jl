@@ -44,7 +44,7 @@ _groundtruth_finalCS(initPS) = _groundtruth_diffCS(initPS,initPS)
     @test_throws MethodError incoming_particles(TestProcess_FAIL())
     @test_throws MethodError outgoing_particles(TestProcess_FAIL())
 end
-@testset "($N_INCOMING,N_OUTGOING)" for (N_INCOMING,N_OUTGOING) in Iterators.product(
+@testset "($N_INCOMING,$N_OUTGOING)" for (N_INCOMING,N_OUTGOING) in Iterators.product(
                                                                                      (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
                                                                                     )   
 
