@@ -136,7 +136,7 @@ function _differential_cross_section(
     init_phasespace::AbstractVector{T},
     final_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    res = Vector{eltype(init_phasespace[1])}(undef, size(final_phasespace, 2))
+    res = Vector{_base_component_type(init_phasespace)}(undef, size(final_phasespace, 2))
     for i in 1:size(final_phasespace, 2)
         res[i] = _differential_cross_section(
             proc_def, model_def, init_phasespace, view(final_phasespace, :, i)
@@ -151,7 +151,7 @@ function _differential_cross_section(
     init_phasespace::AbstractMatrix{T},
     final_phasespace::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-res = Vector{eltype(init_phasespace[1])}(undef, size(init_phasespace, 2))
+res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
     for i in 1:size(init_phasespace, 2)
         res[i] = _differential_cross_section(
             proc_def, model_def, view(init_phasespace, :, i), final_phasespace
@@ -166,7 +166,7 @@ function _differential_cross_section(
     init_phasespace::AbstractMatrix{T},
     final_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-res = Matrix{eltype(init_phasespace[1])}(undef, size(init_phasespace, 2), size(final_phasespace, 2))
+res = Matrix{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2), size(final_phasespace, 2))
     for init_idx in 1:size(init_phasespace, 2)
         for final_idx in 1:size(final_phasespace, 2)
             res[init_idx, final_idx] = _differential_cross_section(
@@ -218,7 +218,7 @@ function _total_cross_section(
     model_def::AbstractModelDefinition,
     init_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-res = Vector{eltype(init_phasespace[1])}(undef, size(init_phasespace, 2))
+res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
     for i in 1:size(initPS, 2)
         res[i] = _total_cross_section(proc_def, model_def, view(init_phasespace, :, i))
     end

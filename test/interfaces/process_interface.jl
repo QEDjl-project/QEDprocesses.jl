@@ -93,7 +93,7 @@ end
                 TestProcess(), TestModel(), p_in, p_out
             )
 
-            groundtruth = Vector{Float64}(undef, size(p_out, 2))
+            groundtruth = Vector{QEDprocesses._base_component_type(p_in)}(undef, size(p_out, 2))
             for i in 1:size(p_out, 2)
                 groundtruth[i] = _groundtruth_diffCS(p_in, view(p_out, :, i))
             end
@@ -104,7 +104,7 @@ end
             p_in = _rand_momenta(RNG,N_INCOMING,2) 
             p_out = _rand_momenta(RNG,N_OUTGOING) 
             diffCS = differential_cross_section(TestProcess(), TestModel(), p_in, p_out)
-            groundtruth = Vector{Float64}(undef, size(p_in, 2))
+            groundtruth = Vector{QEDprocesses._base_component_type(p_in)}(undef, size(p_in, 2))
             for i in 1:size(p_in, 2)
                 groundtruth[i] = _groundtruth_diffCS(view(p_in, :, i), p_out)
             end
@@ -115,7 +115,7 @@ end
             p_in = _rand_momenta(RNG,N_INCOMING,2) 
             p_out = _rand_momenta(RNG,N_OUTGOING,2)
             diffCS = differential_cross_section(TestProcess(), TestModel(), p_in, p_out)
-            groundtruth = Matrix{Float64}(undef, size(p_in, 2), size(p_out, 2))
+            groundtruth = Matrix{QEDprocesses._base_component_type(p_in)}(undef, size(p_in, 2), size(p_out, 2))
             for i in 1:size(p_in, 2)
                 for j in 1:size(p_out, 2)
                     groundtruth[i, j] = _groundtruth_diffCS(

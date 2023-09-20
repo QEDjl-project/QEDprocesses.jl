@@ -22,6 +22,7 @@ export Electron, Positron, Photon
 using DocStringExtensions
 using QEDbase
 
+include("utils.jl")
 include("interfaces/particle_interface.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
