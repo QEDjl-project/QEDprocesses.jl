@@ -87,7 +87,7 @@ check if the length of the passed phase spaces match the respective number of pa
 
     ```
 
-    where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of initial and final phase spaces given by *single points* and *vector of points* 
+    where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of initial and final phase space types given by *single set of points* (AbstractVector{T}) and *mutiple set of points* (AbstractMatrix{T}) 
     is implemented. Furthermore, a safe version of `_differential_cross_section` is also implemented: [`differential_cross_section`](@ref).
 
 !!! note "unsafe implementation"
