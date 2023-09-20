@@ -92,7 +92,7 @@ check if the length of the passed phase spaces match the respective number of pa
 
 !!! note "unsafe implementation"
     
-    Each instance of this function do not check the validity of the input. 
+    Each instance of this function does not check the validity of the input. 
     Therefore, these functions are not exported and should be used with caution. To add a method in order to implement the cross section interface, 
     it is recommented to directly use `QEDprocesses._differential_cross_section` instead of globally `using QEDprocesses: _differential_cross_section`.
 
