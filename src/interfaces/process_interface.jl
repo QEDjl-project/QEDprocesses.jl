@@ -206,7 +206,7 @@ check if the length of the passed initial phase spaces match number of incoming 
 
 !!! note 
     
-    Each instance of this function do not check the validity of the input. 
+    Each instance of this function does not check the validity of the input. 
     This function is not exported and should be used with caution. To add a method in order to implement the cross section interface, 
     it is recommented to directly use `QEDprocesses._total_cross_section` instead of globally `using QEDprocesses: _total_cross_section`.
 
