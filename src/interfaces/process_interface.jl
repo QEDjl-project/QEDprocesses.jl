@@ -122,7 +122,7 @@ function differential_cross_section(
     ) where {T<:QEDbase.AbstractFourMomentum}
     size(init_phasespace, 1) == number_incoming_pariticles(proc_def) || throw(
         DimensionMismatch("The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_pariticles(proc_def)}>."),
-                                                                               )
+    )
     size(final_phasespace, 1) == number_outgoing_pariticles(proc_def) || throw(
         DimensionMismatch("The number of momenta in the final phasespace <{length(final_phasespace)}> does not match the number of incoming particles of the process <{number_outgoing_pariticles(proc_def)}>."),
     )
