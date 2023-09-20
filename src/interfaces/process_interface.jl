@@ -1,7 +1,7 @@
 ###############
 # The process interface
 #
-# In this file, we define the interface of working with scattering processes in
+# In this file, we define the interface for working with scattering processes in
 # general.
 # 
 # This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
