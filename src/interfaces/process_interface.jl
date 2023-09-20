@@ -219,7 +219,7 @@ function _total_cross_section(
     init_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
 res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
-    for i in 1:size(initPS, 2)
+    for i in 1:size(init_phasespace, 2)
         res[i] = _total_cross_section(proc_def, model_def, view(init_phasespace, :, i))
     end
     return res
