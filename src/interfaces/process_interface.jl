@@ -110,7 +110,7 @@ function _differential_cross_section end
     ) where {T<:QEDbase.AbstractFourMomentum}
 
 Return the differential cross section for a given combination of a scattering process 
-and model definition evaluated in the passed inital and final phase space. 
+and model definition evaluated on the passed inital and final phase space points. 
 
 This function will eventually call the respective interface function [`_differential_cross_section`](@ref).
 """
