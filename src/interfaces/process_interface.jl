@@ -10,7 +10,7 @@
 ###############
 
 """
-Abstact base type for definitions of scattering processes. It is the root type for the 
+Abstract base type for definitions of scattering processes. It is the root type for the 
 process interface, which assumes that every subtype of `AbstractProcessDefinition`
 implements at least 
 
