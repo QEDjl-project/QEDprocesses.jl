@@ -124,7 +124,7 @@ function differential_cross_section(
         DimensionMismatch("The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_pariticles(proc_def)}>."),
     )
     size(final_phasespace, 1) == number_outgoing_pariticles(proc_def) || throw(
-        DimensionMismatch("The number of momenta in the final phasespace <{length(final_phasespace)}> does not match the number of incoming particles of the process <{number_outgoing_pariticles(proc_def)}>."),
+        DimensionMismatch("The number of momenta in the final phasespace <{length(final_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_pariticles(proc_def)}>."),
     )
     return _differential_cross_section(proc_def, model_def, init_phasespace, final_phasespace)
 end
