@@ -33,3 +33,21 @@ To install the locally downloaded package on Windows, change to the parent direc
 ```julia
 (@v1.9) pkg> add ./QEDprocesses.jl
 ```
+
+## Building the documentation locally
+
+To build the documentation of `QEDprocesses.jl` locally, first clone this
+repository. Then, you instantiate the documentation subpackage by hitting 
+
+```julia 
+julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+```
+in the root directory of this repository. Afterwards, the dokumentation can be
+built by running
+
+```julia
+julia --project=docs --color=yes docs/make.jl
+```
+
+To access the documentation site, just open the file `docs/_build/index.html` in
+your favorite browser. 
