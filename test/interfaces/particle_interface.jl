@@ -8,7 +8,7 @@ RND_MASS = rand(RNG)
 RND_CHARGE = rand(RNG)
 
 struct TestParticle <: AbstractParticle end
-QEDprocesses.mass(::TestParticle) = RND_MASS 
+QEDprocesses.mass(::TestParticle) = RND_MASS
 QEDprocesses.charge(::TestParticle) = RND_CHARGE
 
 @testset "default interface" begin

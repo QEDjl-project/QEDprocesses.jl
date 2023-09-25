@@ -10,7 +10,7 @@ export AbstractModelDefinition, fundamental_interaction_type
 # Abstract process interface
 export AbstractProcessDefinition, incoming_particles, outgoing_particles
 export initial_phasespace_dimension, final_phasespace_dimension
-export number_incoming_particles, number_outgoing_particles 
+export number_incoming_particles, number_outgoing_particles
 export differential_cross_section, total_cross_section
 
 # particle types
