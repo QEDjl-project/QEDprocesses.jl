@@ -1,19 +1,66 @@
 ###############
 # The process setup 
 #
-# In this file, we define the interface for process setups. A `setup` means
-# here, a collection of setup-data needed to evaluate a dedicated quantity on a given
-# running data. Despite that, the decomposition into setup and running data is
-# arbitrary, this will be used for cases where a subset of the variables a
-# quantity depends on is kept constant.  
+# In this file, we define the interface for general computation and process setups.
 # 
 # This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
 # ecosystem.
 #
 ###############
 
-# base type for any setup, will most properbly be defined somewhere else,
-# e.g. QEDbase, therefore it is not exported
+"""
+Abstract base type for computation setups.  A *setup* means
+here, a collection of setup-data needed to evaluate a dedicated quantity on given
+running data. Therefore, each setup is associated to a single quantity, which one may compute using the setup data and the funning data. 
+Despite that, the decomposition into setup and running data is
+arbitrary, and this can be used for cases where a subset of the variables a
+quantity depends on is kept constant. 
+
+!!! note "Computation setup interface"
+    
+    The computation performed using a computation setup is separated into three steps:
+        
+        1. input validation,
+        2. actual computation,
+        3. post computation,
+
+    where every step has its own interface function (see [`compute`](@ref) for details). 
+    
+    ## input validation
+
+    Every subtype of `AbstractComputationSetup` implements the interface function
+    
+    ```Julia
+    _input_validation(stp::AbstractComputationSetup, input) # default: true
+    ```
+    
+    which returns true, if the `input` is valid for the computation of the associated quantity (see [`_input_validation`](@ref) for more details). 
+    The default implementation returns always `true`; provide a custom implementation if a different behavior is required.
+
+    ## Actual computation
+    
+    Every subtype of `AbstractComputationSetup` should at least implement the following required interface function
+    
+    ```Julia
+    _compute(stp::AbstractComputationSetup, input) 
+    ```
+    
+    which computes the value of the associated quantity for a given `input` (see [`_compute`](@ref) for more details).
+
+
+    ## Post computation
+
+    Every subtype of `AbstractComputationSetup` implement the following interface function
+    
+    ```Julia
+    _post_computation(stp::AbstractComputationSetup, input) 
+    ```
+    
+    which performs *computations* after the actual computation, e.g. conversions or normalisations (see [`_post_computation`](@ref) for more details).
+
+
+    
+"""
 abstract type AbstractComputationSetup end
 
 # convenience function to check if an object is a computation setup
@@ -66,8 +113,15 @@ Interface function which returns the value of the associated quantity evaluated 
 """
 function _compute end
 
+"""
 
+    compute(stp::AbstractComputationSetup, input::Any)
 
+Return the value of the quantity associated with `stp` for a given `input`. 
+In addition to the actual call of the associated unsafe version [`_compute`](@ref),
+input validation (using [`_input_validation`](@ref)) and post computation
+(using [`_post_computation`](@ref)) are wrapped around the calculation (see [`AbstractComputationSetup`](@ref) for details).
+"""
 function compute(stp::AbstractComputationSetup, input)
     _input_validation(stp,input) || error("InvalidInputError: there is something wrong with the input!\n setup:$stp \n input:$input")
     raw_result = _compute(stp,input)
@@ -83,7 +137,6 @@ interface functions
 scattering_process(::AbstractProcessSetup) 
 compute_model(::AbstractProcessSetup) 
 ```
-where `x` is the running input, i.e. a *single point* the quantity is evaluated on.
 
 Derived from the these interface functions, the following delegations are implemented
 
@@ -91,6 +144,7 @@ Derived from the these interface functions, the following delegations are implem
 number_incoming_particles(::AbstractProcessSetup)
 number_outgoing_particles(::AbstractProcessSetup)
 ```
+
 """
 abstract type AbstractProcessSetup <: AbstractComputationSetup end
 
