@@ -119,14 +119,23 @@ function differential_cross_section(
     model_def::AbstractModelDefinition,
     init_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
     final_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
-    ) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:QEDbase.AbstractFourMomentum}
     size(init_phasespace, 1) == number_incoming_pariticles(proc_def) || throw(
-        DimensionMismatch("The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_pariticles(proc_def)}>."),
+        DimensionMismatch(
+            "The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_pariticles(proc_def)}>.",
+        ),
     )
     size(final_phasespace, 1) == number_outgoing_pariticles(proc_def) || throw(
-        DimensionMismatch("The number of momenta in the final phasespace <{length(final_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_pariticles(proc_def)}>."),
+        DimensionMismatch(
+            "The number of momenta in the final phasespace <{length(final_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_pariticles(proc_def)}>.",
+        ),
     )
-    return _differential_cross_section(proc_def, model_def, init_phasespace, final_phasespace)
+    return _differential_cross_section(
+        proc_def,
+        model_def,
+        init_phasespace,
+        final_phasespace,
+    )
 end
 
 # returns diffCS for single `initPS` and several `finalPS` points without input-check
@@ -137,9 +146,12 @@ function _differential_cross_section(
     final_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{_base_component_type(init_phasespace)}(undef, size(final_phasespace, 2))
-    for i in 1:size(final_phasespace, 2)
+    for i = 1:size(final_phasespace, 2)
         res[i] = _differential_cross_section(
-            proc_def, model_def, init_phasespace, view(final_phasespace, :, i)
+            proc_def,
+            model_def,
+            init_phasespace,
+            view(final_phasespace, :, i),
         )
     end
     return res
@@ -151,10 +163,13 @@ function _differential_cross_section(
     init_phasespace::AbstractMatrix{T},
     final_phasespace::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
-    for i in 1:size(init_phasespace, 2)
+    res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
+    for i = 1:size(init_phasespace, 2)
         res[i] = _differential_cross_section(
-            proc_def, model_def, view(init_phasespace, :, i), final_phasespace
+            proc_def,
+            model_def,
+            view(init_phasespace, :, i),
+            final_phasespace,
         )
     end
     return res
@@ -166,11 +181,18 @@ function _differential_cross_section(
     init_phasespace::AbstractMatrix{T},
     final_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-res = Matrix{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2), size(final_phasespace, 2))
-    for init_idx in 1:size(init_phasespace, 2)
-        for final_idx in 1:size(final_phasespace, 2)
+    res = Matrix{_base_component_type(init_phasespace)}(
+        undef,
+        size(init_phasespace, 2),
+        size(final_phasespace, 2),
+    )
+    for init_idx = 1:size(init_phasespace, 2)
+        for final_idx = 1:size(final_phasespace, 2)
             res[init_idx, final_idx] = _differential_cross_section(
-                proc_def, model_def, view(init_phasespace, :, init_idx), view(final_phasespace, :, final_idx)
+                proc_def,
+                model_def,
+                view(init_phasespace, :, init_idx),
+                view(final_phasespace, :, final_idx),
             )
         end
     end
@@ -218,8 +240,8 @@ function _total_cross_section(
     model_def::AbstractModelDefinition,
     init_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
-    for i in 1:size(init_phasespace, 2)
+    res = Vector{_base_component_type(init_phasespace)}(undef, size(init_phasespace, 2))
+    for i = 1:size(init_phasespace, 2)
         res[i] = _total_cross_section(proc_def, model_def, view(init_phasespace, :, i))
     end
     return res
@@ -244,7 +266,9 @@ function total_cross_section(
     init_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
 ) where {T<:QEDbase.AbstractFourMomentum}
     size(init_phasespace, 1) == number_incoming_pariticles(proc_def) || throw(
-        DimensionMismatch("The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_pariticles(proc_def)}>."),
+        DimensionMismatch(
+            "The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_pariticles(proc_def)}>.",
+        ),
     )
     return _total_cross_section(proc_def, model_def, init_phasespace)
 end
