@@ -77,6 +77,11 @@ end
         @test outgoing_particles(TestProcess()) == OUTGOING_PARTICLES
     end
 
+    @testset "delegated functions" begin
+        @test number_incoming_particles(TestProcess()) == N_INCOMING
+        @test number_outgoing_particles(TestProcess()) == N_OUTGOING
+    end
+
 
     @testset "cross section" begin
 
