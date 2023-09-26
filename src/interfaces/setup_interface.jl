@@ -16,6 +16,9 @@
 # e.g. QEDbase, therefore it is not exported
 abstract type AbstractComputationSetup end
 
+# convenience function to check if an object is a computation setup
+_is_computation_setup(::AbstractComputationSetup) = true
+
 """
 
     _is_valid_input(stp::AbstractComputationSetup, input::Any)
