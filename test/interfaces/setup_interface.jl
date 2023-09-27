@@ -50,7 +50,7 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
 
         @test_throws MethodError QEDprocesses._compute(TestSetupCustomValidationFAIL(), rnd_input) 
         @test_throws MethodError compute(TestSetupCustomValidationFAIL(), rnd_input) 
-        # invalid input should be catched without throwing a MethodError
+        # invalid input should be caught without throwing a MethodError
         @test_throws ErrorException compute(TestSetupCustomValidationFAIL(), _transform_to_invalid(rnd_input)) 
 
         @test_throws MethodError QEDprocesses._compute(TestSetupCustomPostComputationFAIL(), rnd_input) 
@@ -138,7 +138,7 @@ struct TestProcessSetupFAIL <: AbstractProcessSetup end
         QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
         QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES 
 
-        @testset "deligated functions" begin
+        @testset "delegated functions" begin
             stp = TestProcessSetup()
             @test number_incoming_particles(stp) == N_INCOMING
             @test number_outgoing_particles(stp) == N_OUTGOING
