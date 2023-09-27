@@ -7,25 +7,25 @@ RNG = MersenneTwister(137137)
 ATOL = 0.0
 RTOL = sqrt(eps())
 
-_groundthruth_compute(x) = x
-_groundthruth_input_validation(x) = (x>0)
+_groundtruth_compute(x) = x
+_groundtruth_input_validation(x) = (x>0)
 _transform_to_invalid(x) = -abs(x)
 _groundtruth_post_computation(x,y) = x+y
 
 # setups for which the interface is implemented
 abstract type AbstractTestSetup <: AbstractComputationSetup end
-QEDprocesses._compute(stp::AbstractTestSetup, x) = _groundthruth_compute(x)
+QEDprocesses._compute(stp::AbstractTestSetup, x) = _groundtruth_compute(x)
 
 # setup with default implementations
 struct TestSetupDefault <: AbstractTestSetup end
 
 # setup with custom _is_valid_input 
 struct TestSetupCustomIsValidInput <: AbstractTestSetup end 
-QEDprocesses._is_valid_input(::TestSetupCustomIsValidInput, x) = _groundthruth_input_validation(x)
+QEDprocesses._is_valid_input(::TestSetupCustomIsValidInput, x) = _groundtruth_input_validation(x)
 
 # setup with custom _assert_valid_input 
 struct TestSetupCustomAssertValidInput<: AbstractTestSetup end 
-QEDprocesses._is_valid_input(::TestSetupCustomAssertValidInput, x) = _groundthruth_input_validation(x)
+QEDprocesses._is_valid_input(::TestSetupCustomAssertValidInput, x) = _groundtruth_input_validation(x)
 struct TestException <: Exception end
 function QEDprocesses._assert_valid_input(stp::TestSetupCustomAssertValidInput, x) 
     QEDprocesses._is_valid_input(stp,x)||throw(TestException())
@@ -38,7 +38,7 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputation,x,y) = _groundtr
 
 # setup with custom input validation and post computation
 struct TestSetupCustom <: AbstractTestSetup end 
-QEDprocesses._is_valid_input(::TestSetupCustom, x) = _groundthruth_input_validation(x)
+QEDprocesses._is_valid_input(::TestSetupCustom, x) = _groundtruth_input_validation(x)
 QEDprocesses._post_computation(::TestSetupCustom,x,y) = _groundtruth_post_computation(x,y)
 
 # setup which fail on computation with default implementations
@@ -46,7 +46,7 @@ struct TestSetupFAIL <: AbstractComputationSetup end
 
 # setup which fail on computation with custom input validation
 struct TestSetupCustomValidationFAIL <: AbstractComputationSetup end
-QEDprocesses._is_valid_input(::TestSetupCustomValidationFAIL, x) = _groundthruth_input_validation(x)
+QEDprocesses._is_valid_input(::TestSetupCustomValidationFAIL, x) = _groundtruth_input_validation(x)
 
 # setup which fail on computation with custom post computation
 struct TestSetupCustomPostComputationFAIL <: AbstractComputationSetup end
@@ -73,16 +73,16 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
         rnd_output = rand(RNG)
         @test QEDprocesses._is_valid_input(stp,rnd_input)
         @test QEDprocesses._post_computation(stp,rnd_input,rnd_output) == rnd_output
-        @test isapprox(QEDprocesses._compute(stp, rnd_input), _groundthruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
-        @test isapprox(compute(stp, rnd_input), _groundthruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
+        @test isapprox(QEDprocesses._compute(stp, rnd_input), _groundtruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
+        @test isapprox(compute(stp, rnd_input), _groundtruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
     end
 
     @testset "custom input validation" begin
         stp = TestSetupCustomIsValidInput()
         rnd_input = rand(RNG)
-        @test QEDprocesses._is_valid_input(stp, _groundthruth_input_validation(rnd_input))
-        @test !QEDprocesses._is_valid_input(stp, !_groundthruth_input_validation(rnd_input))
-        @test isapprox(compute(stp, rnd_input), _groundthruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
+        @test QEDprocesses._is_valid_input(stp, _groundtruth_input_validation(rnd_input))
+        @test !QEDprocesses._is_valid_input(stp, !_groundtruth_input_validation(rnd_input))
+        @test isapprox(compute(stp, rnd_input), _groundtruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
         @test_throws InvalidInputError QEDprocesses._assert_valid_input(stp, _transform_to_invalid(rnd_input))
         @test_throws InvalidInputError compute(stp, _transform_to_invalid(rnd_input))
  
@@ -99,7 +99,7 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
         rnd_input = rand(RNG)
         rnd_output = rand(RNG)
         @test isapprox(QEDprocesses._post_computation(stp,rnd_input,rnd_output), _groundtruth_post_computation(rnd_input,rnd_output))
-        @test isapprox(compute(stp,rnd_input), _groundtruth_post_computation(rnd_input,_groundthruth_compute(rnd_input)))
+        @test isapprox(compute(stp,rnd_input), _groundtruth_post_computation(rnd_input,_groundtruth_compute(rnd_input)))
     end
 
     @testset "custom input validation and post computation" begin
@@ -107,11 +107,11 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
         rnd_input = rand(RNG)
         rnd_output = rand(RNG)
 
-        @test QEDprocesses._is_valid_input(stp, _groundthruth_input_validation(rnd_input))
-        @test !QEDprocesses._is_valid_input(stp, !_groundthruth_input_validation(rnd_input))
+        @test QEDprocesses._is_valid_input(stp, _groundtruth_input_validation(rnd_input))
+        @test !QEDprocesses._is_valid_input(stp, !_groundtruth_input_validation(rnd_input))
         @test_throws InvalidInputError compute(stp, _transform_to_invalid(rnd_input))
         @test isapprox(QEDprocesses._post_computation(stp,rnd_input,rnd_output), _groundtruth_post_computation(rnd_input,rnd_output))
-        @test isapprox(compute(stp,rnd_input), _groundtruth_post_computation(rnd_input,_groundthruth_compute(rnd_input)))
+        @test isapprox(compute(stp,rnd_input), _groundtruth_post_computation(rnd_input,_groundtruth_compute(rnd_input)))
     end
 end
 # process setup 
