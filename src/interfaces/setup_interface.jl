@@ -27,10 +27,10 @@ quantity depends on is kept constant.
     Every subtype of `AbstractComputationSetup` should implement the interface function
     
     ```Julia
-    _input_validation(stp::AbstractComputationSetup, input) # default: true
+    _is_valid_input(stp::AbstractComputationSetup, input) # default: true
     ```
     
-    which should return true iff the `input` is valid for the computation of the associated quantity (see [`_input_validation`](@ref) for more details). 
+    which should return true iff the `input` is valid for the computation of the associated quantity (see [`_is_valid_input`](@ref) for more details). 
     The default implementation always returns `true`. Provide a custom implementation if a different behavior is required.
 
     ## Actual computation
@@ -75,7 +75,7 @@ This function is called to validate the input of [`compute`](@ref) before callin
     This behavior can be overwritten if actual validation is necessary.
 
 """
-@inline function _input_validation(stp::AbstractComputationSetup, input)
+@inline function _is_valid_input(stp::AbstractComputationSetup, input)
     return true
 end
 
@@ -103,7 +103,7 @@ Interface function that returns the value of the associated quantity evaluated o
 
 !!! note "unsafe implementation"
 
-    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_input_validation`](@ref) and [`_post_computation`](@ref)), as those two are performed while calling 
+    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_is_valid_input`](@ref) and [`_post_computation`](@ref)), as those two are performed while calling 
     the safe version of this function [`compute`](@ref).
 
 """
@@ -115,11 +115,11 @@ function _compute end
 
 Return the value of the quantity associated with `stp` for a given `input`. 
 In addition to the actual call of the associated unsafe version [`_compute`](@ref),
-input validation (using [`_input_validation`](@ref)) and post computation
+input validation (using [`_is_valid_input`](@ref)) and post computation
 (using [`_post_computation`](@ref)) are wrapped around the calculation (see [`AbstractComputationSetup`](@ref) for details).
 """
 function compute(stp::AbstractComputationSetup, input)
-    _input_validation(stp,input) || error("InvalidInputError: there is something wrong with the input!\n setup:$stp \n input:$input")
+    _is_valid_input(stp,input) || error("InvalidInputError: there is something wrong with the input!\n setup:$stp \n input:$input")
     raw_result = _compute(stp,input)
     return _post_computation(stp, input,raw_result)
 end
