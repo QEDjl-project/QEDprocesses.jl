@@ -2,10 +2,6 @@
 # The process setup 
 #
 # In this file, we define the interface for general computation and process setups.
-# 
-# This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
-# ecosystem.
-#
 ###############
 
 """
