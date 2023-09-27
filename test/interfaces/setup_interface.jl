@@ -19,9 +19,18 @@ QEDprocesses._compute(stp::AbstractTestSetup, x) = _groundthruth_compute(x)
 # setup with default implementations
 struct TestSetupDefault <: AbstractTestSetup end
 
-# setup with custom input validation
-struct TestSetupCustomValidation <: AbstractTestSetup end 
-QEDprocesses._is_valid_input(::TestSetupCustomValidation, x) = _groundthruth_input_validation(x)
+# setup with custom _is_valid_input 
+struct TestSetupCustomIsValidInput <: AbstractTestSetup end 
+QEDprocesses._is_valid_input(::TestSetupCustomIsValidInput, x) = _groundthruth_input_validation(x)
+
+# setup with custom _assert_valid_input 
+struct TestSetupCustomAssertValidInput<: AbstractTestSetup end 
+QEDprocesses._is_valid_input(::TestSetupCustomAssertValidInput, x) = _groundthruth_input_validation(x)
+struct TestException <: Exception end
+function QEDprocesses._assert_valid_input(stp::TestSetupCustomAssertValidInput, x) 
+    QEDprocesses._is_valid_input(stp,x)||throw(TestException())
+    return nothing
+end 
 
 # setup with custom post computation
 struct TestSetupCustomPostComputation <: AbstractTestSetup end
@@ -69,12 +78,20 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
     end
 
     @testset "custom input validation" begin
-        stp = TestSetupCustomValidation()
+        stp = TestSetupCustomIsValidInput()
         rnd_input = rand(RNG)
         @test QEDprocesses._is_valid_input(stp, _groundthruth_input_validation(rnd_input))
         @test !QEDprocesses._is_valid_input(stp, !_groundthruth_input_validation(rnd_input))
         @test isapprox(compute(stp, rnd_input), _groundthruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
+        @test_throws ErrorException QEDprocesses._assert_valid_input(stp, _transform_to_invalid(rnd_input))
         @test_throws ErrorException compute(stp, _transform_to_invalid(rnd_input))
+
+        stp2 = TestSetupCustomAssertValidInput()
+        rnd_input2 = rand(RNG)
+        @test QEDprocesses._assert_valid_input(stp2,rnd_input2)==nothing
+        @test_throws TestException QEDprocesses._assert_valid_input(stp2,_transform_to_invalid(rnd_input2))
+        @test_throws TestException compute(stp2, _transform_to_invalid(rnd_input2))
+
     end
 
     @testset "custom post computation" begin

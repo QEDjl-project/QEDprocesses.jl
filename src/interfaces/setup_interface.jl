@@ -30,7 +30,7 @@ quantity depends on is kept constant.
     _is_valid_input(stp::AbstractComputationSetup, input) # default: true
     ```
     
-    which should return true iff the `input` is valid for the computation of the associated quantity (see [`_is_valid_input`](@ref) for more details). 
+    which should return true iff the `input` is valid for the computation of the associated quantity (see [`_is_valid_input`](@ref) and [`_assert_valid_input`](@ref) for more details). 
     The default implementation always returns `true`. Provide a custom implementation if a different behavior is required.
 
     ## Actual computation
@@ -74,9 +74,37 @@ This function is called to validate the input of [`compute`](@ref) before callin
     Since no input validation is equivalent to every input being valid, this function returns `true` by default. 
     This behavior can be overwritten if actual validation is necessary.
 
+
+An assert version of this function is given by [`_assert_valid_input`](@ref), which used directly the output of this function.
+
 """
 @inline function _is_valid_input(stp::AbstractComputationSetup, input)
     return true
+end
+
+"""
+
+    _assert_valid_input(stp::AbstractComputationSetup, input::Any)
+
+Interface function, which asserts that the given `input` is valid, and thows an error if not.
+
+!!! note "default implementation"
+
+    The generic fallback uses the boolian value returned by `_is_valid_input(stp,input)` to check for validity, 
+    i.e. if the returned value is `true` the assert does not trigger and nothing happens, but if the returned value is `false`, 
+    an error with a generic error message will be thrown (see  [`_is_valid_input`](@ref) for details). 
+    To customize the error message, or use a custom assertion mechanism, just add your own implementation of
+
+    ```Julia
+    _assert_valid_input(stp::YourCustomSetup,input)        
+    ```
+    However, it is highly recommented to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside this assert function.
+
+"""
+@inline function _assert_valid_input(stp::AbstractComputationSetup,input)
+    _is_valid_input(stp,input) || error("InvalidInputError: there is something wrong with the input!\n setup:$stp \n input:$input")
+
+    return nothing
 end
 
 """
@@ -115,11 +143,11 @@ function _compute end
 
 Return the value of the quantity associated with `stp` for a given `input`. 
 In addition to the actual call of the associated unsafe version [`_compute`](@ref),
-input validation (using [`_is_valid_input`](@ref)) and post computation
+input validation ([`_assert_valid_input`]) and post computation
 (using [`_post_computation`](@ref)) are wrapped around the calculation (see [`AbstractComputationSetup`](@ref) for details).
 """
 function compute(stp::AbstractComputationSetup, input)
-    _is_valid_input(stp,input) || error("InvalidInputError: there is something wrong with the input!\n setup:$stp \n input:$input")
+    _assert_valid_input(stp,input) 
     raw_result = _compute(stp,input)
     return _post_computation(stp, input,raw_result)
 end
