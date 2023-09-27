@@ -134,8 +134,10 @@ struct TestProcessSetupFAIL <: AbstractProcessSetup end
 
 @testset "process setup interface" begin
     @testset "interface fail" begin
-        @test_throws MethodError scattering_process(TestProcessSetupFAIL)
-        @test_throws MethodError compute_model(TestProcessSetupFAIL)
+        rnd_input = rand(RNG)
+        @test_throws MethodError scattering_process(TestProcessSetupFAIL())
+        @test_throws MethodError compute_model(TestProcessSetupFAIL())
+        @test_throws MethodError QEDprocesses._compute(TestProcessSetupFAIL(), rnd_input)
     end
 
     @testset "hard interface" begin
