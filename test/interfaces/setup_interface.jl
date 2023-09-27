@@ -60,7 +60,7 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
         @test_throws MethodError QEDprocesses._compute(TestSetupCustomValidationFAIL(), rnd_input) 
         @test_throws MethodError compute(TestSetupCustomValidationFAIL(), rnd_input) 
         # invalid input should be caught without throwing a MethodError
-        @test_throws ErrorException compute(TestSetupCustomValidationFAIL(), _transform_to_invalid(rnd_input)) 
+        @test_throws InvalidInputError compute(TestSetupCustomValidationFAIL(), _transform_to_invalid(rnd_input)) 
 
         @test_throws MethodError QEDprocesses._compute(TestSetupCustomPostComputationFAIL(), rnd_input) 
         @test_throws MethodError compute(TestSetupCustomPostComputationFAIL(), rnd_input) 
@@ -83,9 +83,9 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
         @test QEDprocesses._is_valid_input(stp, _groundthruth_input_validation(rnd_input))
         @test !QEDprocesses._is_valid_input(stp, !_groundthruth_input_validation(rnd_input))
         @test isapprox(compute(stp, rnd_input), _groundthruth_compute(rnd_input), atol=ATOL,rtol=RTOL)
-        @test_throws ErrorException QEDprocesses._assert_valid_input(stp, _transform_to_invalid(rnd_input))
-        @test_throws ErrorException compute(stp, _transform_to_invalid(rnd_input))
-
+        @test_throws InvalidInputError QEDprocesses._assert_valid_input(stp, _transform_to_invalid(rnd_input))
+        @test_throws InvalidInputError compute(stp, _transform_to_invalid(rnd_input))
+ 
         stp2 = TestSetupCustomAssertValidInput()
         rnd_input2 = rand(RNG)
         @test QEDprocesses._assert_valid_input(stp2,rnd_input2)==nothing
@@ -109,7 +109,7 @@ QEDprocesses._post_computation(::TestSetupCustomPostComputationFAIL,x,y) = _grou
 
         @test QEDprocesses._is_valid_input(stp, _groundthruth_input_validation(rnd_input))
         @test !QEDprocesses._is_valid_input(stp, !_groundthruth_input_validation(rnd_input))
-        @test_throws ErrorException compute(stp, _transform_to_invalid(rnd_input))
+        @test_throws InvalidInputError compute(stp, _transform_to_invalid(rnd_input))
         @test isapprox(QEDprocesses._post_computation(stp,rnd_input,rnd_output), _groundtruth_post_computation(rnd_input,rnd_output))
         @test isapprox(compute(stp,rnd_input), _groundtruth_post_computation(rnd_input,_groundthruth_compute(rnd_input)))
     end

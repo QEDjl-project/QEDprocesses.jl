@@ -81,12 +81,22 @@ An assert version of this function is given by [`_assert_valid_input`](@ref), wh
 @inline function _is_valid_input(stp::AbstractComputationSetup, input)
     return true
 end
+"""
+
+    InvalidInputError(msg::String)
+
+Exception which is thrown if a given input is invalid, e.g. passed to [`_assert_valid_input`](@ref).
+"""
+struct InvalidInputError <: Exception
+    msg::String
+end
+Base.showerror(io::IO, err::InvalidInputError) = println(io, "InvalidInputError: $(err.msg).")
 
 """
 
     _assert_valid_input(stp::AbstractComputationSetup, input::Any)
 
-Interface function, which asserts that the given `input` is valid, and thows an error if not.
+Interface function, which asserts that the given `input` is valid, and throws an [`InvalidInputError`](@ref) if not.
 
 !!! note "default implementation"
 
@@ -96,13 +106,14 @@ Interface function, which asserts that the given `input` is valid, and thows an 
     To customize the error message, or use a custom assertion mechanism, just add your own implementation of
 
     ```Julia
-    _assert_valid_input(stp::YourCustomSetup,input)        
+    _assert_valid_input(stp::YourCustomSetup,input)
     ```
-    However, it is highly recommented to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside this assert function.
+    which should throw an [`InvalidInputError`](@ref) if the input is invalid.
+    Dispite the presence of a custom `_assert_valid_input`, it is highly recommented to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside the assert function.
 
 """
 @inline function _assert_valid_input(stp::AbstractComputationSetup,input)
-    _is_valid_input(stp,input) || error("InvalidInputError: there is something wrong with the input!\n setup:$stp \n input:$input")
+    _is_valid_input(stp,input) || throw(InvalidInputError("Something wrong with the input!\n setup:$stp \n input:$input"))
 
     return nothing
 end
