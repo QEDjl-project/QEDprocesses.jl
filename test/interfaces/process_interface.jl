@@ -58,18 +58,18 @@ end
     function QEDprocesses._differential_cross_section(
         proc::TestProcess,
         model::TestModel,
-        init_phasespace::AbstractVector{T},
-        final_phasespace::AbstractVector{T},
+        in_phasespace::AbstractVector{T},
+        out_phasespace::AbstractVector{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
-        _groundtruth_diffCS(init_phasespace, final_phasespace)
+        _groundtruth_diffCS(in_phasespace, out_phasespace)
     end
 
     function QEDprocesses._total_cross_section(
         proc::TestProcess,
         model::TestModel,
-        init_phasespace::AbstractVector{T},
+        in_phasespace::AbstractVector{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
-        _groundtruth_totCS(init_phasespace)
+        _groundtruth_totCS(in_phasespace)
     end
 
     @testset "hard interface" begin
