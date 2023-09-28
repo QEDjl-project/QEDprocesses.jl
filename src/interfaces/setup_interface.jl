@@ -52,7 +52,7 @@ quantity depends on is kept constant.
     _post_computation(stp::AbstractComputationSetup, input) 
     ```
     
-    which performs *computations* after the actual computation, e.g. conversions or normalisations (see [`_post_computation`](@ref) for more details).
+    which performs *computations* after the actual computation, e.g. conversions or normalizations (see [`_post_computation`](@ref) for more details).
 
 
     
@@ -75,7 +75,7 @@ This function is called to validate the input of [`compute`](@ref) before callin
     This behavior can be overwritten if actual validation is necessary.
 
 
-An assert version of this function is given by [`_assert_valid_input`](@ref), which used directly the output of this function.
+An assert version of this function is given by [`_assert_valid_input`](@ref), which directly uses the output of this function.
 
 """
 @inline function _is_valid_input(stp::AbstractComputationSetup, input)
@@ -109,7 +109,7 @@ Interface function, which asserts that the given `input` is valid, and throws an
     _assert_valid_input(stp::YourCustomSetup,input)
     ```
     which should throw an [`InvalidInputError`](@ref) if the input is invalid.
-    Dispite the presence of a custom `_assert_valid_input`, it is highly recommented to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside the assert function.
+    Despite the presence of a custom `_assert_valid_input`, it is highly recommended to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside of the assert function.
 
 """
 @inline function _assert_valid_input(stp::AbstractComputationSetup,input)
