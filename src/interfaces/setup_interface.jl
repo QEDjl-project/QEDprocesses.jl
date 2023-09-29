@@ -54,8 +54,6 @@ quantity depends on is kept constant.
     
     which performs task after the actual computation, e.g. conversions or normalizations (see [`_post_processing`](@ref) for more details).
 
-
-    
 """
 abstract type AbstractComputationSetup end
 
@@ -164,13 +162,13 @@ function compute(stp::AbstractComputationSetup, input)
 end
 
 """
-Abstract base type for setups related to combining scattering processes and compute models.  
+Abstract base type for setups related to combining scattering processes and physical models.  
 Every subtype of `AbstractProcessSetup` must implement at least the following 
 interface functions:
 
 ```Julia
 scattering_process(::AbstractProcessSetup) 
-compute_model(::AbstractProcessSetup) 
+physical_model(::AbstractProcessSetup) 
 ```
 
 Derived from these interface functions, the following delegations are provided:
@@ -188,18 +186,18 @@ abstract type AbstractProcessSetup <: AbstractComputationSetup end
     scattering_process(stp::AbstractProcessSetup)
 
 Interface function that returns the scattering process associated with `stp`,
-i.e. an object which is a subtype of `AbstractProcessDefinition`. 
+i.e. an object which is a subtype of [`AbstractProcessDefinition`](@ref). 
 """
 function scattering_process end
 
 """
 
-    compute_model(stp::AbstractProcessSetup)
+    physical_model(stp::AbstractProcessSetup)
 
-Interface function that returns the compute model associated with `stp`, i.e.
-an object which is a subtype of `AbstractModelDefinition`.
+Interface function that returns the physical model associated with `stp`, i.e.
+an object which is a subtype of [`AbstractModelDefinition`](@ref).
 """
-function compute_model end
+function physical_model end
 
 @inline number_incoming_particles(stp::AbstractProcessSetup) = number_incoming_particles(scattering_process(stp))
 @inline number_outgoing_particles(stp::AbstractProcessSetup) = number_outgoing_particles(scattering_process(stp))

@@ -66,8 +66,8 @@ end
         final_phasespace::AbstractVector{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Interface function for the combination of scattering processes and models. Return the differential cross section of a 
-given process and model for a passed initial and final phase space. The elements of the `AbstractVector` representing the phase spaces 
+Interface function for the combination of scattering processes and physical models. Return the differential cross section of a 
+given process and physical model for a passed initial and final phase space. The elements of the `AbstractVector` representing the phase spaces 
 are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
 check if the length of the passed phase spaces match the respective number of particles. 
 
@@ -194,7 +194,7 @@ end
         init_phasespace::AbstractVector{T},
     ) where {T<:QEDbase.AbstractFourMomentum} end
 
-Interface function for the combination of scattering processes and models. Return the total cross section of a 
+Interface function for the combination of scattering processes and physical models. Return the total cross section of a 
 given process and model for a passed initial phase space. The elements of the `AbstractVector` representing the initial phase space
 are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
 check if the length of the passed initial phase spaces match number of incoming particles. 
@@ -242,7 +242,7 @@ end
         init_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the total cross section for a combination of a scattering process and a compute model evaluated on a given initial phase space. 
+Return the total cross section for a combination of a scattering process and a physical model evaluated on a given initial phase space. 
 
 This function will eventually call the respective interface function [`_total_cross_section`](@ref).
 

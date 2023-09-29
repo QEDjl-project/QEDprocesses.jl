@@ -128,7 +128,7 @@ struct TestModel <: AbstractModelDefinition end
 
 struct TestProcessSetup <: AbstractProcessSetup end
 QEDprocesses.scattering_process(::TestProcessSetup) = TestProcess()
-QEDprocesses.compute_model(::TestProcessSetup) = TestModel()
+QEDprocesses.physical_model(::TestProcessSetup) = TestModel()
 
 struct TestProcessSetupFAIL <: AbstractProcessSetup end
 
@@ -136,7 +136,7 @@ struct TestProcessSetupFAIL <: AbstractProcessSetup end
     @testset "interface fail" begin
         rnd_input = rand(RNG)
         @test_throws MethodError scattering_process(TestProcessSetupFAIL())
-        @test_throws MethodError compute_model(TestProcessSetupFAIL())
+        @test_throws MethodError physical_model(TestProcessSetupFAIL())
         @test_throws MethodError QEDprocesses._compute(TestProcessSetupFAIL(), rnd_input)
     end
 
@@ -145,7 +145,7 @@ struct TestProcessSetupFAIL <: AbstractProcessSetup end
         
         @test QEDprocesses._is_computation_setup(stp) 
         @test scattering_process(stp) == TestProcess()
-        @test compute_model(stp) == TestModel()
+        @test physical_model(stp) == TestModel()
     end
 
     @testset "($N_INCOMING,$N_OUTGOING)" for (N_INCOMING,N_OUTGOING) in Iterators.product(
