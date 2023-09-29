@@ -44,15 +44,15 @@ quantity depends on is kept constant.
     which computes the value of the associated quantity for a given `input` (see [`_compute`](@ref) for more details).
 
 
-    ## Post computation
+    ## Post processing 
 
     Every subtype of `AbstractComputationSetup` should implement the interface function
     
     ```Julia
-    _post_computation(stp::AbstractComputationSetup, input) 
+    _post_processing(stp::AbstractComputationSetup, input, result) 
     ```
     
-    which performs *computations* after the actual computation, e.g. conversions or normalizations (see [`_post_computation`](@ref) for more details).
+    which performs task after the actual computation, e.g. conversions or normalizations (see [`_post_processing`](@ref) for more details).
 
 
     
@@ -120,17 +120,17 @@ end
 
 """
     
-    function _post_computation(stp::AbstractComputationSetup, input::Any, result::Any)
+    function _post_processing(stp::AbstractComputationSetup, input::Any, result::Any)
     
 Interface function, which is called in [`compute`](@ref) after [`_compute`](@ref) has been called. This function is dedicated to 
 finalize the result of a computation. 
 
 !!! note "default implementation"
 
-    Since in the case of no post computation the result of [`_compute`](@ref) is unchanged, this function returns `result` by default.
+    Since in the case of no post processing the result of [`_compute`](@ref) is unchanged, this function returns `result` by default.
 
 """
-@inline function _post_computation(stp::AbstractComputationSetup, input, result)
+@inline function _post_processing(stp::AbstractComputationSetup, input, result)
     return result
 end
 
@@ -142,7 +142,7 @@ Interface function that returns the value of the associated quantity evaluated o
 
 !!! note "unsafe implementation"
 
-    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_is_valid_input`](@ref) and [`_post_computation`](@ref)), as those two are performed while calling 
+    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_is_valid_input`](@ref) and [`_post_processing`](@ref)), as those two are performed while calling 
     the safe version of this function [`compute`](@ref).
 
 """
@@ -154,13 +154,13 @@ function _compute end
 
 Return the value of the quantity associated with `stp` for a given `input`. 
 In addition to the actual call of the associated unsafe version [`_compute`](@ref),
-input validation ([`_assert_valid_input`]) and post computation
-(using [`_post_computation`](@ref)) are wrapped around the calculation (see [`AbstractComputationSetup`](@ref) for details).
+input validation ([`_assert_valid_input`]) and post processing 
+(using [`_post_processing`](@ref)) are wrapped around the calculation (see [`AbstractComputationSetup`](@ref) for details).
 """
 function compute(stp::AbstractComputationSetup, input)
     _assert_valid_input(stp,input) 
     raw_result = _compute(stp,input)
-    return _post_computation(stp, input,raw_result)
+    return _post_processing(stp, input,raw_result)
 end
 
 """
