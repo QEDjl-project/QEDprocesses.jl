@@ -78,10 +78,11 @@ abstract type AbstractInvalidInputException <: Exception end
 
 Exception which is thrown if a given input is invalid, e.g. passed to [`_assert_valid_input`](@ref).
 """
-struct InvalidInputError <: AbstractInvalidInputException 
+struct InvalidInputError <: AbstractInvalidInputException
     msg::String
 end
-Base.showerror(io::IO, err::InvalidInputError) = println(io, "InvalidInputError: $(err.msg).")
+Base.showerror(io::IO, err::InvalidInputError) =
+    println(io, "InvalidInputError: $(err.msg).")
 
 """
 
@@ -103,7 +104,7 @@ Interface function, which asserts that the given `input` is valid, and throws an
     Despite the presence of a custom `_assert_valid_input`, it is highly recommended to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside of the assert function.
 
 """
-@inline function _assert_valid_input(stp::AbstractComputationSetup,input)
+@inline function _assert_valid_input(stp::AbstractComputationSetup, input)
     return nothing
 end
 
@@ -125,7 +126,7 @@ An assert version of this function is given by [`_assert_valid_input`](@ref), wh
 """
 @inline function _is_valid_input(stp::AbstractComputationSetup, input)
     try
-        _assert_valid_input(stp,input)
+        _assert_valid_input(stp, input)
     catch e
         if isa(e, AbstractInvalidInputException)
             return false
@@ -176,9 +177,9 @@ input validation ([`_assert_valid_input`]) and post processing
 (using [`_post_processing`](@ref)) are wrapped around the calculation (see [`AbstractComputationSetup`](@ref) for details).
 """
 function compute(stp::AbstractComputationSetup, input)
-    _assert_valid_input(stp,input) 
-    raw_result = _compute(stp,input)
-    return _post_processing(stp, input,raw_result)
+    _assert_valid_input(stp, input)
+    raw_result = _compute(stp, input)
+    return _post_processing(stp, input, raw_result)
 end
 
 """
@@ -219,6 +220,7 @@ an object which is a subtype of [`AbstractModelDefinition`](@ref).
 """
 function physical_model end
 
-@inline number_incoming_particles(stp::AbstractProcessSetup) = number_incoming_particles(scattering_process(stp))
-@inline number_outgoing_particles(stp::AbstractProcessSetup) = number_outgoing_particles(scattering_process(stp))
-
+@inline number_incoming_particles(stp::AbstractProcessSetup) =
+    number_incoming_particles(scattering_process(stp))
+@inline number_outgoing_particles(stp::AbstractProcessSetup) =
+    number_outgoing_particles(scattering_process(stp))

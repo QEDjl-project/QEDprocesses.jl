@@ -15,7 +15,7 @@ export differential_cross_section, total_cross_section
 
 # Abstract setup interface
 export AbstractComputationSetup, InvalidInputError, compute
-export AbstractProcessSetup, scattering_process, physical_model 
+export AbstractProcessSetup, scattering_process, physical_model
 
 # particle types
 export AbstractParticleType
