@@ -27,11 +27,11 @@ quantity depends on is kept constant.
     Every subtype of `AbstractComputationSetup` should implement the interface function
     
     ```Julia
-    _is_valid_input(stp::AbstractComputationSetup, input) # default: true
+    _assert_valid_input(stp::AbstractComputationSetup, input)
     ```
     
-    which should return true iff the `input` is valid for the computation of the associated quantity (see [`_is_valid_input`](@ref) and [`_assert_valid_input`](@ref) for more details). 
-    The default implementation always returns `true`. Provide a custom implementation if a different behavior is required.
+    which should throw and an exception subtyped from [`AbstractInvalidInputException`](@ref) if the `input` is not valid for the computation of the associated quantity (see [`_is_valid_input`](@ref) and [`_assert_valid_input`](@ref) for more details). 
+    The default implementation does nothing, i.e. every input is valid by default. Provide a custom implementation if a different behavior is required.
 
     ## Actual computation
     
@@ -61,31 +61,24 @@ abstract type AbstractComputationSetup end
 _is_computation_setup(::AbstractComputationSetup) = true
 
 """
+Abstract base type for exceptions indicating invalid input. See [`InvalidInputError`](@ref) for a simple concrete implementation. 
+Concrete implementations should at least implement 
 
-    _is_valid_input(stp::AbstractComputationSetup, input::Any)
+```Julia
 
-Interface function, which returns true if the constraints of the `input` associated with the quantity of `stp` are met.
-This function is called to validate the input of [`compute`](@ref) before calling [`_compute`](@ref).
+Base.showerror(io::IO, err::CustomInvalidError) where {CustomInvalidError<:AbstractInvalidInputException}
 
-!!! note "Default implementation"
-    
-    Since no input validation is equivalent to every input being valid, this function returns `true` by default. 
-    This behavior can be overwritten if actual validation is necessary.
-
-
-An assert version of this function is given by [`_assert_valid_input`](@ref), which directly uses the output of this function.
-
+```
 """
-@inline function _is_valid_input(stp::AbstractComputationSetup, input)
-    return true
-end
+abstract type AbstractInvalidInputException <: Exception end
+
 """
 
     InvalidInputError(msg::String)
 
 Exception which is thrown if a given input is invalid, e.g. passed to [`_assert_valid_input`](@ref).
 """
-struct InvalidInputError <: Exception
+struct InvalidInputError <: AbstractInvalidInputException 
     msg::String
 end
 Base.showerror(io::IO, err::InvalidInputError) = println(io, "InvalidInputError: $(err.msg).")
@@ -111,9 +104,36 @@ Interface function, which asserts that the given `input` is valid, and throws an
 
 """
 @inline function _assert_valid_input(stp::AbstractComputationSetup,input)
-    _is_valid_input(stp,input) || throw(InvalidInputError("Something wrong with the input!\n setup:$stp \n input:$input"))
-
     return nothing
+end
+
+"""
+
+    _is_valid_input(stp::AbstractComputationSetup, input::Any)
+
+Interface function, which returns true if the constraints of the `input` associated with the quantity of `stp` are met.
+This function is called to validate the input of [`compute`](@ref) before calling [`_compute`](@ref).
+
+!!! note "Default implementation"
+    
+    Since no input validation is equivalent to every input being valid, this function returns `true` by default. 
+    This behavior can be overwritten if actual validation is necessary.
+
+
+An assert version of this function is given by [`_assert_valid_input`](@ref), which directly uses the output of this function.
+
+"""
+@inline function _is_valid_input(stp::AbstractComputationSetup, input)
+    try
+        _assert_valid_input(stp,input)
+    catch e
+        if isa(e, AbstractInvalidInputException)
+            return false
+        end
+        @warn "The function _assert_valid_input throws an Exception, which is not an InvalidInputError! The Exception thrown is: "
+        throw(e)
+    end
+    return true
 end
 
 """
