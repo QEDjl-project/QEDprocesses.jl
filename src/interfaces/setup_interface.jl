@@ -30,7 +30,7 @@ quantity depends on is kept constant.
     _assert_valid_input(stp::AbstractComputationSetup, input)
     ```
     
-    which should throw and an exception subtyped from [`AbstractInvalidInputException`](@ref) if the `input` is not valid for the computation of the associated quantity ([`_assert_valid_input`](@ref) for more details). 
+    which should throw and an exception subtyped from [`AbstractInvalidInputException`](@ref) if the `input` is not valid for the computation of the associated quantity (see [`_assert_valid_input`](@ref) for more details). 
     The default implementation does nothing, i.e. every input is valid by default. Provide a custom implementation if a different behavior is required.
 
     ## Actual computation
@@ -92,13 +92,13 @@ Interface function, which asserts that the given `input` is valid, and throws an
 
 !!! note "default implementation"
 
-    By default, every input is assumed to be valid. Therefore, this functions does nothing. 
-    To customize this behavior add your own implementation of
+    By default, every input is assumed to be valid. Therefore, this function does nothing. 
+    To customize this behavior, add your own implementation of
 
     ```Julia
     _assert_valid_input(stp::YourCustomSetup,input)
     ```
-    which should throw an exception, which is subtype of [`AbstractInvalidInputError`](@ref). One may also use the concrete implementation [`InvalidInputError`](@ref) if the input is invalid, instead of writing a custom exception type.
+    which should throw an exception, which is a subtype of [`AbstractInvalidInputError`](@ref). One may also use the concrete implementation [`InvalidInputError`](@ref) if the input is invalid instead of writing a custom exception type.
 
 """
 @inline function _assert_valid_input(stp::AbstractComputationSetup, input)
@@ -129,7 +129,7 @@ Interface function that returns the value of the associated quantity evaluated o
 
 !!! note "unsafe implementation"
 
-    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_assert_valid_input`](@ref) and [`_post_processing`](@ref)), as those two are performed while calling 
+    This function must be implemented for any subtype of [`AbstractComputationSetup`](@ref). It should not do any input validation or post processing (see [`_assert_valid_input`](@ref) and [`_post_processing`](@ref)), as those two are performed while calling 
     the safe version of this function [`compute`](@ref).
 
 """
