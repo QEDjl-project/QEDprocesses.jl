@@ -30,7 +30,7 @@ quantity depends on is kept constant.
     _assert_valid_input(stp::AbstractComputationSetup, input)
     ```
     
-    which should throw and an exception subtyped from [`AbstractInvalidInputException`](@ref) if the `input` is not valid for the computation of the associated quantity (see [`_is_valid_input`](@ref) and [`_assert_valid_input`](@ref) for more details). 
+    which should throw and an exception subtyped from [`AbstractInvalidInputException`](@ref) if the `input` is not valid for the computation of the associated quantity ([`_assert_valid_input`](@ref) for more details). 
     The default implementation does nothing, i.e. every input is valid by default. Provide a custom implementation if a different behavior is required.
 
     ## Actual computation
@@ -92,49 +92,17 @@ Interface function, which asserts that the given `input` is valid, and throws an
 
 !!! note "default implementation"
 
-    The generic fallback uses the boolian value returned by `_is_valid_input(stp,input)` to check for validity, 
-    i.e. if the returned value is `true` the assert does not trigger and nothing happens, but if the returned value is `false`, 
-    an error with a generic error message will be thrown (see  [`_is_valid_input`](@ref) for details). 
-    To customize the error message, or use a custom assertion mechanism, just add your own implementation of
+    By default, every input is assumed to be valid. Therefore, this functions does nothing. 
+    To customize this behavior add your own implementation of
 
     ```Julia
     _assert_valid_input(stp::YourCustomSetup,input)
     ```
-    which should throw an [`InvalidInputError`](@ref) if the input is invalid.
-    Despite the presence of a custom `_assert_valid_input`, it is highly recommended to also implement `_is_valid_input` for `CustomSetup`, because it might be used outside of the assert function.
+    which should throw an exception, which is subtype of [`AbstractInvalidInputError`](@ref). One may also use the concrete implementation [`InvalidInputError`](@ref) if the input is invalid, instead of writing a custom exception type.
 
 """
 @inline function _assert_valid_input(stp::AbstractComputationSetup, input)
     return nothing
-end
-
-"""
-
-    _is_valid_input(stp::AbstractComputationSetup, input::Any)
-
-Interface function, which returns true if the constraints of the `input` associated with the quantity of `stp` are met.
-This function is called to validate the input of [`compute`](@ref) before calling [`_compute`](@ref).
-
-!!! note "Default implementation"
-    
-    Since no input validation is equivalent to every input being valid, this function returns `true` by default. 
-    This behavior can be overwritten if actual validation is necessary.
-
-
-An assert version of this function is given by [`_assert_valid_input`](@ref), which directly uses the output of this function.
-
-"""
-@inline function _is_valid_input(stp::AbstractComputationSetup, input)
-    try
-        _assert_valid_input(stp, input)
-    catch e
-        if isa(e, AbstractInvalidInputException)
-            return false
-        end
-        @warn "The function _assert_valid_input throws an Exception, which is not an InvalidInputError! The Exception thrown is: "
-        throw(e)
-    end
-    return true
 end
 
 """
@@ -161,7 +129,7 @@ Interface function that returns the value of the associated quantity evaluated o
 
 !!! note "unsafe implementation"
 
-    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_is_valid_input`](@ref) and [`_post_processing`](@ref)), as those two are performed while calling 
+    This function must be implemented for any subtype of [`AbstractComputationSetup`]. It should not do any input validation or post processing (see [`_assert_valid_input`](@ref) and [`_post_processing`](@ref)), as those two are performed while calling 
     the safe version of this function [`compute`](@ref).
 
 """

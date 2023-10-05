@@ -84,7 +84,6 @@ QEDprocesses._post_processing(::TestSetupCustomPostProcessingFAIL, x, y) =
 
         rnd_input = rand(RNG)
         rnd_output = rand(RNG)
-        @test QEDprocesses._is_valid_input(stp, rnd_input)
         @test QEDprocesses._post_processing(stp, rnd_input, rnd_output) == rnd_output
         @test isapprox(
             QEDprocesses._compute(stp, rnd_input),
@@ -103,8 +102,6 @@ QEDprocesses._post_processing(::TestSetupCustomPostProcessingFAIL, x, y) =
     @testset "custom input validation" begin
         stp = TestSetupCustomAssertValidInput()
         rnd_input = rand(RNG)
-        @test QEDprocesses._is_valid_input(stp, _groundtruth_input_validation(rnd_input))
-        @test !QEDprocesses._is_valid_input(stp, !_groundtruth_input_validation(rnd_input))
         @test QEDprocesses._assert_valid_input(stp, rnd_input) == nothing
         @test_throws TestException QEDprocesses._assert_valid_input(
             stp,
@@ -133,8 +130,6 @@ QEDprocesses._post_processing(::TestSetupCustomPostProcessingFAIL, x, y) =
         rnd_input = rand(RNG)
         rnd_output = rand(RNG)
 
-        @test QEDprocesses._is_valid_input(stp, _groundtruth_input_validation(rnd_input))
-        @test !QEDprocesses._is_valid_input(stp, !_groundtruth_input_validation(rnd_input))
         @test_throws TestException() compute(stp, _transform_to_invalid(rnd_input))
         @test isapprox(
             QEDprocesses._post_processing(stp, rnd_input, rnd_output),
