@@ -2,9 +2,6 @@
 # utility functions
 #
 # This file contains small helper and utility functions used throughout the package.
-#
-# This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
-# ecosystem.
 ###############
 
 

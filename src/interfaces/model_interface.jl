@@ -3,10 +3,6 @@
 #
 # In this file, we define the interface of working with compute models in
 # general.
-# 
-# This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
-# ecosystem.
-#
 ###############
 # root type for models
 """

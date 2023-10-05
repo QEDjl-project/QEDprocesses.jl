@@ -3,9 +3,6 @@
 #
 # In this file, we define the types of particles used in `QEDprocesses.jl` and
 # implement the abstact particle interface accordingly. 
-# 
-# This file is part of `QEDprocesses.jl` which is by itself part of the `QED.jl`
-# ecosystem.
 ###############
 
 """
