@@ -176,7 +176,7 @@ abstract type AbstractProcessSetup <: AbstractComputationSetup end
     scattering_process(stp::AbstractProcessSetup)
 
 Interface function that returns the scattering process associated with `stp`,
-i.e. an object which is a subtype of [`AbstractProcessDefinition`](@ref). 
+i.e. an object which is a subtype of [`AbstractScatteringProcess`](@ref). 
 """
 function scattering_process end
 

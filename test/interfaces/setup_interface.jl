@@ -146,7 +146,7 @@ struct TestParticle4 <: AbstractParticle end
 
 PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
 
-struct TestProcess <: AbstractProcessDefinition end
+struct TestProcess <: AbstractScatteringProcess end
 struct TestModel <: AbstractModelDefinition end
 
 struct TestProcessSetup <: AbstractProcessSetup end

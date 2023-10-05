@@ -7,21 +7,21 @@
 
 """
 Abstract base type for definitions of scattering processes. It is the root type for the 
-process interface, which assumes that every subtype of `AbstractProcessDefinition`
+process interface, which assumes that every subtype of `AbstractScatteringProcess`
 implements at least 
 
 ```Julia
-incoming_particles(proc_def::AbstractProcessDefinition)
-outgoing_particles(proc_def::AbstractProcessDefinition)
+incoming_particles(proc_def::AbstractScatteringProcess)
+outgoing_particles(proc_def::AbstractScatteringProcess)
 ```
 
 which return a tuple of the incoming and outgoing particles, respectively.
 """
-abstract type AbstractProcessDefinition end
+abstract type AbstractScatteringProcess end
 
 """
 
-    incoming_particles(proc_def::AbstractProcessDefinition)
+    incoming_particles(proc_def::AbstractScatteringProcess)
 
 Interface function for scattering processes. Return a tuple of the incoming particles for the given process definition.
 This function needs to be given to implement the scattering process interface.
@@ -30,7 +30,7 @@ function incoming_particles end
 
 """
 
-    outgoing_particles(proc_def::AbstractProcessDefinition)
+    outgoing_particles(proc_def::AbstractScatteringProcess)
 
 Interface function for scattering processes. Return the tuple of outgoing particles for the given process definition.
 This function needs to be given to implement the scattering process interface.
@@ -43,7 +43,7 @@ function outgoing_particles end
 
 Return the number of incoming particles of a given process. 
 """
-@inline function number_incoming_particles(proc_def::AbstractProcessDefinition)
+@inline function number_incoming_particles(proc_def::AbstractScatteringProcess)
     return length(incoming_particles(proc_def))
 end
 
@@ -53,14 +53,14 @@ end
 
 Return the number of outgoing particles of a given process. 
 """
-@inline function number_outgoing_particles(proc_def::AbstractProcessDefinition)
+@inline function number_outgoing_particles(proc_def::AbstractScatteringProcess)
     return length(outgoing_particles(proc_def))
 end
 
 """
 
     _differential_cross_section(
-        proc_def::AbstractProcessDefinition,
+        proc_def::AbstractScatteringProcess,
         model_def::AbstractModelDefinition,
         in_phasespace::AbstractVector{T},
         out_phasespace::AbstractVector{T},
@@ -77,13 +77,13 @@ check if the length of the passed phase spaces match the respective number of pa
 
     ```julia
 
-    _differential_cross_section(proc_def,model_def,in_phasespace::AbstractVector{T},finial_phasespace::AbstractMatrix{T})
-    _differential_cross_section(proc_def,model_def,in_phasespace::AbstractMatrix{T},finial_phasespace::AbstractVector{T})
-    _differential_cross_section(proc_def,model_def,in_phasespace::AbstractMatrix{T},finial_phasespace::AbstractMatrix{T})
+    _differential_cross_section(proc_def, model_def, in_phasespace::AbstractVector{T}, out_phasespace::AbstractMatrix{T})
+    _differential_cross_section(proc_def, model_def, in_phasespace::AbstractMatrix{T}, out_phasespace::AbstractVector{T})
+    _differential_cross_section(proc_def, model_def, in_phasespace::AbstractMatrix{T}, out_phasespace::AbstractMatrix{T})
 
     ```
 
-    where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of initial and final phase space types given by *single set of points* (AbstractVector{T}) and *mutiple set of points* (AbstractMatrix{T}) 
+    where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of initial and final phase space types given by *single set of points* (AbstractVector{T}) and *mutiple sets of points* (AbstractMatrix{T}) 
     is implemented. Furthermore, a safe version of `_differential_cross_section` is also implemented: [`differential_cross_section`](@ref).
 
 !!! note "unsafe implementation"
@@ -99,7 +99,7 @@ function _differential_cross_section end
 """
     
     differential_cross_section(
-        proc_def::AbstractProcessDefinition,
+        proc_def::AbstractScatteringProcess,
         model_def::AbstractModelDefinition,
         in_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
         out_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
@@ -111,7 +111,7 @@ and model definition evaluated on the passed inital and final phase space points
 This function will eventually call the respective interface function [`_differential_cross_section`](@ref).
 """
 function differential_cross_section(
-    proc_def::AbstractProcessDefinition,
+    proc_def::AbstractScatteringProcess,
     model_def::AbstractModelDefinition,
     in_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
     out_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
@@ -131,7 +131,7 @@ end
 
 # returns diffCS for single `initPS` and several `finalPS` points without input-check
 function _differential_cross_section(
-    proc_def::AbstractProcessDefinition,
+    proc_def::AbstractScatteringProcess,
     model_def::AbstractModelDefinition,
     in_phasespace::AbstractVector{T},
     out_phasespace::AbstractMatrix{T},
@@ -146,7 +146,7 @@ function _differential_cross_section(
 end
 
 function _differential_cross_section(
-    proc_def::AbstractProcessDefinition,
+    proc_def::AbstractScatteringProcess,
     model_def::AbstractModelDefinition,
     in_phasespace::AbstractMatrix{T},
     out_phasespace::AbstractVector{T},
@@ -161,7 +161,7 @@ function _differential_cross_section(
 end
 
 function _differential_cross_section(
-    proc_def::AbstractProcessDefinition,
+    proc_def::AbstractScatteringProcess,
     model_def::AbstractModelDefinition,
     in_phasespace::AbstractMatrix{T},
     out_phasespace::AbstractMatrix{T},
@@ -185,7 +185,7 @@ end
 """
 
     _total_cross_section(
-        proc_def::AbstractProcessDefinition,
+        proc_def::AbstractScatteringProcess,
         model_def::AbstractModelDefinition,
         in_phasespace::AbstractVector{T},
     ) where {T<:QEDbase.AbstractFourMomentum} end
@@ -219,7 +219,7 @@ check if the length of the passed initial phase spaces match number of incoming 
 function _total_cross_section end
 
 function _total_cross_section(
-    proc_def::AbstractProcessDefinition,
+    proc_def::AbstractScatteringProcess,
     model_def::AbstractModelDefinition,
     in_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
@@ -233,7 +233,7 @@ end
 """
 
     total_cross_section(
-        proc_def::AbstractProcessDefinition,
+        proc_def::AbstractScatteringProcess,
         model_def::AbstractModelDefinition,
         in_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
     ) where {T<:QEDbase.AbstractFourMomentum}
@@ -244,7 +244,7 @@ This function will eventually call the respective interface function [`_total_cr
 
 """
 function total_cross_section(
-    proc_def::AbstractProcessDefinition,
+    proc_def::AbstractScatteringProcess,
     model_def::AbstractModelDefinition,
     in_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
 ) where {T<:QEDbase.AbstractFourMomentum}
