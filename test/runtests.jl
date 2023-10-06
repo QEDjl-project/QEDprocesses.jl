@@ -18,4 +18,7 @@ begin
     @time @safetestset "propagators" begin
         include("propagators.jl")
     end
+    @time @safetestset "compton" begin
+        include("compton.jl")
+    end
 end
