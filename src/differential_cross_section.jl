@@ -14,7 +14,15 @@ struct DifferentialCrossSection{Model,Process,PhaseSpace} <: AbstractProcessSetu
         proc::Process,
         model::Model,
         in_phase_space::PhaseSpace,
-    ) where {Model<:AbstractModelDefinition,Process<:AbstractScatteringProcess,NumericType,PhaseSpace<:AbstractArray{NumericType}}
+    ) where {
+        Model<:AbstractModelDefinition,
+        Process<:AbstractScatteringProcess,
+        NumericType,
+        PhaseSpace<:AbstractArray{NumericType},
+    }
+        is_onshell(in_phase_space[1], mass(incoming_particles(proc)[1])) ||
+            throw(InvalidInputError("Should be Photon"))
+        is_onshell(in_phase_space[2], mass(incoming_particles(proc)[2]))
         return new{Model,Process,PhaseSpace}(model, proc, in_phase_space)
     end
 end
