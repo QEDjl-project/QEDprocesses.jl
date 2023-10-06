@@ -5,18 +5,17 @@
 # implement the AbstractProcessSetup interface to provide its functionality.
 ###############
 
-struct DifferentialCrossSection{Model,Process,PhaseSpace,NumericType} <:
-       AbstractProcessSetup where {Model<:AbstractModelDefinition,Process<:AbstractScatteringProcess,PhaseSpace<:AbstractArray{NumericType}}
+struct DifferentialCrossSection{Model,Process,PhaseSpace} <: AbstractProcessSetup
     model::Model
     process::Process
-    inPhaseSpace::PhaseSpace
+    in_phase_space::PhaseSpace
 
     function DifferentialCrossSection(
-        model::Model,
         proc::Process,
-        inPS::PhaseSpace,
-    ) where {Model,Process,PhaseSpace<:AbstractArray{NumericType},NumericType}
-        return new{Model,Process,PhaseSpace,NumericType}(model, proc, inPS)
+        model::Model,
+        in_phase_space::PhaseSpace,
+    ) where {Model<:AbstractModelDefinition,Process<:AbstractScatteringProcess,NumericType,PhaseSpace<:AbstractArray{NumericType}}
+        return new{Model,Process,PhaseSpace}(model, proc, in_phase_space)
     end
 end
 
@@ -55,20 +54,32 @@ function physical_model(dcs::DifferentialCrossSection)
     return dcs.model
 end
 
-function _assert_valid_input(dcs::DCS, input::AbstractArray{NumericType}) where {NumericType}
-    isa(dcs.inPhaseSpace, AbstractArray{NumericType}) || throw(
-        InvalidInputError("Input type is '$(typeof(input))' but '$(typeof(dcs.inPS))' was expected.")
+function _assert_valid_input(
+    dcs::DifferentialCrossSection,
+    out_phase_space::AbstractArray{NumericType},
+) where {NumericType}
+    isa(dcs.in_phase_space, AbstractArray{NumericType}) || throw(
+        InvalidInputError(
+            "Input type is '$(typeof(out_phase_space))' but '$(typeof(dcs.in_phase_space))' was expected",
+        ),
     )
-    size(inPS, 1) == in_phasespace_dimension(proc, model) || throw(
-        InvalidInputError("In-phase-space dimension is inconsistent with input size ($(size(inPS, 1)) versus $(in_phasespace_dimension(proc, model)))."),
+    length(dcs.in_phase_space) == number_incoming_particles(dcs.process) || throw(
+        InvalidInputError(
+            "In phase space dimension is inconsistent with input size ($(size(dcs.in_phase_space)) versus $(number_incoming_particles(dcs.process)))",
+        ),
     )
-    _assert_valid_input(dcs.model, dcs.process, dcs.inPhaseSpace, input)
+    length(out_phase_space) == number_outgoing_particles(dcs.process) || throw(
+        InvalidInputError(
+            "Out phase space dimension is inconsistent with input size ($(size(out_phase_space, 1)) versus $(number_outgoing_particles(dcs.process)))",
+        ),
+    )
+    _assert_valid_input(dcs.process, dcs.model, dcs.in_phase_space, out_phase_space)
 end
 
 function _compute(dcs::DifferentialCrossSection, input)
-    _differential_cross_section(dcs.model, dcs.process, dcs.inPhaseSpace, input)
+    return _differential_cross_section(dcs.process, dcs.model, dcs.in_phase_space, input)
 end
 
 function _post_processing(dcs::DifferentialCrossSection, input, result)
-    return _post_process(dcs.model, dcs.process, dcs.inPhaseSpace, input, result)
+    return _post_process(dcs.process, dcs.model, dcs.in_phase_space, input, result)
 end

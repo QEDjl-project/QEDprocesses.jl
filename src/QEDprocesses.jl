@@ -5,7 +5,6 @@ export AbstractModelDefinition, fundamental_interaction_type
 
 # Abstract process interface
 export AbstractScatteringProcess, incoming_particles, outgoing_particles
-export in_phasespace_dimension, out_phasespace_dimension
 export number_incoming_particles, number_outgoing_particles
 export differential_cross_section, total_cross_section
 
