@@ -10,7 +10,8 @@
 Type for a Compton scattering process. The Compton process is parametrized with the types of [`AbstractPolarization`](@ref) and [`AbstractSpin`](@ref) used for the incoming and outgoing particles.
 This type implements the [`AbstractScatteringProcess`](@ref) interface. It can be used with [`DifferentialCrossSection`](@ref) to calculate differential cross sections of Compton scattering events.
 """
-struct Compton{InPhotonPol,InElectronSpin,OutPhotonPol,OutElectronSpin} <: AbstractScatteringProcess where {
+struct Compton{InPhotonPol,InElectronSpin,OutPhotonPol,OutElectronSpin} <:
+       AbstractScatteringProcess where {
     InPhotonPol<:AbstractPolarization,
     InElectronSpin<:AbstractSpin,
     OutPhotonPol<:AbstractPolarization,
@@ -29,7 +30,13 @@ const ComptonDCS = DifferentialCrossSection{
     Compton{P1,S1,P2,S2},
     PerturbativeQED,
     PhaseSpace,
-} where {P1<:AbstractPolarization,S1<:AbstractSpin,P2<:AbstractPolarization,S2<:AbstractSpin,PhaseSpace<:AbstractArray{SFourMomentum}}
+} where {
+    P1<:AbstractPolarization,
+    S1<:AbstractSpin,
+    P2<:AbstractPolarization,
+    S2<:AbstractSpin,
+    PhaseSpace<:AbstractArray{SFourMomentum},
+}
 
 """
     $(TYPEDSIGNATURES)
