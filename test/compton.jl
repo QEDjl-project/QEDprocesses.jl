@@ -40,45 +40,22 @@ end
     momenta_2_2 = Matrix{SFourMomentum}(undef, 2, 2)
     momenta_3_2 = Matrix{SFourMomentum}(undef, 3, 2)
 
-    # try compute single input with incorrect dimensions
-    @test_throws DimensionMismatch differential_cross_section(
-        proc,
-        model,
-        momenta_3,
-        momenta_2,
-    )
-    @test_throws "incoming" differential_cross_section(proc, model, momenta_3, momenta_2)
-    @test_throws DimensionMismatch differential_cross_section(
-        proc,
-        model,
-        momenta_2,
-        momenta_3,
-    )
-    @test_throws "outgoing" differential_cross_section(proc, model, momenta_2, momenta_3)
-
-    # try compute multiple inputs with incorrect dimensions
-    @test_throws DimensionMismatch differential_cross_section(
-        proc,
-        model,
-        momenta_3_2,
-        momenta_2_2,
-    )
-    @test_throws "incoming" differential_cross_section(
-        proc,
-        model,
-        momenta_3_2,
-        momenta_2_2,
-    )
-    @test_throws DimensionMismatch differential_cross_section(
-        proc,
-        model,
-        momenta_2_2,
-        momenta_3_2,
-    )
-    @test_throws "outgoing" differential_cross_section(
-        proc,
-        model,
-        momenta_2_2,
-        momenta_3_2,
-    )
+    for (valid, invalid) in
+        Iterators.product([momenta_2, momenta_2_2], [momenta_3, momenta_3_2])
+        # try compute single input with incorrect dimensions
+        @test_throws DimensionMismatch differential_cross_section(
+            proc,
+            model,
+            invalid,
+            valid,
+        )
+        @test_throws "incoming" differential_cross_section(proc, model, invalid, valid)
+        @test_throws DimensionMismatch differential_cross_section(
+            proc,
+            model,
+            valid,
+            invalid,
+        )
+        @test_throws "outgoing" differential_cross_section(proc, model, valid, invalid)
+    end
 end
