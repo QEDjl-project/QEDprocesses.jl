@@ -72,17 +72,17 @@ Return the implementation of [`AbstractPolarization`](@ref) or [`AbstractSpin`] 
 function _spin_or_pol end
 
 function _spin_or_pol(process::Compton, ::Electron, ::Incoming)
-    return process.spin[1]
+    return process.spins[1]
 end
 
 function _spin_or_pol(process::Compton, ::Electron, ::Outgoing)
-    return process.spin[2]
+    return process.spins[2]
 end
 
 function _spin_or_pol(process::Compton, ::Photon, ::Incoming)
-    return process.polarization[1]
+    return process.polarizations[1]
 end
 
 function _spin_or_pol(process::Compton, ::Photon, ::Outgoing)
-    return process.polarization[2]
+    return process.polarizations[2]
 end
