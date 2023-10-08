@@ -116,22 +116,17 @@ function differential_cross_section(
     in_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
     out_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(init_phasespace, 1) == number_incoming_particles(proc_def) || throw(
+    size(in_phasespace, 1) == number_incoming_particles(proc_def) || throw(
         DimensionMismatch(
-            "The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
+            "The number of momenta in the initial phasespace <{length(in_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
         ),
     )
-    size(final_phasespace, 1) == number_outgoing_particles(proc_def) || throw(
+    size(out_phasespace, 1) == number_outgoing_particles(proc_def) || throw(
         DimensionMismatch(
-            "The number of momenta in the final phasespace <{length(final_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_particles(proc_def)}>.",
+            "The number of momenta in the final phasespace <{length(out_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_particles(proc_def)}>.",
         ),
     )
-    return _differential_cross_section(
-        proc_def,
-        model_def,
-        in_phasespace,
-        out_phasespace,
-    )
+    return _differential_cross_section(proc_def, model_def, in_phasespace, out_phasespace)
 end
 
 # returns diffCS for single `initPS` and several `finalPS` points without input-check
@@ -261,9 +256,9 @@ function total_cross_section(
     model_def::AbstractModelDefinition,
     in_phasespace::Union{AbstractVector{T},AbstractMatrix{T}},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(init_phasespace, 1) == number_incoming_particles(proc_def) || throw(
+    size(in_phasespace, 1) == number_incoming_particles(proc_def) || throw(
         DimensionMismatch(
-            "The number of momenta in the initial phasespace <{length(init_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
+            "The number of momenta in the initial phasespace <{length(in_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
         ),
     )
     return _total_cross_section(proc_def, model_def, in_phasespace)
