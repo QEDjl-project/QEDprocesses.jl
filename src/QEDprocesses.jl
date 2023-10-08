@@ -21,6 +21,9 @@ export PerturbativeQED
 # Differential cross section
 export DifferentialCrossSection
 
+# Compton
+export Compton, ComptonDCS
+
 using DocStringExtensions
 using QEDbase
 
