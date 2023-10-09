@@ -20,9 +20,22 @@ struct DifferentialCrossSection{Model,Process,PhaseSpace} <: AbstractProcessSetu
         NumericType,
         PhaseSpace<:AbstractArray{NumericType},
     }
-        is_onshell(in_phase_space[1], mass(incoming_particles(proc)[1])) ||
-            throw(InvalidInputError("Should be Photon"))
-        is_onshell(in_phase_space[2], mass(incoming_particles(proc)[2]))
+        is_onshell(in_phase_space[1], mass(incoming_particles(proc)[1])) || throw(
+            InvalidInputError(
+                "First in-phasespace particle must be an on-shell Photon\nValue: $(in_phase_space[1])",
+            ),
+        )
+        is_onshell(in_phase_space[2], mass(incoming_particles(proc)[2])) || throw(
+            InvalidInputError(
+                "Second in-phasespace particle must be an on-shell Electron\nValue: $(in_phase_space[1])",
+            ),
+        )
+
+        length(in_phase_space) == number_incoming_particles(proc) || throw(
+            InvalidInputError(
+                "In-phasespace dimension is inconsistent with input size ($(length(in_phase_space)) versus $(number_incoming_particles(proc)))",
+            ),
+        )
         return new{Model,Process,PhaseSpace}(model, proc, in_phase_space)
     end
 end
@@ -37,22 +50,13 @@ For details on what it should do, see [`_assert_valid_input`](@ref).
 function _assert_valid_dcs_input end
 
 """
-    _differential_cross_section(model::AbstractModelDefinition, process::AbstractScatteringProcess, phaseSpace::AbstractArray{NumericType}, input::AbstractArray{NumericType}) where {NumericType}
+    _post_process_dcs(model::AbstractModelDefinition, process::AbstractScatteringProcess, phaseSpace::AbstractArray{NumericType}, input::AbstractArray{NumericType}, result::Any) where {NumericType}
 
-Interface function that must be implemented for valid model-process combinations. This function will be dispatched to when [`_compute`](@ref) is called on a [`DifferentialCrossSection`](@ref), which in turn is called in [`compute`](@ref).
+Interface function that must be implemented for valid model-process combinations. This function will be dispatched to when [`_post_processing`](@ref) is called on a [`DifferentialCrossSection`](@ref), which in turn is called in [`compute`](@ref).
 
-For details on what it should do, see [`_compute`](@ref).
+For details on what it should do, see [`_post_processing`](@ref).
 """
-function _differential_cross_section end
-
-"""
-    _post_process(model::AbstractModelDefinition, process::AbstractScatteringProcess, phaseSpace::AbstractArray{NumericType}, input::AbstractArray{NumericType}, result::Any) where {NumericType}
-
-Interface function that must be implemented for valid model-process combinations. This function will be dispatched to when [`_post_process`](@ref) is called on a [`DifferentialCrossSection`](@ref), which in turn is called in [`compute`](@ref).
-
-For details on what it should do, see [`_post_process`](@ref).
-"""
-function _post_process end
+function _post_process_dcs end
 
 function scattering_process(dcs::DifferentialCrossSection)
     return dcs.process
@@ -66,22 +70,12 @@ function _assert_valid_input(
     dcs::DifferentialCrossSection,
     out_phase_space::AbstractArray{NumericType},
 ) where {NumericType}
-    isa(dcs.in_phase_space, AbstractArray{NumericType}) || throw(
-        InvalidInputError(
-            "Input type is '$(typeof(out_phase_space))' but '$(typeof(dcs.in_phase_space))' was expected",
-        ),
-    )
-    length(dcs.in_phase_space) == number_incoming_particles(dcs.process) || throw(
-        InvalidInputError(
-            "In phase space dimension is inconsistent with input size ($(size(dcs.in_phase_space)) versus $(number_incoming_particles(dcs.process)))",
-        ),
-    )
     length(out_phase_space) == number_outgoing_particles(dcs.process) || throw(
         InvalidInputError(
-            "Out phase space dimension is inconsistent with input size ($(size(out_phase_space, 1)) versus $(number_outgoing_particles(dcs.process)))",
+            "Out-phasespace dimension is inconsistent with input size ($(length(out_phase_space)) versus $(number_outgoing_particles(dcs.process)))",
         ),
     )
-    _assert_valid_input(dcs.process, dcs.model, dcs.in_phase_space, out_phase_space)
+    _assert_valid_dcs_input(dcs.process, dcs.model, dcs.in_phase_space, out_phase_space)
 end
 
 function _compute(dcs::DifferentialCrossSection, input)
@@ -89,5 +83,5 @@ function _compute(dcs::DifferentialCrossSection, input)
 end
 
 function _post_processing(dcs::DifferentialCrossSection, input, result)
-    return _post_process(dcs.process, dcs.model, dcs.in_phase_space, input, result)
+    return _post_process_dcs(dcs.process, dcs.model, dcs.in_phase_space, input, result)
 end

@@ -12,11 +12,16 @@ using QEDprocesses
     end
 
     @testset "non-default" begin
-        proc = Compton((PolX(), PolY()), (SpinUp(), SpinDown()))
-        @test QEDprocesses._spin_or_pol(proc, Photon(), Incoming()) == PolX()
-        @test QEDprocesses._spin_or_pol(proc, Electron(), Incoming()) == SpinUp()
-        @test QEDprocesses._spin_or_pol(proc, Photon(), Outgoing()) == PolY()
-        @test QEDprocesses._spin_or_pol(proc, Electron(), Outgoing()) == SpinDown()
+        pols = [PolX(), PolY(), AllPol()]
+        spins = [SpinUp(), SpinDown(), AllSpin()]
+        pol_and_spin_combinations = Iterators.product(pols, pols, spins, spins)
+        for (pol1, pol2, spin1, spin2) in pol_and_spin_combinations
+            proc = Compton((pol1, pol2), (spin1, spin2))
+            @test QEDprocesses._spin_or_pol(proc, Photon(), Incoming()) == pol1
+            @test QEDprocesses._spin_or_pol(proc, Electron(), Incoming()) == spin1
+            @test QEDprocesses._spin_or_pol(proc, Photon(), Outgoing()) == pol2
+            @test QEDprocesses._spin_or_pol(proc, Electron(), Outgoing()) == spin2
+        end
     end
 end
 

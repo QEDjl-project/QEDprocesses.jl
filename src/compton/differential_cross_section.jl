@@ -1,12 +1,20 @@
 
-function _assert_valid_input(
-    ::Compton,
+function _assert_valid_dcs_input(
+    process::Compton,
     ::PerturbativeQED,
     in_phase_space::AbstractArray{NumericType},
     out_phase_space::AbstractArray{NumericType},
 ) where {NumericType<:QEDbase.AbstractFourMomentum}
-    @assert is_onshell(out_phase_space[1])
-    @assert is_onshell(out_phase_space[2], 1.0)
+    is_onshell(out_phase_space[1], mass(outcoming_particles(process)[1])) || throw(
+        InvalidInputError(
+            "First out-phasespace particle must be an on-shell Photon\nValue: $(out_phase_space[1])",
+        ),
+    )
+    is_onshell(out_phase_space[2], mass(outgoing_particles(process)[2])) || throw(
+        InvalidInputError(
+            "Second out-phasespace particle must be an on-shell Electron\nValue: $(out_phase_space[2])",
+        ),
+    )
     return nothing
 end
 
@@ -96,7 +104,7 @@ function _phase_space_factor(
     return zero(ComplexF64)
 end
 
-function _post_process(
+function _post_process_dcs(
     process::Compton,
     model::PerturbativeQED,
     in_phase_space::AbstractArray{NumericType},
