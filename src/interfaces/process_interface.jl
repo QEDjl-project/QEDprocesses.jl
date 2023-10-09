@@ -67,7 +67,7 @@ end
     ) where {T<:QEDbase.AbstractFourMomentum}
 
 Interface function for the combination of scattering processes and physical models. Return the differential cross section of a 
-given process and physical model for a passed initial and final phase space. The elements of the `AbstractVector` representing the phase spaces 
+given process and physical model for a passed in- and out-phasespace. The elements of the `AbstractVector` representing the phase spaces 
 are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
 check if the length of the passed phase spaces match the respective number of particles. 
 
@@ -83,7 +83,7 @@ check if the length of the passed phase spaces match the respective number of pa
 
     ```
 
-    where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of initial and final phase space types given by *single set of points* (AbstractVector{T}) and *mutiple sets of points* (AbstractMatrix{T}) 
+    where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of in- and out-phasespace types given by *single set of points* (AbstractVector{T}) and *mutiple sets of points* (AbstractMatrix{T}) 
     is implemented. Furthermore, a safe version of `_differential_cross_section` is also implemented: [`differential_cross_section`](@ref).
 
 !!! note "unsafe implementation"
@@ -106,7 +106,7 @@ function _differential_cross_section end
     ) where {T<:QEDbase.AbstractFourMomentum}
 
 Return the differential cross section for a given combination of a scattering process 
-and model definition evaluated on the passed inital and final phase space points. 
+and model definition evaluated on the passed in- and out-phasespace points. 
 
 This function will eventually call the respective interface function [`_differential_cross_section`](@ref).
 """
@@ -118,12 +118,12 @@ function differential_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     size(in_phasespace, 1) == number_incoming_particles(proc_def) || throw(
         DimensionMismatch(
-            "The number of momenta in the initial phasespace <{length(in_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
+            "The number of momenta in the in-phasespace <{length(in_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
         ),
     )
     size(out_phasespace, 1) == number_outgoing_particles(proc_def) || throw(
         DimensionMismatch(
-            "The number of momenta in the final phasespace <{length(out_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_particles(proc_def)}>.",
+            "The number of momenta in the out-phasespace <{length(out_phasespace)}> does not match the number of outgoing particles of the process <{number_outgoing_particles(proc_def)}>.",
         ),
     )
     return _differential_cross_section(proc_def, model_def, in_phasespace, out_phasespace)
