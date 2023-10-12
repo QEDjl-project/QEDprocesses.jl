@@ -98,7 +98,7 @@ Interface function, which asserts that the given `input` is valid, and throws an
     ```Julia
     _assert_valid_input(stp::YourCustomSetup,input)
     ```
-    which should throw an exception, which is a subtype of [`AbstractInvalidInputError`](@ref). One may also use the concrete implementation [`InvalidInputError`](@ref) if the input is invalid instead of writing a custom exception type.
+    which should throw an exception, which is a subtype of [`AbstractInvalidInputException`](@ref). One may also use the concrete implementation [`InvalidInputError`](@ref) if the input is invalid instead of writing a custom exception type.
 
 """
 @inline function _assert_valid_input(stp::AbstractComputationSetup, input)

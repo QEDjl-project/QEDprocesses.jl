@@ -1,9 +1,5 @@
 module QEDprocesses
 
-export AbstractParticle
-export is_fermion, is_boson, is_particle, is_anti_particle
-export mass, charge
-
 # Abstract model interface
 export AbstractModelDefinition, fundamental_interaction_type
 
@@ -17,19 +13,11 @@ export differential_cross_section, total_cross_section
 export AbstractComputationSetup, InvalidInputError, compute
 export AbstractProcessSetup, scattering_process, physical_model
 
-# particle types
-export AbstractParticleType
-export FermionLike, Fermion, AntiFermion, MajoranaFermion
-export BosonLike, Boson, AntiBoson, MajoranaBoson
-export Electron, Positron, Photon
-
 using DocStringExtensions
 using QEDbase
 
 include("utils.jl")
-include("interfaces/particle_interface.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
-include("particle_types.jl")
 end
