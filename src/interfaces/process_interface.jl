@@ -250,7 +250,7 @@ function total_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     size(in_phasespace, 1) == number_incoming_particles(proc_def) || throw(
         DimensionMismatch(
-            "The number of momenta in the initial phasespace <{length(in_phasespace)}> does not match the number of incoming particles of the process <{number_incoming_particles(proc_def)}>.",
+            "The number of momenta in the initial phasespace $(length(in_phasespace)) does not match the number of incoming particles of the process $(number_incoming_particles(proc_def)).",
         ),
     )
     return _total_cross_section(proc_def, model_def, in_phasespace)

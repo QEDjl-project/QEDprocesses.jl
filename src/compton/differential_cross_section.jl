@@ -33,46 +33,8 @@ function _differential_cross_section(
     photon_out = out_phase_space[1]
     electron_out = out_phase_space[2]
 
-    # get base states of the particles
-    photon_in_bstate = base_state(
-        Photon(),
-        Incoming(),
-        photon_in,
-        _spin_or_pol(process, Photon(), Incoming()),
-    )
-    electron_in_bstate = base_state(
-        Electron(),
-        Incoming(),
-        electron_in,
-        _spin_or_pol(process, Electron(), Incoming()),
-    )
-    photon_out_bstate = base_state(
-        Photon(),
-        Outgoing(),
-        photon_out,
-        _spin_or_pol(process, Photon(), Outgoing()),
-    )
-    electron_out_bstate = base_state(
-        Electron(),
-        Outgoing(),
-        electron_out,
-        _spin_or_pol(process, Electron(), Outgoing()),
-    )
-
-    # if the particles had AllSpin or AllPol, the base states can be vectors and we need to consider every combination of the base states with each other
-    base_states_comb = Iterators.product(
-        photon_in_bstate,
-        electron_in_bstate,
-        photon_out_bstate,
-        electron_out_bstate,
-    )
-    matrix_elements = Vector{ComplexF64}()
-    sizehint!(matrix_elements, length(base_states_comb))
-    for (phin, ein, phout, eout) in base_states_comb
-        push!(matrix_elements, _perturbative_compton_matrix(phin, ein, phout, eout))
-    end
-
-    matrix_elements_sq = abs2.(matrix_elements)
+    matrix_elements_sq =
+        _matrix_el_sq(process, model, photon_in, electron_in, photon_out, electron_out)
 
     # average over incoming polarizations/spins, but sum over outgoing pols/spins
     normalization = 1.0 / (length(photon_in_bstate) * length(electron_in_bstate))
@@ -85,13 +47,38 @@ function _differential_cross_section(
 end
 
 function _perturbative_compton_matrix(
+    ph_in::NumericType,
+    el_in::NumericType,
+    ph_out::NumericType,
+    el_out::NumericType,
     ph_in_bstate::SLorentzVector{ComplexF64},
     el_in_bstate::BiSpinor,
     ph_out_bstate::SLorentzVector{ComplexF64},
     el_out_bstate::AdjointBiSpinor,
-)
-    # TODO
-    return zero(ComplexF64)
+) where {NumericType<:QEDbase.AbstractFourMomentum}
+    ph_in_slashed = slashed(ph_in_bstate)
+    ph_out_slashed = slashed(ph_out_bstate)
+
+    # TODO: fermion propagator is not yet in QEDbase
+    diagram_1 =
+        ph_out_slashed *
+        _fermion_propagator(ph_in + el_in, mass(Electron())) *
+        ph_in_slashed
+    diagram_2 =
+        ph_in_slashed *
+        _fermion_propagator(el_in - ph_out, mass(Electron())) *
+        ph_out_slashed
+
+    result = diagram_1 + diagram_2
+    result = result * el_in_bstate
+    result = el_out_bstate * result
+
+    # TODO: find (preferably unitful) global provider for physical constants
+    # elementary charge
+    alpha = 1 / 137.035999084
+    e = sqrt(4 * pi * alpha)
+
+    return -e * e * result
 end
 
 function _phase_space_factor(
@@ -113,4 +100,108 @@ function _post_process_dcs(
 ) where {NumericType<:QEDbase.AbstractFourMomentum}
     # generally nothing to be done here
     return result
+end
+
+function _matrix_el(
+    process::Compton{InPol,InSpin,OutPol,OutSpin},
+    model::PerturbativeQED,
+    photon_in::NumericType,
+    electron_in::NumericType,
+    photon_out::NumericType,
+    electron_out::NumericType,
+) where {
+    InPol<:AbstractPolarization,
+    InSpin<:AbstractSpin,
+    OutPol<:AbstractPolarization,
+    OutSpin<:AbstractSpin,
+    NumericType<:QEDbase.AbstractFourMomentum,
+}
+    # get base states of the particles
+    photon_in_bstate = Vector{SLorentzVector{ComplexF64}}(
+        base_state(
+            Photon(),
+            Incoming(),
+            photon_in,
+            _spin_or_pol(process, Photon(), Incoming()),
+        ),
+    )
+    electron_in_bstate = Vector{BiSpinor}(
+        base_state(
+            Electron(),
+            Incoming(),
+            electron_in,
+            _spin_or_pol(process, Electron(), Incoming()),
+        ),
+    )
+    photon_out_bstate = Vector{SLorentzVector{ComplexF64}}(
+        base_state(
+            Photon(),
+            Outgoing(),
+            photon_out,
+            _spin_or_pol(process, Photon(), Outgoing()),
+        ),
+    )
+    electron_out_bstate = Vector{AdjointBiSpinor}(
+        base_state(
+            Electron(),
+            Outgoing(),
+            electron_out,
+            _spin_or_pol(process, Electron(), Outgoing()),
+        ),
+    )
+
+    # if the particles had AllSpin or AllPol, the base states can be vectors and we need to consider every combination of the base states with each other
+    base_states_comb = Iterators.product(
+        photon_in_bstate,
+        electron_in_bstate,
+        photon_out_bstate,
+        electron_out_bstate,
+    )
+    matrix_elements = Vector{ComplexF64}()
+    sizehint!(matrix_elements, length(base_states_comb))
+    for (ph_in, el_in, ph_out, el_out) in base_states_comb
+        push!(
+            matrix_elements,
+            _perturbative_compton_matrix(
+                photon_in,
+                electron_in,
+                photon_out,
+                electron_out,
+                ph_in,
+                el_in,
+                ph_out,
+                el_out,
+            ),
+        )
+    end
+
+    return matrix_elements
+end
+
+function _matrix_el_sq(
+    process::Compton{InPol,InSpin,OutPol,OutSpin},
+    model::PerturbativeQED,
+    photon_in::NumericType,
+    electron_in::NumericType,
+    photon_out::NumericType,
+    electron_out::NumericType,
+) where {
+    NumericType<:QEDbase.AbstractFourMomentum,
+    InPol<:AbstractPolarization,
+    InSpin<:AbstractSpin,
+    OutPol<:AbstractPolarization,
+    OutSpin<:AbstractSpin,
+}
+    return abs2.(
+        _matrix_el(process, model, photon_in, electron_in, photon_out, electron_out)
+    )
+end
+
+# TODO: should be implemented in QEDbase instead
+function _fermion_propagator(mom::QEDbase.AbstractFourMomentum, mass::Float64)
+    slashed_mom = slashed(mom)
+
+    i = ComplexF64(0.0, 1.0)
+    # might not be correct, but this is just a mock implementation to have something to test until its available from QEDbase
+    return (i * (slashed_mom + mass * one(DiracMatrix))) / (mom * mom - mass * mass)
 end

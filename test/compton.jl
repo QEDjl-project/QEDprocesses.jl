@@ -32,10 +32,10 @@ end
         @test number_outgoing_particles(proc) == 2
     end
 
-    @testset "invalid inputs" begin
-        model = PerturbativeQED()
-        proc = Compton()
+    model = PerturbativeQED()
+    proc = Compton((pol1, pol2), (spin1, spin2))
 
+    @testset "invalid inputs" begin
         momenta_2 = [zero(SFourMomentum) for _ = 1:2]
         momenta_3 = [zero(SFourMomentum) for _ = 1:3]
 
@@ -61,4 +61,13 @@ end
             @test_throws "outgoing" differential_cross_section(proc, model, valid, invalid)
         end
     end
+
+    #= See https://github.com/QEDjl-project/QEDbase.jl/issues/36
+    @testset "valid inputs" begin
+        momenta_in = [SFourMomentum(1.0, 0.0, 0.0, 0.0), SFourMomentum(1.0, 0.0, 0.0, 0.0)]
+        momenta_out = [SFourMomentum(1.0, 0.0, 0.0, 0.0), SFourMomentum(1.0, 0.0, 0.0, 0.0)]
+
+        differential_cross_section(proc, model, momenta_in, momenta_out)
+    end
+    =#
 end
