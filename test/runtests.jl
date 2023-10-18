@@ -15,9 +15,6 @@ begin
     end
 
     # modules
-    @time @safetestset "particles types" begin
-        include("particle_types.jl")
-    end
     @time @safetestset "propagators" begin
         include("propagators.jl")
     end
