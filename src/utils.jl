@@ -4,7 +4,6 @@
 # This file contains small helper and utility functions used throughout the package.
 ###############
 
-
 """
 
     _base_component_type(array_of_lv::AbstractArray{LV}) where {LV<:QEDbase.AbstractLorentzVector}

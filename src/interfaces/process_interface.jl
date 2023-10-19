@@ -137,12 +137,9 @@ function _differential_cross_section(
     out_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{_base_component_type(in_phasespace)}(undef, size(out_phasespace, 2))
-    for i = 1:size(out_phasespace, 2)
+    for i in 1:size(out_phasespace, 2)
         res[i] = _differential_cross_section(
-            proc_def,
-            model_def,
-            in_phasespace,
-            view(out_phasespace, :, i),
+            proc_def, model_def, in_phasespace, view(out_phasespace, :, i)
         )
     end
     return res
@@ -155,12 +152,9 @@ function _differential_cross_section(
     out_phasespace::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{_base_component_type(in_phasespace)}(undef, size(in_phasespace, 2))
-    for i = 1:size(in_phasespace, 2)
+    for i in 1:size(in_phasespace, 2)
         res[i] = _differential_cross_section(
-            proc_def,
-            model_def,
-            view(in_phasespace, :, i),
-            out_phasespace,
+            proc_def, model_def, view(in_phasespace, :, i), out_phasespace
         )
     end
     return res
@@ -173,12 +167,10 @@ function _differential_cross_section(
     out_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Matrix{_base_component_type(in_phasespace)}(
-        undef,
-        size(in_phasespace, 2),
-        size(out_phasespace, 2),
+        undef, size(in_phasespace, 2), size(out_phasespace, 2)
     )
-    for init_idx = 1:size(in_phasespace, 2)
-        for final_idx = 1:size(out_phasespace, 2)
+    for init_idx in 1:size(in_phasespace, 2)
+        for final_idx in 1:size(out_phasespace, 2)
             res[init_idx, final_idx] = _differential_cross_section(
                 proc_def,
                 model_def,
@@ -232,7 +224,7 @@ function _total_cross_section(
     in_phasespace::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{_base_component_type(in_phasespace)}(undef, size(in_phasespace, 2))
-    for i = 1:size(in_phasespace, 2)
+    for i in 1:size(in_phasespace, 2)
         res[i] = _total_cross_section(proc_def, model_def, view(in_phasespace, :, i))
     end
     return res
