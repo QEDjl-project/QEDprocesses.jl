@@ -2,7 +2,7 @@
 
 [diff since latest main](https://github.com/QEDjl-project/QEDprocesses.jl/compare/302274695d82225f4a810c252d6919839bc59fd7...release-v0.1.0)
 
-[Full list of PRs][https://github.com/QEDjl-project/QEDprocesses.jl/milestone/2?closed=1]
+[Full list of PRs](https://github.com/QEDjl-project/QEDprocesses.jl/milestone/2?closed=1)
 
 ## Version 0.1.0
 
