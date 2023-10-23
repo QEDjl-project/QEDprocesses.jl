@@ -81,8 +81,9 @@ Exception which is thrown if a given input is invalid, e.g. passed to [`_assert_
 struct InvalidInputError <: AbstractInvalidInputException
     msg::String
 end
-Base.showerror(io::IO, err::InvalidInputError) =
-    println(io, "InvalidInputError: $(err.msg).")
+function Base.showerror(io::IO, err::InvalidInputError)
+    return println(io, "InvalidInputError: $(err.msg).")
+end
 
 """
 
