@@ -8,7 +8,8 @@ This is the initial verison of QEDprocesses.
 
 
 ### Highlights
-* Particle interface (Particle types, fundamental properties) https://github.com/QEDjl-project/QEDprocesses.jl/pull/8
 * interface for scattering processes described by physical models (general properties, differential/total cross sections) https://github.com/QEDjl-project/QEDprocesses.jl/pull/11
+* interface for abstract setups (general computation setup and process dedicated
+setups) https://github.com/QEDjl-project/QEDprocesses.jl/pull/14
 * setup ci for unit and integration testing https://github.com/QEDjl-project/QEDprocesses.jl/pull/5 https://github.com/QEDjl-project/QEDprocesses.jl/pull/7 https://github.com/QEDjl-project/QEDprocesses.jl/pull/21
 * setup ci/cd for docs https://github.com/QEDjl-project/QEDprocesses.jl/pull/19
