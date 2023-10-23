@@ -6,14 +6,14 @@ DocMeta.setdocmeta!(QEDprocesses, :DocTestSetup, :(using QEDprocesses); recursiv
 makedocs(;
     modules=[QEDprocesses],
     authors="Uwe Hernandez Acosta <u.hernandez@hzdr.de>, Simeon Ehrig, Klaus Steiniger, Tom Jungnickel, Anton Reinhard",
-    repo="https://github.com/QEDjl-project/QEDprocesses.jl/blob/{commit}{path}#{line}",
+    repo=Documenter.Remotes.GitHub("QEDjl-project", "QEDprocesses.jl"),
     sitename="QEDprocesses.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        edit_link="main",
+        canonical="https://qedjl-project.gitlab.io/QEDprocesses.jl",
+        edit_link="dev",
         assets=String[],
     ),
-    pages=[
-        "Home" => "index.md",
-    ],
+    pages=["Home" => "index.md"],
 )
+deploydocs(; repo="github.com/QEDjl-project/QEDprocesses.jl.git", push_preview=false)

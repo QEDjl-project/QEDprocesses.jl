@@ -1,6 +1,18 @@
 using QEDprocesses
 using Test
+using SafeTestsets
 
-@testset "QEDprocesses.jl" begin
-    # Write your tests here.
+begin
+    # Interfaces
+    @time @safetestset "model interface" begin
+        include("interfaces/model_interface.jl")
+    end
+    @time @safetestset "process interface" begin
+        include("interfaces/process_interface.jl")
+    end
+    @time @safetestset "computation setup interface" begin
+        include("interfaces/setup_interface.jl")
+    end
+
+    # modules
 end
