@@ -36,25 +36,26 @@ Return the propagator of a particle for a given four-momentum. If `mass` is pass
 function propagator end
 
 function _scalar_propagator(K::QEDbase.AbstractFourMomentum, mass::Real)
-    one(mass) / (K * K - mass^2)
+    return one(mass) / (K * K - mass^2)
 end
 
 function _scalar_propagator(K::QEDbase.AbstractFourMomentum)
-    one(getT(K)) / (K * K)
+    return one(getT(K)) / (K * K)
 end
 
-
 function _fermion_propagator(P::QEDbase.AbstractFourMomentum, mass::Real)
-    (slashed(P) + mass * one(DiracMatrix)) * _scalar_propagator(P, mass)
+    return (slashed(P) + mass * one(DiracMatrix)) * _scalar_propagator(P, mass)
 end
 
 function _fermion_propagator(P::QEDbase.AbstractFourMomentum)
-    (slashed(P)) * _scalar_propagator(P)
+    return (slashed(P)) * _scalar_propagator(P)
 end
 
-propagator(particle_type::BosonLike, K::QEDbase.AbstractFourMomentum) =
-    _scalar_propagator(K, mass(particle_type))
+function propagator(particle_type::BosonLike, K::QEDbase.AbstractFourMomentum)
+    return _scalar_propagator(K, mass(particle_type))
+end
 propagator(particle_type::Photon, K::QEDbase.AbstractFourMomentum) = _scalar_propagator(K)
 
-propagator(particle_type::FermionLike, P::QEDbase.AbstractFourMomentum) =
-    _fermion_propagator(P, mass(particle_type))
+function propagator(particle_type::FermionLike, P::QEDbase.AbstractFourMomentum)
+    return _fermion_propagator(P, mass(particle_type))
+end
