@@ -1,6 +1,6 @@
 # QEDprocesses
 
-[![Doc Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://qedjl-project.github.io/QEDprocesses.jl/main)
+[![Doc Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://qedjl-project.github.io/QEDprocesses.jl/stable)
 [![Doc Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://qedjl-project.github.io/QEDprocesses.jl/dev)
 [![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/invenia/BlueStyle)
 
@@ -11,22 +11,12 @@ To install the current stable version of `QEDprocesses.jl` you may use the stand
 ```julia
 julia> using Pkg
 
-# add local registry, where QEDprocesses is registered
-julia> Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/QEDjl-project/registry"))
-# add general registry again to have it join the local registry
-julia> Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/JuliaRegistries/General"))
-
 julia> Pkg.add("QEDprocesses")
 ```
 
 or you use the Pkg prompt by hitting `]` within the Julia REPL and then type
 
 ```julia
-# add local registry, where QEDprocesses is registered
-(@v1.9) pkg> registry add https://github.com/QEDjl-project/registry
-# add general registry again to have it join the local registry
-(@v1.9) pkg> registry add https://github.com/JuliaRegistries/General
-
 (@v1.9) pkg> add QEDprocesses
 ```
 
