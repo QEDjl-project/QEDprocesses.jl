@@ -54,7 +54,10 @@ end
 function propagator(particle_type::BosonLike, K::QEDbase.AbstractFourMomentum)
     return _scalar_propagator(K, mass(particle_type))
 end
-propagator(particle_type::Photon, K::QEDbase.AbstractFourMomentum) = _scalar_propagator(K)
+
+function propagator(particle_type::Photon, K::QEDbase.AbstractFourMomentum)
+    return _scalar_propagator(K)
+end
 
 function propagator(particle_type::FermionLike, P::QEDbase.AbstractFourMomentum)
     return _fermion_propagator(P, mass(particle_type))
