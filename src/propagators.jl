@@ -2,7 +2,7 @@
 ###############
 # Propagators
 #
-# This file contains implementations for the fermion- and boson propagators. 
+# This file contains implementations for the fermion and boson propagators. 
 ####
 
 """
@@ -15,7 +15,7 @@ Return the propagator of a particle for a given four-momentum. If `mass` is pass
 
 !!! note "Convention"
     
-    There are two types implementations for propagators given in `QEDProcesses`: 
+    There are two types of implementations for propagators given in `QEDProcesses`: 
     For a `BosonLike` particle with four-momentum ``k`` and mass ``m``, the propagator is given as 
 
     ```math
@@ -30,7 +30,7 @@ Return the propagator of a particle for a given four-momentum. If `mass` is pass
 
 !!! warning
     
-    In the current implementation, it is **not checked** if the given particle  is off-shell. If an on-shell particle is passed, the function `propagator` returns `Inf`.
+    This function does not throw when the given particle is off-shell. If an off-shell particle is passed, the function `propagator` returns `Inf`.
 
 """
 function propagator end
