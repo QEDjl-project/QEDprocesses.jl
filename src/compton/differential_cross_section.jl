@@ -24,7 +24,7 @@ function _differential_cross_section(
     in_phase_space::AbstractVector{NumericType},
     out_phase_space::AbstractVector{NumericType},
 )::Float64 where {NumericType<:QEDbase.AbstractFourMomentum}
-    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol = sqrt(eps())))
+    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
         return zero(Float64)
     end
 
@@ -33,8 +33,9 @@ function _differential_cross_section(
     photon_out = out_phase_space[1]
     electron_out = out_phase_space[2]
 
-    matrix_elements_sq =
-        _matrix_el_sq(process, model, photon_in, electron_in, photon_out, electron_out)
+    matrix_elements_sq = _matrix_el_sq(
+        process, model, photon_in, electron_in, photon_out, electron_out
+    )
 
     # average over incoming polarizations/spins, but sum over outgoing pols/spins
     normalization = 1.0 / (length(photon_in_bstate) * length(electron_in_bstate))
@@ -82,10 +83,7 @@ function _perturbative_compton_matrix(
 end
 
 function _phase_space_factor(
-    ph_in::NumericType,
-    el_in::NumericType,
-    ph_out::NumericType,
-    el_out::NumericType,
+    ph_in::NumericType, el_in::NumericType, ph_out::NumericType, el_out::NumericType
 ) where {NumericType<:QEDbase.AbstractFourMomentum}
     # TODO
     return zero(ComplexF64)
@@ -119,10 +117,7 @@ function _matrix_el(
     # get base states of the particles
     photon_in_bstate = Vector{SLorentzVector{ComplexF64}}(
         base_state(
-            Photon(),
-            Incoming(),
-            photon_in,
-            _spin_or_pol(process, Photon(), Incoming()),
+            Photon(), Incoming(), photon_in, _spin_or_pol(process, Photon(), Incoming())
         ),
     )
     electron_in_bstate = Vector{BiSpinor}(
@@ -135,10 +130,7 @@ function _matrix_el(
     )
     photon_out_bstate = Vector{SLorentzVector{ComplexF64}}(
         base_state(
-            Photon(),
-            Outgoing(),
-            photon_out,
-            _spin_or_pol(process, Photon(), Outgoing()),
+            Photon(), Outgoing(), photon_out, _spin_or_pol(process, Photon(), Outgoing())
         ),
     )
     electron_out_bstate = Vector{AdjointBiSpinor}(
@@ -152,10 +144,7 @@ function _matrix_el(
 
     # if the particles had AllSpin or AllPol, the base states can be vectors and we need to consider every combination of the base states with each other
     base_states_comb = Iterators.product(
-        photon_in_bstate,
-        electron_in_bstate,
-        photon_out_bstate,
-        electron_out_bstate,
+        photon_in_bstate, electron_in_bstate, photon_out_bstate, electron_out_bstate
     )
     matrix_elements = Vector{ComplexF64}()
     sizehint!(matrix_elements, length(base_states_comb))
@@ -195,13 +184,4 @@ function _matrix_el_sq(
     return abs2.(
         _matrix_el(process, model, photon_in, electron_in, photon_out, electron_out)
     )
-end
-
-# TODO: should be implemented in QEDbase instead
-function _fermion_propagator(mom::QEDbase.AbstractFourMomentum, mass::Float64)
-    slashed_mom = slashed(mom)
-
-    i = ComplexF64(0.0, 1.0)
-    # might not be correct, but this is just a mock implementation to have something to test until its available from QEDbase
-    return (i * (slashed_mom + mass * one(DiracMatrix))) / (mom * mom - mass * mass)
 end
