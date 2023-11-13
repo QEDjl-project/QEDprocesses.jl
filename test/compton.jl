@@ -48,11 +48,18 @@ end
             @test_throws DimensionMismatch differential_cross_section(
                 proc, model, invalid, valid
             )
-            @test_throws "incoming" differential_cross_section(proc, model, invalid, valid)
             @test_throws DimensionMismatch differential_cross_section(
                 proc, model, valid, invalid
             )
-            @test_throws "outgoing" differential_cross_section(proc, model, valid, invalid)
+            if VERSION >= v"1.8"
+                # this syntax is not supported in julia version 1.7 or below
+                @test_throws "incoming" differential_cross_section(
+                    proc, model, invalid, valid
+                )
+                @test_throws "outgoing" differential_cross_section(
+                    proc, model, valid, invalid
+                )
+            end
         end
     end
 

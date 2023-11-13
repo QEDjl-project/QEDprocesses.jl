@@ -37,6 +37,21 @@ function _differential_cross_section(
         process, model, photon_in, electron_in, photon_out, electron_out
     )
 
+    # TODO: replace this with some less computationally intensive way to figure out how many states there are
+    photon_in_bstate = Vector{SLorentzVector{ComplexF64}}(
+        base_state(
+            Photon(), Incoming(), photon_in, _spin_or_pol(process, Photon(), Incoming())
+        ),
+    )
+    electron_in_bstate = Vector{BiSpinor}(
+        base_state(
+            Electron(),
+            Incoming(),
+            electron_in,
+            _spin_or_pol(process, Electron(), Incoming()),
+        ),
+    )
+
     # average over incoming polarizations/spins, but sum over outgoing pols/spins
     normalization = 1.0 / (length(photon_in_bstate) * length(electron_in_bstate))
     I = photon_in * electron_in
