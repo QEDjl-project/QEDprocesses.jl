@@ -13,6 +13,9 @@ export differential_cross_section, total_cross_section
 export AbstractComputationSetup, InvalidInputError, compute
 export AbstractProcessSetup, scattering_process, physical_model
 
+# propagator
+export propagator
+
 using DocStringExtensions
 using QEDbase
 
@@ -20,4 +23,5 @@ include("utils.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
+include("propagators.jl")
 end

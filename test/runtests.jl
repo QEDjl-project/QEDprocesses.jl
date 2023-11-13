@@ -15,4 +15,7 @@ begin
     end
 
     # modules
+    @time @safetestset "propagators" begin
+        include("propagators.jl")
+    end
 end
