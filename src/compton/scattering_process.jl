@@ -27,9 +27,7 @@ end
 A convenience type specialization of [`DifferentialCrossSection`](@ref) with [`Compton`](@ref) set as the process type and [`PerturbativeQED`](@ref) as the model.
 """
 const ComptonDCS = DifferentialCrossSection{
-    Compton{P1,S1,P2,S2},
-    PerturbativeQED,
-    PhaseSpace,
+    Compton{P1,S1,P2,S2},PerturbativeQED,PhaseSpace
 } where {
     P1<:AbstractPolarization,
     S1<:AbstractSpin,

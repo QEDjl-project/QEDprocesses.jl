@@ -11,9 +11,7 @@ struct DifferentialCrossSection{Model,Process,PhaseSpace} <: AbstractProcessSetu
     in_phase_space::PhaseSpace
 
     function DifferentialCrossSection(
-        proc::Process,
-        model::Model,
-        in_phase_space::PhaseSpace,
+        proc::Process, model::Model, in_phase_space::PhaseSpace
     ) where {
         Model<:AbstractModelDefinition,
         Process<:AbstractScatteringProcess,
@@ -67,15 +65,16 @@ function physical_model(dcs::DifferentialCrossSection)
 end
 
 function _assert_valid_input(
-    dcs::DifferentialCrossSection,
-    out_phase_space::AbstractArray{NumericType},
+    dcs::DifferentialCrossSection, out_phase_space::AbstractArray{NumericType}
 ) where {NumericType}
     length(out_phase_space) == number_outgoing_particles(dcs.process) || throw(
         InvalidInputError(
             "Out-phasespace dimension is inconsistent with input size ($(length(out_phase_space)) versus $(number_outgoing_particles(dcs.process)))",
         ),
     )
-    _assert_valid_dcs_input(dcs.process, dcs.model, dcs.in_phase_space, out_phase_space)
+    return _assert_valid_dcs_input(
+        dcs.process, dcs.model, dcs.in_phase_space, out_phase_space
+    )
 end
 
 function _compute(dcs::DifferentialCrossSection, input)
