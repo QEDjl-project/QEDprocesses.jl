@@ -63,12 +63,14 @@ end
         end
     end
 
-    #= See https://github.com/QEDjl-project/QEDbase.jl/issues/36
     @testset "valid inputs" begin
         momenta_in = [SFourMomentum(1.0, 0.0, 0.0, 0.0), SFourMomentum(1.0, 0.0, 0.0, 0.0)]
         momenta_out = [SFourMomentum(1.0, 0.0, 0.0, 0.0), SFourMomentum(1.0, 0.0, 0.0, 0.0)]
 
-        differential_cross_section(proc, model, momenta_in, momenta_out)
+        @test isapprox(
+            differential_cross_section(proc, model, momenta_in, momenta_out),
+            0.0;
+            atol=eps(Float64),
+        )
     end
-    =#
 end

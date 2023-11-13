@@ -38,22 +38,19 @@ function _differential_cross_section(
     )
 
     # TODO: replace this with some less computationally intensive way to figure out how many states there are
-    photon_in_bstate = Vector{SLorentzVector{ComplexF64}}(
-        base_state(
-            Photon(), Incoming(), photon_in, _spin_or_pol(process, Photon(), Incoming())
-        ),
+    photon_in_bstate = base_state(
+        Photon(), Incoming(), photon_in, _spin_or_pol(process, Photon(), Incoming())
     )
-    electron_in_bstate = Vector{BiSpinor}(
-        base_state(
-            Electron(),
-            Incoming(),
-            electron_in,
-            _spin_or_pol(process, Electron(), Incoming()),
-        ),
+    electron_in_bstate = base_state(
+        Electron(), Incoming(), electron_in, _spin_or_pol(process, Electron(), Incoming())
     )
 
     # average over incoming polarizations/spins, but sum over outgoing pols/spins
-    normalization = 1.0 / (length(photon_in_bstate) * length(electron_in_bstate))
+    normalization =
+        1.0 / (
+            length(QEDbase._as_svec(photon_in_bstate)) *
+            length(QEDbase._as_svec(electron_in_bstate))
+        )
     I = photon_in * electron_in
 
     return I *
@@ -67,9 +64,9 @@ function _perturbative_compton_matrix(
     el_in::NumericType,
     ph_out::NumericType,
     el_out::NumericType,
-    ph_in_bstate::SLorentzVector{ComplexF64},
+    ph_in_bstate::SLorentzVector,
     el_in_bstate::BiSpinor,
-    ph_out_bstate::SLorentzVector{ComplexF64},
+    ph_out_bstate::SLorentzVector,
     el_out_bstate::AdjointBiSpinor,
 ) where {NumericType<:QEDbase.AbstractFourMomentum}
     ph_in_slashed = slashed(ph_in_bstate)
@@ -130,36 +127,25 @@ function _matrix_el(
     NumericType<:QEDbase.AbstractFourMomentum,
 }
     # get base states of the particles
-    photon_in_bstate = Vector{SLorentzVector{ComplexF64}}(
-        base_state(
-            Photon(), Incoming(), photon_in, _spin_or_pol(process, Photon(), Incoming())
-        ),
+    photon_in_bstate = base_state(
+        Photon(), Incoming(), photon_in, _spin_or_pol(process, Photon(), Incoming())
     )
-    electron_in_bstate = Vector{BiSpinor}(
-        base_state(
-            Electron(),
-            Incoming(),
-            electron_in,
-            _spin_or_pol(process, Electron(), Incoming()),
-        ),
+    electron_in_bstate = base_state(
+        Electron(), Incoming(), electron_in, _spin_or_pol(process, Electron(), Incoming())
     )
-    photon_out_bstate = Vector{SLorentzVector{ComplexF64}}(
-        base_state(
-            Photon(), Outgoing(), photon_out, _spin_or_pol(process, Photon(), Outgoing())
-        ),
+    photon_out_bstate = base_state(
+        Photon(), Outgoing(), photon_out, _spin_or_pol(process, Photon(), Outgoing())
     )
-    electron_out_bstate = Vector{AdjointBiSpinor}(
-        base_state(
-            Electron(),
-            Outgoing(),
-            electron_out,
-            _spin_or_pol(process, Electron(), Outgoing()),
-        ),
+    electron_out_bstate = base_state(
+        Electron(), Outgoing(), electron_out, _spin_or_pol(process, Electron(), Outgoing())
     )
 
     # if the particles had AllSpin or AllPol, the base states can be vectors and we need to consider every combination of the base states with each other
     base_states_comb = Iterators.product(
-        photon_in_bstate, electron_in_bstate, photon_out_bstate, electron_out_bstate
+        QEDbase._as_svec(photon_in_bstate),
+        QEDbase._as_svec(electron_in_bstate),
+        QEDbase._as_svec(photon_out_bstate),
+        QEDbase._as_svec(electron_out_bstate),
     )
     matrix_elements = Vector{ComplexF64}()
     sizehint!(matrix_elements, length(base_states_comb))
