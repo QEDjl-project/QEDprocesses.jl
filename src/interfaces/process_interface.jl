@@ -92,6 +92,72 @@ This function needs to be given to implement the scattering process interface.
 """
 function outgoing_particles end
 
+##############
+#
+# incident flux
+#
+##############
+"""
+    _incident_flux(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+"""
+function _incident_flux end
+
+"""
+    _matrix_element(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+Return tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
+"""
+function _matrix_element end
+
+function _matrix_element_square(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+    mat_el = matrix_element(proc,model,in_ps,out_ps)
+    return abs2.(mat_el)
+end
+    
+"""
+    averaging_norm(
+        proc::AbstractProcessDefinition
+        )
+
+"""
+function averaging_norm end
+
+"""
+    _phase_space_factor(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+        out_ps_def::OutPhasespaceDefinition,
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+"""
+function _phase_space_factor end
+
+
+
+#######################
+#
+# utility functions
+#
+#######################
+
 """
     _incident_flux(
         proc::AbstractProcessDefinition,
@@ -200,6 +266,8 @@ Return the number of outgoing particles of a given process.
     return length(outgoing_particles(proc_def))
 end
 
+
+    
 """
     in_phase_space_dimension(
         proc::AbstractProcessDefinition,
