@@ -16,6 +16,17 @@ outgoing_particles(proc_def::AbstractProcessDefinition)
 ```
 
 which return a tuple of the incoming and outgoing particles, respectively.
+
+Furthermore, to calculate scatteing probabilities and differential cross sections, the following 
+interface functions need to be implemented
+
+```Julia
+_incident_flux
+_matrix_element
+averaging_norm
+_phase_space_factor
+```
+
 """
 abstract type AbstractProcessDefinition end
 
@@ -37,6 +48,72 @@ This function needs to be given to implement the scattering process interface.
 """
 function outgoing_particles end
 
+##############
+#
+# incident flux
+#
+##############
+"""
+    _incident_flux(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+"""
+function _incident_flux end
+
+"""
+    _matrix_element(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+Return tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
+"""
+function _matrix_element end
+
+function _matrix_element_square(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+    mat_el = matrix_element(proc,model,in_ps,out_ps)
+    return abs2.(mat_el)
+end
+    
+"""
+    averaging_norm(
+        proc::AbstractProcessDefinition
+        )
+
+"""
+function averaging_norm end
+
+"""
+    _phase_space_factor(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+        out_ps_def::OutPhasespaceDefinition,
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+"""
+function _phase_space_factor end
+
+
+
+#######################
+#
+# utility functions
+#
+#######################
+
 """
 
     $(TYPEDSIGNATURES)
@@ -57,6 +134,8 @@ Return the number of outgoing particles of a given process.
     return length(outgoing_particles(proc_def))
 end
 
+
+    
 """
 
     _differential_cross_section(
@@ -129,58 +208,6 @@ function differential_cross_section(
     return _differential_cross_section(proc_def, model_def, in_phasespace, out_phasespace)
 end
 
-# returns diffCS for single `initPS` and several `finalPS` points without input-check
-function _differential_cross_section(
-    proc_def::AbstractProcessDefinition,
-    model_def::AbstractModelDefinition,
-    in_phasespace::AbstractVector{T},
-    out_phasespace::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    res = Vector{_base_component_type(in_phasespace)}(undef, size(out_phasespace, 2))
-    for i in 1:size(out_phasespace, 2)
-        res[i] = _differential_cross_section(
-            proc_def, model_def, in_phasespace, view(out_phasespace, :, i)
-        )
-    end
-    return res
-end
-
-function _differential_cross_section(
-    proc_def::AbstractProcessDefinition,
-    model_def::AbstractModelDefinition,
-    in_phasespace::AbstractMatrix{T},
-    out_phasespace::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    res = Vector{_base_component_type(in_phasespace)}(undef, size(in_phasespace, 2))
-    for i in 1:size(in_phasespace, 2)
-        res[i] = _differential_cross_section(
-            proc_def, model_def, view(in_phasespace, :, i), out_phasespace
-        )
-    end
-    return res
-end
-
-function _differential_cross_section(
-    proc_def::AbstractProcessDefinition,
-    model_def::AbstractModelDefinition,
-    in_phasespace::AbstractMatrix{T},
-    out_phasespace::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    res = Matrix{_base_component_type(in_phasespace)}(
-        undef, size(in_phasespace, 2), size(out_phasespace, 2)
-    )
-    for init_idx in 1:size(in_phasespace, 2)
-        for final_idx in 1:size(out_phasespace, 2)
-            res[init_idx, final_idx] = _differential_cross_section(
-                proc_def,
-                model_def,
-                view(in_phasespace, :, init_idx),
-                view(out_phasespace, :, final_idx),
-            )
-        end
-    end
-    return res
-end
 
 """
 
