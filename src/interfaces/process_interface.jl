@@ -21,10 +21,31 @@ Furthermore, to calculate scatteing probabilities and differential cross section
 interface functions need to be implemented
 
 ```Julia
-_incident_flux
-_matrix_element
-averaging_norm
-_phase_space_factor
+    _incident_flux(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+    _matrix_element(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps::AbstractVector{T}
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+    averaging_norm(
+        proc::AbstractProcessDefinition
+        )
+
+    _phase_space_factor(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+        out_ps_def::OutPhasespaceDefinition,
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
 ```
 
 """
@@ -165,7 +186,7 @@ check if the length of the passed phase spaces match the respective number of pa
     where `T<:QEDbase.AbstractFourMomentum`. Although, any combinations of initial and final phase space types given by *single set of points* (AbstractVector{T}) and *mutiple set of points* (AbstractMatrix{T}) 
     is implemented. Furthermore, a safe version of `_differential_cross_section` is also implemented: [`differential_cross_section`](@ref).
 
-!!! note "unsafe implementation"
+!!! note "Input validation"
     
     Each instance of this function does not check the validity of the input. 
     Therefore, these functions are not exported and should be used with caution. To add a method in order to implement the cross section interface, 

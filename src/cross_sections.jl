@@ -87,9 +87,9 @@ function unsafe_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstactPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
+    in_phase_space::AbstractVecOrMat{T},
     out_phase_space_def::AbstactPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
+    out_phase_space::AbstractVecOrMat{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
     
     size(in_ps,1)==number_incoming_paricles(proc) || throw(
@@ -265,9 +265,9 @@ function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstactPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
+    in_phase_space::AbstractVecOrMat{T},
     out_phase_space_def::AbstactPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
+    out_phase_space::AbstractVecOrMat{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
     
     size(in_ps,1)==number_incoming_paricles(proc) || throw(
