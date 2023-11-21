@@ -12,6 +12,9 @@ export number_incoming_particles, number_outgoing_particles
 export differential_probability, unsafe_differential_probability
 export total_probability
 
+# probabilities
+export probability, unsafe_probability
+
 # differential cross section
 export differential_cross_section, unsafe_differential_cross_section
 export total_cross_section
