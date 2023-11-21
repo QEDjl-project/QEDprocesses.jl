@@ -19,37 +19,37 @@ end
 
 function _groundtruth_incident_flux(in_ps)
     s = sum(in_ps)
-    return s*s
+    return s * s
 end
 
-function _groundtruth_matrix_element(in_ps,out_ps)
+function _groundtruth_matrix_element(in_ps, out_ps)
     s_in = sum(in_ps)
     s_out = sum(out_ps)
-    res = s_in*s_in + 1im*(s_out*s_out)
-    return (res,2*res,3*res)
+    res = s_in * s_in + 1im * (s_out * s_out)
+    return (res, 2 * res, 3 * res)
 end
 
 function _groundtruth_averaging_norm(proc)
-    number_incoming_particles(proc) + number_outgoing_particles(proc)
+    return number_incoming_particles(proc) + number_outgoing_particles(proc)
 end
 
-function _groundtruth_phase_space_factor(in_ps,out_ps)
+function _groundtruth_phase_space_factor(in_ps, out_ps)
     en_in = getE.(in_ps)
     en_out = getE.(out_ps)
-    return 1/(prod(en_in)*prod(en_out))
+    return 1 / (prod(en_in) * prod(en_out))
 end
 
-function _groundtruth_unsafe_probability(proc,in_ps,out_ps)
-    mat_el = _groundtruth_matrix_element(in_ps,out_ps)
+function _groundtruth_unsafe_probability(proc, in_ps, out_ps)
+    mat_el = _groundtruth_matrix_element(in_ps, out_ps)
     mat_el_sq = abs2.(mat_el)
     normalization = _groundtruth_averaging_norm(proc)
-    ps_fac = _groundtruth_phase_space_factor(in_ps,out_ps)
-    return sum(mat_el_sq)*ps_fac*normalization
+    ps_fac = _groundtruth_phase_space_factor(in_ps, out_ps)
+    return sum(mat_el_sq) * ps_fac * normalization
 end
-    
-function _groundtruth_unsafe_diffCS(proc,in_ps,out_ps)
+
+function _groundtruth_unsafe_diffCS(proc, in_ps, out_ps)
     init_flux = _groundtruth_incident_flux(in_ps)
-    return _groundtruth_unsafe_probability(proc,in_ps,out_ps)/(4*init_flux)
+    return _groundtruth_unsafe_probability(proc, in_ps, out_ps) / (4 * init_flux)
 end
 
 struct TestParticle1 <: AbstractParticle end
@@ -59,32 +59,42 @@ struct TestParticle4 <: AbstractParticle end
 
 PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
 
-struct TestProcess <: AbstractProcessDefinition end 
+struct TestProcess <: AbstractProcessDefinition end
 struct TestProcess_FAIL <: AbstractProcessDefinition end
 
 struct TestModel <: AbstractModelDefinition end
 struct TestModel_FAIL <: AbstractModelDefinition end
 
 struct TestPhasespaceDef <: AbstractPhasespaceDefinition end
-struct TestPhasespaceDef_FAIL<: AbstractPhasespaceDefinition end
+struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
 
 _any_fail(x...) = true
-_any_fail(::TestProcess,::TestModel) = false
-_any_fail(::TestProcess,::TestModel,::TestPhasespaceDef,::TestPhasespaceDef) = false
+_any_fail(::TestProcess, ::TestModel) = false
+_any_fail(::TestProcess, ::TestModel, ::TestPhasespaceDef, ::TestPhasespaceDef) = false
 
-function QEDprocesses._incident_flux(::TestProcess,::TestModel,in_ps::AbstractVector{T}) where {T<:QEDbase.AbstractFourMomentum}
-    _groundtruth_incident_flux(in_ps)
+function QEDprocesses._incident_flux(
+    ::TestProcess, ::TestModel, in_ps::AbstractVector{T}
+) where {T<:QEDbase.AbstractFourMomentum}
+    return _groundtruth_incident_flux(in_ps)
 end
 
 function QEDprocesses._averaging_norm(proc::TestProcess)
-    _groundtruth_averaging_norm(proc)
+    return _groundtruth_averaging_norm(proc)
 end
 
-function QEDprocesses._matrix_element(::TestProcess,::TestModel,in_ps::AbstractVector{T},out_ps::AbstractVector{T}) where {T<:QEDbase.AbstractFourMomentum}
-    _groundtruth_matrix_element(in_ps,out_ps)
+function QEDprocesses._matrix_element(
+    ::TestProcess, ::TestModel, in_ps::AbstractVector{T}, out_ps::AbstractVector{T}
+) where {T<:QEDbase.AbstractFourMomentum}
+    return _groundtruth_matrix_element(in_ps, out_ps)
 end
 
-function QEDprocesses._phase_space_factor(::TestProcess,::TestModel,
-    in_ps_def::TestPhasespaceDef,in_ps::AbstractVector{T},out_ps_def::TestPhasespaceDef,out_ps::AbstractVector{T}) where {T<:QEDbase.AbstractFourMomentum}
-    _groundtruth_phase_space_factor(in_ps,out_ps)
+function QEDprocesses._phase_space_factor(
+    ::TestProcess,
+    ::TestModel,
+    in_ps_def::TestPhasespaceDef,
+    in_ps::AbstractVector{T},
+    out_ps_def::TestPhasespaceDef,
+    out_ps::AbstractVector{T},
+) where {T<:QEDbase.AbstractFourMomentum}
+    return _groundtruth_phase_space_factor(in_ps, out_ps)
 end
