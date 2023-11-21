@@ -13,7 +13,8 @@ struct CenterOfMomentumFrame <: AbstractFrameOfReference end
 struct ElectronRestFrame <: AbstractFrameOfReference end
 
 abstract type AbstractPhasespaceDefinition end
-struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfReference} <: AbstractPhasespaceDefinition
+struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfReference} <:
+       AbstractPhasespaceDefinition
     coord_sys::CS
     frame::F
-end 
+end

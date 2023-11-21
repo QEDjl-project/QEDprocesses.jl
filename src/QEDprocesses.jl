@@ -21,7 +21,7 @@ export propagator
 
 # phase space 
 export AbstractCoordinateSystem, SphericalCoordinateSystem
-export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame 
+export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
 
 using DocStringExtensions

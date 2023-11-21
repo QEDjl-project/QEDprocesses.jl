@@ -97,16 +97,15 @@ Return tuple of scattering matrix elements for each spin and polarisation combin
 function _matrix_element end
 
 function _matrix_element_square(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T},
-        out_ps::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
-
-    mat_el = _matrix_element(proc,model,in_ps,out_ps)
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_ps::AbstractVector{T},
+    out_ps::AbstractVector{T},
+) where {T<:QEDbase.AbstractFourMomentum}
+    mat_el = _matrix_element(proc, model, in_ps, out_ps)
     return abs2.(mat_el)
 end
-    
+
 """
     _averaging_norm(
         proc::AbstractProcessDefinition
@@ -126,8 +125,6 @@ function _averaging_norm end
         ) where {T<:QEDbase.AbstractFourMomentum}
 """
 function _phase_space_factor end
-
-
 
 #######################
 #
@@ -155,8 +152,6 @@ Return the number of outgoing particles of a given process.
     return length(outgoing_particles(proc_def))
 end
 
-
-    
 """
 
     _differential_cross_section(

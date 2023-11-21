@@ -21,5 +21,4 @@ begin
     @time @safetestset "differential cross section" begin
         include("cross_sections.jl")
     end
-
 end

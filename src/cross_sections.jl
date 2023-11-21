@@ -5,7 +5,6 @@
 # sections based on the scattering process interface
 ########################
 
-
 ############
 #
 # scattering probability
@@ -20,18 +19,22 @@ function _unsafe_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    
-
-    matrix_elements_sq =
-        _matrix_element_square(proc, model, in_phase_space, out_phase_space)
+    matrix_elements_sq = _matrix_element_square(
+        proc, model, in_phase_space, out_phase_space
+    )
 
     normalization = _averaging_norm(proc)
 
-    ps_fac = _phase_space_factor(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+    ps_fac = _phase_space_factor(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 
-    return normalization *
-           sum(matrix_elements_sq) *
-            ps_fac
+    return normalization * sum(matrix_elements_sq) * ps_fac
 end
 
 function _unsafe_probability(
@@ -42,9 +45,16 @@ function _unsafe_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    res = Vector{eltype(T)}(undef,size(out_phase_space,2))
-    for i in 1:size(out_phase_space,2)
-        res[i] = _unsafe_probability(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,view(out_phase_space,:,i))
+    res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
+    for i in 1:size(out_phase_space, 2)
+        res[i] = _unsafe_probability(
+            proc,
+            model,
+            in_phase_space_def,
+            in_phase_space,
+            out_phase_space_def,
+            view(out_phase_space, :, i),
+        )
     end
     return res
 end
@@ -57,10 +67,16 @@ function _unsafe_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    
-    res = Matrix{eltype(T)}(undef,size(in_phase_space,2), size(out_phase_space,2))
-    for i in 1:size(in_phase_space,2)
-        res[i,:] .= _unsafe_probability(proc,model,in_phase_space_def,view(in_phase_space,:,i),out_phase_space_def,out_phase_space)
+    res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
+    for i in 1:size(in_phase_space, 2)
+        res[i, :] .= _unsafe_probability(
+            proc,
+            model,
+            in_phase_space_def,
+            view(in_phase_space, :, i),
+            out_phase_space_def,
+            out_phase_space,
+        )
     end
     return res
 end
@@ -73,18 +89,28 @@ function unsafe_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    
-    size(in_ps,1)==number_incoming_paricles(proc) || throw(
-        InvalidInputError("The number of incoming particles <$(number_incoming_paricles(proc))> is inconsistent with input size <$(size(in_ps,1))>"),
+    size(in_ps, 1) == number_incoming_paricles(proc) || throw(
+        InvalidInputError(
+            "The number of incoming particles <$(number_incoming_paricles(proc))> is inconsistent with input size <$(size(in_ps,1))>",
+        ),
     )
-        
-    size(out_ps,1)==number_outgoing_paricles(proc) || throw(
-        InvalidInputError("The number of outgoing particles <$(number_outgoing_paricles(proc))> is inconsistent with input size <$(size(out_ps,1))>"),
+
+    size(out_ps, 1) == number_outgoing_paricles(proc) || throw(
+        InvalidInputError(
+            "The number of outgoing particles <$(number_outgoing_paricles(proc))> is inconsistent with input size <$(size(out_ps,1))>",
+        ),
     )
-        
-    return _unsafe_probability(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+
+    return _unsafe_probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 end
-    
+
 function _probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -95,11 +121,18 @@ function _probability(
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
 
     # consider wrapping the unchecked diffCS in a function
-    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol = sqrt(eps())))
+    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
         return zero(eltype(T))
     end
 
-    return _unsafe_probability(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+    return _unsafe_probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 end
 
 function _probability(
@@ -110,10 +143,16 @@ function _probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    
-    res = Vector{eltype(T)}(undef,size(out_phase_space,2))
-    for i in 1:size(out_phase_space,2)
-        res[i] = _probability(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,view(out_phase_space,:,i))
+    res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
+    for i in 1:size(out_phase_space, 2)
+        res[i] = _probability(
+            proc,
+            model,
+            in_phase_space_def,
+            in_phase_space,
+            out_phase_space_def,
+            view(out_phase_space, :, i),
+        )
     end
     return res
 end
@@ -126,14 +165,19 @@ function _probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    
-    res = Matrix{eltype(T)}(undef,size(in_phase_space,2), size(out_phase_space,2))
-    for i in 1:size(in_phase_space,2)
-        res[i,:] .= _probability(proc,model,in_phase_space_def,view(in_phase_space,:,i),out_phase_space_def,out_phase_space)
+    res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
+    for i in 1:size(in_phase_space, 2)
+        res[i, :] .= _probability(
+            proc,
+            model,
+            in_phase_space_def,
+            view(in_phase_space, :, i),
+            out_phase_space_def,
+            out_phase_space,
+        )
     end
     return res
 end
-
 
 function probability(
     proc::AbstractProcessDefinition,
@@ -143,16 +187,26 @@ function probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-    
-    size(in_ps,1)==number_incoming_paricles(proc) || throw(
-        InvalidInputError("The number of incoming particles <$(number_incoming_paricles(proc))> is inconsistent with input size <$(size(in_ps,1))>"),
+    size(in_ps, 1) == number_incoming_paricles(proc) || throw(
+        InvalidInputError(
+            "The number of incoming particles <$(number_incoming_paricles(proc))> is inconsistent with input size <$(size(in_ps,1))>",
+        ),
     )
-        
-    size(out_ps,1)==number_outgoing_paricles(proc) || throw(
-        InvalidInputError("The number of outgoing particles <$(number_outgoing_paricles(proc))> is inconsistent with input size <$(size(out_ps,1))>"),
+
+    size(out_ps, 1) == number_outgoing_paricles(proc) || throw(
+        InvalidInputError(
+            "The number of outgoing particles <$(number_outgoing_paricles(proc))> is inconsistent with input size <$(size(out_ps,1))>",
+        ),
     )
-        
-    return _probability(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+
+    return _probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 end
 
 ############
@@ -170,10 +224,16 @@ function _unsafe_differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
+    I = 1 / (4 * _incident_flux(proc, model, in_phase_space))
 
-    I = 1/(4*_incident_flux(proc,model,in_phase_space))
-
-    return I * _unsafe_probability(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+    return I * _unsafe_probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 end
 
 function _unsafe_differential_cross_section(
@@ -184,13 +244,19 @@ function _unsafe_differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    res = Vector{eltype(T)}(undef,size(out_phase_space,2))
-    for i in 1:size(out_phase_space,2)
-        res[i] = _unsafe_differential_cross_section(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,view(out_phase_space,:,i))
+    res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
+    for i in 1:size(out_phase_space, 2)
+        res[i] = _unsafe_differential_cross_section(
+            proc,
+            model,
+            in_phase_space_def,
+            in_phase_space,
+            out_phase_space_def,
+            view(out_phase_space, :, i),
+        )
     end
     return res
 end
-
 
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -200,10 +266,16 @@ function _unsafe_differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    
-    res = Matrix{eltype(T)}(undef,size(in_phase_space,2), size(out_phase_space,2))
-    for i in 1:size(in_phase_space,2)
-            res[i,:] .= _unsafe_differential_cross_section(proc,model,in_phase_space_def,view(in_phase_space,:,i),out_phase_space_def,out_phase_space)
+    res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
+    for i in 1:size(in_phase_space, 2)
+        res[i, :] .= _unsafe_differential_cross_section(
+            proc,
+            model,
+            in_phase_space_def,
+            view(in_phase_space, :, i),
+            out_phase_space_def,
+            out_phase_space,
+        )
     end
     return res
 end
@@ -216,16 +288,26 @@ function unsafe_differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    
-    size(in_phase_space,1)==number_incoming_particles(proc) || throw(
-        DimensionMismatch("The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>"),
+    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
+        DimensionMismatch(
+            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+        ),
     )
-        
-    size(out_phase_space,1)==number_outgoing_particles(proc) || throw(
-        DimensionMismatch("The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>"),
+
+    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
+        DimensionMismatch(
+            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
+        ),
     )
-        
-    return _unsafe_differential_cross_section(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+
+    return _unsafe_differential_cross_section(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 end
 
 # differential cross sections with energy momentum conservation check
@@ -239,11 +321,18 @@ function _differential_cross_section(
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
 
     # consider wrapping the unchecked diffCS in a function
-    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol = sqrt(eps())))
+    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
         return zero(eltype(T))
     end
 
-    return _unsafe_differential_cross_section(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+    return _unsafe_differential_cross_section(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
 end
 
 function _differential_cross_section(
@@ -254,10 +343,16 @@ function _differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    
-    res = Vector{eltype(T)}(undef,size(out_phase_space,2))
-    for i in 1:size(out_phase_space,2)
-        res[i] = _differential_cross_section(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,view(out_phase_space,:,i))
+    res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
+    for i in 1:size(out_phase_space, 2)
+        res[i] = _differential_cross_section(
+            proc,
+            model,
+            in_phase_space_def,
+            in_phase_space,
+            out_phase_space_def,
+            view(out_phase_space, :, i),
+        )
     end
     return res
 end
@@ -270,14 +365,19 @@ function _differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    
-    res = Matrix{eltype(T)}(undef,size(in_phase_space,2), size(out_phase_space,2))
-    for i in 1:size(in_phase_space,2)
-        res[i,:] .= _differential_cross_section(proc,model,in_phase_space_def,view(in_phase_space,:,i),out_phase_space_def,out_phase_space)
+    res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
+    for i in 1:size(in_phase_space, 2)
+        res[i, :] .= _differential_cross_section(
+            proc,
+            model,
+            in_phase_space_def,
+            view(in_phase_space, :, i),
+            out_phase_space_def,
+            out_phase_space,
+        )
     end
     return res
 end
-
 
 function differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -287,15 +387,24 @@ function differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    
-    size(in_phase_space,1)==number_incoming_particles(proc) || throw(
-        DimensionMismatch("The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>"),
+    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
+        DimensionMismatch(
+            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+        ),
     )
-        
-    size(out_phase_space,1)==number_outgoing_particles(proc) || throw(
-        DimensionMismatch("The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>"),
-    )
-        
-    return _differential_cross_section(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
-end
 
+    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
+        DimensionMismatch(
+            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
+        ),
+    )
+
+    return _differential_cross_section(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+end
