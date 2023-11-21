@@ -23,3 +23,5 @@ Float64
 function _base_component_type(::AbstractArray{LV}) where {LV<:QEDbase.AbstractLorentzVector}
     return eltype(LV)
 end
+
+

@@ -126,5 +126,46 @@ include("../test_implementation/TestImplementation.jl")
         )
         groundtruth = TestImplementation._groundtruth_phase_space_factor(IN_PS, OUT_PS)
         @test isapprox(test_phase_space_factor, groundtruth, atol=ATOL, rtol=RTOL)
+=======
+    IN_PS = _rand_momenta(RNG,N_INCOMING)
+    OUT_PS = _rand_momenta(RNG,N_OUTGOING)
+
+    QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
+    QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+        
+
+    @testset "incoming/outgoing particles" begin
+        @test incoming_particles(TestProcess()) == INCOMING_PARTICLES
+        @test outgoing_particles(TestProcess()) == OUTGOING_PARTICLES
+        @test number_incoming_particles(TestProcess()) == N_INCOMING
+        @test number_outgoing_particles(TestProcess()) == N_OUTGOING
+    end
+
+    @testset "incident flux" begin
+        test_incident_flux = QEDprocesses._incident_flux(TestProcess(),TestModel(),IN_PS) 
+        groundtruth = _groundtruth_incident_flux(IN_PS)
+        @test isapprox(test_incident_flux,groundtruth,atol=ATOL,rtol=RTOL)
+    end
+        
+    @testset "matrix element" begin
+        test_avg_norm = QEDprocesses._averaging_norm(TestProcess())
+        groundtruth = _groundtruth_averaging_norm(TestProcess())
+        @test isapprox(test_avg_norm,groundtruth,atol=ATOL,rtol=RTOL)
+    end
+        
+    @testset "matrix element" begin
+        test_matrix_element = QEDprocesses._matrix_element(TestProcess(),TestModel(),IN_PS,OUT_PS) 
+        groundtruth = _groundtruth_matrix_element(IN_PS,OUT_PS)
+        @test length(test_matrix_element) == length(groundtruth)
+        for i in eachindex(test_matrix_element)
+            @test isapprox(test_matrix_element[i],groundtruth[i],atol=ATOL,rtol=RTOL)
+        end
+    end
+
+    @testset "phase space factor" begin
+        test_phase_space_factor = QEDprocesses._phase_space_factor(TestProcess(),TestModel(),TestPhasespaceDef(),IN_PS,TestPhasespaceDef(),OUT_PS) 
+        groundtruth = _groundtruth_phase_space_factor(IN_PS,OUT_PS)
+        @test isapprox(test_phase_space_factor,groundtruth,atol=ATOL,rtol=RTOL)
+>>>>>>> a8e7d7d (updated differential cross section and tests)
     end
 end
