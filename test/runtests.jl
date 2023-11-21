@@ -18,4 +18,8 @@ begin
     @time @safetestset "propagators" begin
         include("propagators.jl")
     end
+    @time @safetestset "differential cross section" begin
+        include("cross_sections.jl")
+    end
+
 end

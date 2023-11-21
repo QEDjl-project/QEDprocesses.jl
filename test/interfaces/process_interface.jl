@@ -6,219 +6,69 @@ RNG = MersenneTwister(137137)
 ATOL = 0.0
 RTOL = sqrt(eps())
 
-function _rand_momenta(rng::AbstractRNG, N)
-    moms = Vector{SFourMomentum}(undef, N)
-    for i in 1:N
-        moms[i] = SFourMomentum(rand(rng, 4))
-    end
-    return moms
-end
+include("../test_implementation.jl")
 
-function _rand_momenta(rng::AbstractRNG, N1, N2)
-    moms = Matrix{SFourMomentum}(undef, N1, N2)
-    for i in 1:N1
-        for j in 1:N2
-            moms[i, j] = SFourMomentum(rand(rng, 4))
+@testset "interface fail" for (PROC,MODEL) in Iterators.product((TestProcess(),TestProcess_FAIL()), (TestModel(),TestModel_FAIL()))
+    in_ps = _rand_momenta(RNG,2)
+    out_ps = _rand_momenta(RNG,2)
+    if _any_fail(PROC,MODEL)
+        @test_throws MethodError incoming_particles(PROC)
+        @test_throws MethodError outgoing_particles(PROC)
+        @test_throws MethodError QEDprocesses._incident_flux(PROC,MODEL,in_ps)
+        @test_throws MethodError QEDprocesses._matrix_element(PROC,MODEL,in_ps,out_ps)
+    end
+
+    for (IN_PS_DEF,OUT_PS_DEF) in Iterators.product((TestPhasespaceDef(),TestPhasespaceDef_FAIL()), (TestPhasespaceDef(),TestPhasespaceDef_FAIL()))
+        if _any_fail(PROC,MODEL,IN_PS_DEF,OUT_PS_DEF)
+            @test_throws MethodError QEDprocesses._phase_space_factor(PROC,MODEL,IN_PS_DEF,in_ps,OUT_PS_DEF,out_ps)
         end
     end
-    return moms
 end
-
-struct TestParticle1 <: AbstractParticle end
-struct TestParticle2 <: AbstractParticle end
-struct TestParticle3 <: AbstractParticle end
-struct TestParticle4 <: AbstractParticle end
-
-PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
-
-struct TestProcess <: AbstractProcessDefinition end
-struct TestProcess_FAIL <: AbstractProcessDefinition end
-
-struct TestModel <: AbstractModelDefinition end
-struct TestModel_FAIL <: AbstractModelDefinition end
-
-_groundtruth_diffCS(initPS, finalPS) = sum(initPS) * sum(finalPS)
-_groundtruth_totCS(initPS) = _groundtruth_diffCS(initPS, initPS)
-
-@testset "interface fail" begin
-    @test_throws MethodError incoming_particles(TestProcess_FAIL())
-    @test_throws MethodError outgoing_particles(TestProcess_FAIL())
-end
+    
 @testset "($N_INCOMING,$N_OUTGOING)" for (N_INCOMING, N_OUTGOING) in Iterators.product(
     (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
 )
     INCOMING_PARTICLES = rand(RNG, PARTICLE_SET, N_INCOMING)
     OUTGOING_PARTICLES = rand(RNG, PARTICLE_SET, N_OUTGOING)
 
+    IN_PS = _rand_momenta(RNG,N_INCOMING)
+    OUT_PS = _rand_momenta(RNG,N_OUTGOING)
+
     QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
     QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+        
 
-    function QEDprocesses._differential_cross_section(
-        proc::TestProcess,
-        model::TestModel,
-        in_phasespace::AbstractVector{T},
-        out_phasespace::AbstractVector{T},
-    ) where {T<:QEDbase.AbstractFourMomentum}
-        return _groundtruth_diffCS(in_phasespace, out_phasespace)
-    end
-
-    function QEDprocesses._total_cross_section(
-        proc::TestProcess, model::TestModel, in_phasespace::AbstractVector{T}
-    ) where {T<:QEDbase.AbstractFourMomentum}
-        return _groundtruth_totCS(in_phasespace)
-    end
-
-    @testset "hard interface" begin
+    @testset "incoming/outgoing particles" begin
         @test incoming_particles(TestProcess()) == INCOMING_PARTICLES
         @test outgoing_particles(TestProcess()) == OUTGOING_PARTICLES
-    end
-
-    @testset "delegated functions" begin
         @test number_incoming_particles(TestProcess()) == N_INCOMING
         @test number_outgoing_particles(TestProcess()) == N_OUTGOING
     end
 
-    @testset "cross section" begin
-        p_in = _rand_momenta(RNG, N_INCOMING)
-        p_out = _rand_momenta(RNG, N_OUTGOING)
-        p_in_set = _rand_momenta(RNG, N_INCOMING, 2)
-        p_out_set = _rand_momenta(RNG, N_OUTGOING, 2)
-
-        @testset "interface fail" begin
-            @test_throws MethodError differential_cross_section(
-                TestProcess(), TestModel_FAIL(), p_in, p_out
-            )
-            @test_throws MethodError total_cross_section(
-                TestProcess(), TestModel_FAIL(), p_in, p_out
-            )
+    @testset "incident flux" begin
+        test_incident_flux = QEDprocesses._incident_flux(TestProcess(),TestModel(),IN_PS) 
+        groundtruth = _groundtruth_incident_flux(IN_PS)
+        @test isapprox(test_incident_flux,groundtruth,atol=ATOL,rtol=RTOL)
+    end
+        
+    @testset "matrix element" begin
+        test_avg_norm = QEDprocesses._averaging_norm(TestProcess())
+        groundtruth = _groundtruth_averaging_norm(TestProcess())
+        @test isapprox(test_avg_norm,groundtruth,atol=ATOL,rtol=RTOL)
+    end
+        
+    @testset "matrix element" begin
+        test_matrix_element = QEDprocesses._matrix_element(TestProcess(),TestModel(),IN_PS,OUT_PS) 
+        groundtruth = _groundtruth_matrix_element(IN_PS,OUT_PS)
+        @test length(test_matrix_element) == length(groundtruth)
+        for i in eachindex(test_matrix_element)
+            @test isapprox(test_matrix_element[i],groundtruth[i],atol=ATOL,rtol=RTOL)
         end
+    end
 
-        @testset "differential cross section" begin
-            @testset "compute vector-vector" begin
-                diffCS = differential_cross_section(TestProcess(), TestModel(), p_in, p_out)
-                groundtruth = _groundtruth_diffCS(p_in, p_out)
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-
-            @testset "compute vector-matrix" begin
-                diffCS = differential_cross_section(
-                    TestProcess(), TestModel(), p_in, p_out_set
-                )
-
-                groundtruth = Vector{QEDprocesses._base_component_type(p_in)}(
-                    undef, size(p_out_set, 2)
-                )
-                for i in 1:size(p_out_set, 2)
-                    groundtruth[i] = _groundtruth_diffCS(p_in, view(p_out_set, :, i))
-                end
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-
-            @testset "compute matrix-vector" begin
-                diffCS = differential_cross_section(
-                    TestProcess(), TestModel(), p_in_set, p_out
-                )
-                groundtruth = Vector{QEDprocesses._base_component_type(p_in_set)}(
-                    undef, size(p_in_set, 2)
-                )
-                for i in 1:size(p_in_set, 2)
-                    groundtruth[i] = _groundtruth_diffCS(view(p_in_set, :, i), p_out)
-                end
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-
-            @testset "compute matrix-matrix" begin
-                diffCS = differential_cross_section(
-                    TestProcess(), TestModel(), p_in_set, p_out_set
-                )
-                groundtruth = Matrix{QEDprocesses._base_component_type(p_in_set)}(
-                    undef, size(p_in_set, 2), size(p_out_set, 2)
-                )
-                for i in 1:size(p_in_set, 2)
-                    for j in 1:size(p_out_set, 2)
-                        groundtruth[i, j] = _groundtruth_diffCS(
-                            view(p_in_set, :, i), view(p_out_set, :, j)
-                        )
-                    end
-                end
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-
-            @testset "fail vector-vector" begin
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(), TestModel(), _rand_momenta(RNG, N_INCOMING + 1), p_out
-                )
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(), TestModel(), p_in, _rand_momenta(RNG, N_OUTGOING + 1)
-                )
-            end
-
-            @testset "fail vector-matrix" begin
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(),
-                    TestModel(),
-                    _rand_momenta(RNG, N_INCOMING + 1),
-                    p_out_set,
-                )
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(), TestModel(), p_in, _rand_momenta(RNG, N_OUTGOING + 1, 2)
-                )
-            end
-
-            @testset "fail matrix-vector" begin
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(), TestModel(), _rand_momenta(RNG, N_INCOMING + 1, 2), p_out
-                )
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(), TestModel(), p_in_set, _rand_momenta(RNG, N_OUTGOING + 1)
-                )
-            end
-
-            @testset "fail matrix-matrix" begin
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(),
-                    TestModel(),
-                    _rand_momenta(RNG, N_INCOMING + 1, 2),
-                    p_out_set,
-                )
-                @test_throws DimensionMismatch differential_cross_section(
-                    TestProcess(),
-                    TestModel(),
-                    p_in_set,
-                    _rand_momenta(RNG, N_OUTGOING + 1, 2),
-                )
-            end
-        end
-        @testset "total cross section" begin
-            @testset "compute vector" begin
-                totCS = total_cross_section(TestProcess(), TestModel(), p_in)
-                groundtruth = _groundtruth_totCS(p_in)
-                @test isapprox(totCS, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-
-            @testset "compute matrix" begin
-                totCS = total_cross_section(TestProcess(), TestModel(), p_in_set)
-
-                groundtruth = Vector{QEDprocesses._base_component_type(p_in)}(
-                    undef, size(p_in_set, 2)
-                )
-                for i in 1:size(p_in_set, 2)
-                    groundtruth[i] = _groundtruth_totCS(view(p_in_set, :, i))
-                end
-                @test isapprox(totCS, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-
-            @testset "fail vector" begin
-                @test_throws DimensionMismatch total_cross_section(
-                    TestProcess(), TestModel(), _rand_momenta(RNG, N_INCOMING + 1)
-                )
-            end
-
-            @testset "fail matrix" begin
-                @test_throws DimensionMismatch total_cross_section(
-                    TestProcess(), TestModel(), _rand_momenta(RNG, N_INCOMING + 1, 2)
-                )
-            end
-        end
+    @testset "phase space factor" begin
+        test_phase_space_factor = QEDprocesses._phase_space_factor(TestProcess(),TestModel(),TestPhasespaceDef(),IN_PS,TestPhasespaceDef(),OUT_PS) 
+        groundtruth = _groundtruth_phase_space_factor(IN_PS,OUT_PS)
+        @test isapprox(test_phase_space_factor,groundtruth,atol=ATOL,rtol=RTOL)
     end
 end
