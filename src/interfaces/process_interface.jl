@@ -122,21 +122,21 @@ function _matrix_element end
 function _matrix_element_square(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
+        in_ps::AbstractVector{T},
         out_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
-    mat_el = matrix_element(proc,model,in_ps,out_ps)
+    mat_el = _matrix_element(proc,model,in_ps,out_ps)
     return abs2.(mat_el)
 end
     
 """
-    averaging_norm(
+    _averaging_norm(
         proc::AbstractProcessDefinition
         )
 
 """
-function averaging_norm end
+function _averaging_norm end
 
 """
     _phase_space_factor(

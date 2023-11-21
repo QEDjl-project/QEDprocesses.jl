@@ -168,6 +168,14 @@ function unsafe_differential_cross_section(
         in_phase_space,
         out_phase_space_def,
         out_phase_space,
+=======
+    size(in_phase_space,1)==number_incoming_particles(proc) || throw(
+        DimensionMismatch("The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>"),
+    )
+        
+    size(out_phase_space,1)==number_outgoing_particles(proc) || throw(
+        DimensionMismatch("The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>"),
+>>>>>>> a8e7d7d (updated differential cross section and tests)
     )
 end
 
