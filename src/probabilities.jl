@@ -1,19 +1,12 @@
-########################
-# differential cross sections and probabilities.
-#
-# This file contains default implementations for differential and total cross
-# sections based on the scattering process interface
-########################
-
-
 ############
+# scattering probabilities
 #
-# differential cross sections
-#
+# This file contains implementations of the scattering probability based on the
+# process interface with and without input validation and/or phase space
+# constraint.
 ############
 
-# differential cross sections without energy momentum conservation check
-function _unsafe_differential_cross_section(
+function _unsafe_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -21,9 +14,13 @@ function _unsafe_differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    I = 1 / (4 * _incident_flux(proc, model, in_phase_space))
+    matrix_elements_sq = _matrix_element_square(
+        proc, model, in_phase_space, out_phase_space
+    )
 
-    return I * _unsafe_probability(
+    normalization = _averaging_norm(proc)
+
+    ps_fac = _phase_space_factor(
         proc,
         model,
         in_phase_space_def,
@@ -31,9 +28,11 @@ function _unsafe_differential_cross_section(
         out_phase_space_def,
         out_phase_space,
     )
+
+    return normalization * sum(matrix_elements_sq) * ps_fac
 end
 
-function _unsafe_differential_cross_section(
+function _unsafe_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -43,7 +42,7 @@ function _unsafe_differential_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
-        res[i] = _unsafe_differential_cross_section(
+        res[i] = _unsafe_probability(
             proc,
             model,
             in_phase_space_def,
@@ -55,7 +54,7 @@ function _unsafe_differential_cross_section(
     return res
 end
 
-function _unsafe_differential_cross_section(
+function _unsafe_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -65,7 +64,7 @@ function _unsafe_differential_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
-        res[i, :] .= _unsafe_differential_cross_section(
+        res[i, :] .= _unsafe_probability(
             proc,
             model,
             in_phase_space_def,
@@ -77,7 +76,7 @@ function _unsafe_differential_cross_section(
     return res
 end
 
-function unsafe_differential_cross_section(
+function unsafe_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -97,7 +96,7 @@ function unsafe_differential_cross_section(
         ),
     )
 
-    return _unsafe_differential_cross_section(
+    return _unsafe_probability(
         proc,
         model,
         in_phase_space_def,
@@ -107,22 +106,21 @@ function unsafe_differential_cross_section(
     )
 end
 
-# differential cross sections with energy momentum conservation check
-function _differential_cross_section(
+function _probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
-)::Float64 where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:QEDbase.AbstractFourMomentum}
 
     # consider wrapping the unchecked diffCS in a function
     if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
         return zero(eltype(T))
     end
 
-    return _unsafe_differential_cross_section(
+    return _unsafe_probability(
         proc,
         model,
         in_phase_space_def,
@@ -132,7 +130,7 @@ function _differential_cross_section(
     )
 end
 
-function _differential_cross_section(
+function _probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -142,7 +140,7 @@ function _differential_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
-        res[i] = _differential_cross_section(
+        res[i] = _probability(
             proc,
             model,
             in_phase_space_def,
@@ -154,7 +152,7 @@ function _differential_cross_section(
     return res
 end
 
-function _differential_cross_section(
+function _probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -164,7 +162,7 @@ function _differential_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
-        res[i, :] .= _differential_cross_section(
+        res[i, :] .= _probability(
             proc,
             model,
             in_phase_space_def,
@@ -176,7 +174,7 @@ function _differential_cross_section(
     return res
 end
 
-function differential_cross_section(
+function probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -184,19 +182,19 @@ function differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+    size(in_ps, 1) == number_incoming_paricles(proc) || throw(
+        InvalidInputError(
+            "The number of incoming particles <$(number_incoming_paricles(proc))> is inconsistent with input size <$(size(in_ps,1))>",
         ),
     )
 
-    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
+    size(out_ps, 1) == number_outgoing_paricles(proc) || throw(
+        InvalidInputError(
+            "The number of outgoing particles <$(number_outgoing_paricles(proc))> is inconsistent with input size <$(size(out_ps,1))>",
         ),
     )
 
-    return _differential_cross_section(
+    return _probability(
         proc,
         model,
         in_phase_space_def,

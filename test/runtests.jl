@@ -18,6 +18,9 @@ begin
     @time @safetestset "propagators" begin
         include("propagators.jl")
     end
+    @time @safetestset "differential probability" begin
+        include("probabilities.jl")
+    end
     @time @safetestset "differential cross section" begin
         include("cross_sections.jl")
     end
