@@ -30,7 +30,7 @@ function _groundtruth_matrix_element(in_ps, out_ps)
 end
 
 function _groundtruth_averaging_norm(proc)
-    return 1.0/(number_incoming_particles(proc) + number_outgoing_particles(proc))
+    return 1.0 / (number_incoming_particles(proc) + number_outgoing_particles(proc))
 end
 
 function _groundtruth_phase_space_factor(in_ps, out_ps)
