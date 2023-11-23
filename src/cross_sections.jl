@@ -120,7 +120,14 @@ function _differential_cross_section(
     # if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
     #     return zero(eltype(T))
     # end
-    if !_is_in_phasespace(proc, model, in_phase_space_def, in_phase_space, out_phase_space_def, out_phase_space)
+    if !_is_in_phasespace(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
         return zero(eltype(T))
     end
 
