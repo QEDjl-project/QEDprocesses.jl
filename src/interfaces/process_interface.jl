@@ -135,6 +135,21 @@ Interface function, which returns a normalization for the averaging of the squar
 """
 function _averaging_norm end
 
+
+"""
+
+    _is_in_phasespace(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+        out_ps_def::OutPhasespaceDefinition,
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+"""
+function _is_in_phasespace end
+
 """
 
     _is_in_phasespace(
