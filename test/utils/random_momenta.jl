@@ -25,8 +25,8 @@ end
 Return a random phase space point, which is failing the phase space constraint, 
 i.e. the first entry of the vector is the null momentum.
 """
-function _rand_momenta_failed(rng::AbstractRNG,N)
-    moms = _rand_momenta(rng,N)
+function _rand_momenta_failed(rng::AbstractRNG, N)
+    moms = _rand_momenta(rng, N)
     moms[1] = SFourMomentum(zeros(4))
     return moms
 end
@@ -35,9 +35,9 @@ end
 Return a collection of phase space points, where the first point is failing the phase space constraint, 
 i.e. the first entry of the vector is the null momentum, but the others pass. 
 """
-function _rand_momenta_failed_mix(rng::AbstractRNG,N1,N2)
-    moms = _rand_momenta(rng,N1,N2)
-    moms[1,1] = SFourMomentum(zeros(4))
+function _rand_momenta_failed_mix(rng::AbstractRNG, N1, N2)
+    moms = _rand_momenta(rng, N1, N2)
+    moms[1, 1] = SFourMomentum(zeros(4))
     return moms
 end
 
@@ -45,9 +45,9 @@ end
 Return a collection of phase space points, where all points are failing the phase space constraint, 
 i.e. their first entries are null momenta.
 """
-function _rand_momenta_failed_all(rng::AbstractRNG,N1,N2)
-    moms = _rand_momenta(rng,N1,N2)
-    moms[1,1] = SFourMomentum(zeros(4))
-    moms[1,2] = SFourMomentum(zeros(4))
+function _rand_momenta_failed_all(rng::AbstractRNG, N1, N2)
+    moms = _rand_momenta(rng, N1, N2)
+    moms[1, 1] = SFourMomentum(zeros(4))
+    moms[1, 2] = SFourMomentum(zeros(4))
     return moms
 end

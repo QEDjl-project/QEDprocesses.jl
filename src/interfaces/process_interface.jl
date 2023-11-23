@@ -135,7 +135,6 @@ Interface function, which returns a normalization for the averaging of the squar
 """
 function _averaging_norm end
 
-
 """
 
     _is_in_phasespace(

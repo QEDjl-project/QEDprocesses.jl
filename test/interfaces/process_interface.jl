@@ -83,7 +83,7 @@ include("../test_implementation/TestImplementation.jl")
             @test isapprox(test_matrix_element[i], groundtruth[i], atol=ATOL, rtol=RTOL)
         end
     end
-    
+
     @testset "is in phasespace" begin
         @test QEDprocesses._is_in_phasespace(
             TestProcess(),
@@ -97,7 +97,6 @@ include("../test_implementation/TestImplementation.jl")
         IN_PS_unphysical = deepcopy(IN_PS)
         IN_PS_unphysical[1] = SFourMomentum(zeros(4))
 
-
         @test !QEDprocesses._is_in_phasespace(
             TestProcess(),
             TestModel(),
@@ -106,7 +105,6 @@ include("../test_implementation/TestImplementation.jl")
             TestPhasespaceDef(),
             OUT_PS,
         )
-        
     end
 
     @testset "is in phasespace" begin
