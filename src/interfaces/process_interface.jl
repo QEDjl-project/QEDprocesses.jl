@@ -137,6 +137,21 @@ end
 """
 function _averaging_norm end
 
+
+"""
+
+    _is_in_phasespace(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+        out_ps_def::OutPhasespaceDefinition,
+        out_ps::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
+
+"""
+function _is_in_phasespace end
+
 """
     _phase_space_factor(
         proc::AbstractProcessDefinition,
