@@ -1,5 +1,4 @@
 
-
 # dummy particles
 struct TestParticle1 <: AbstractParticle end
 struct TestParticle2 <: AbstractParticle end
@@ -19,7 +18,6 @@ struct TestModel_FAIL <: AbstractModelDefinition end
 # dummy phase space definition + failing phase space definition
 struct TestPhasespaceDef <: AbstractPhasespaceDefinition end
 struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
-
 
 # dummy implementation of the process interface
 
@@ -49,7 +47,7 @@ function QEDprocesses._is_in_phasespace(
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_is_in_phasespace(in_ps, out_ps)
 end
-    
+
 function QEDprocesses._phase_space_factor(
     ::TestProcess,
     ::TestModel,

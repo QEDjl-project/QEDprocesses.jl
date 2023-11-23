@@ -137,7 +137,6 @@ end
 """
 function _averaging_norm end
 
-
 """
 
     _is_in_phasespace(
