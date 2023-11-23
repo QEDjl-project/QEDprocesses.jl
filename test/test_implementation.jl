@@ -32,7 +32,13 @@ end
 function _groundtruth_averaging_norm(proc)
     return 1.0 / (number_incoming_particles(proc) + number_outgoing_particles(proc))
 end
-
+function _groundtruth_is_in_phasespace(in_ps,out_ps)
+    if in_ps[1] == SFourMomentum(zeros(4))
+        return false
+    end
+        return true
+end
+    
 function _groundtruth_phase_space_factor(in_ps, out_ps)
     en_in = getE.(in_ps)
     en_out = getE.(out_ps)
@@ -88,6 +94,17 @@ function QEDprocesses._matrix_element(
     return _groundtruth_matrix_element(in_ps, out_ps)
 end
 
+function QEDprocesses._is_in_phasespace(
+    ::TestProcess,
+    ::TestModel,
+    in_ps_def::TestPhasespaceDef,
+    in_ps::AbstractVector{T},
+    out_ps_def::TestPhasespaceDef,
+    out_ps::AbstractVector{T},
+) where {T<:QEDbase.AbstractFourMomentum}
+    return _groundtruth_is_in_phasespace(in_ps, out_ps)
+end
+    
 function QEDprocesses._phase_space_factor(
     ::TestProcess,
     ::TestModel,
