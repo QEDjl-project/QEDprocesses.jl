@@ -26,7 +26,7 @@ include("test_implementation.jl")
 
         @testset "unsafe differential probability" begin
             @testset "compute vector-vector" begin
-                diffCS = unsafe_probability(
+                diffProb = unsafe_probability(
                     TestProcess(),
                     TestModel(),
                     TestPhasespaceDef(),
@@ -35,11 +35,11 @@ include("test_implementation.jl")
                     p_out,
                 )
                 groundtruth = _groundtruth_unsafe_probability(TestProcess(), p_in, p_out)
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
+                @test isapprox(diffProb, groundtruth, atol=ATOL, rtol=RTOL)
             end
 
             @testset "compute vector-matrix" begin
-                diffCS = unsafe_probability(
+                diffProb = unsafe_probability(
                     TestProcess(),
                     TestModel(),
                     TestPhasespaceDef(),
@@ -56,11 +56,11 @@ include("test_implementation.jl")
                         TestProcess(), p_in, view(p_out_set, :, i)
                     )
                 end
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
+                @test isapprox(diffProb, groundtruth, atol=ATOL, rtol=RTOL)
             end
 
             @testset "compute matrix-vector" begin
-                diffCS = unsafe_probability(
+                diffProb = unsafe_probability(
                     TestProcess(),
                     TestModel(),
                     TestPhasespaceDef(),
@@ -76,11 +76,11 @@ include("test_implementation.jl")
                         TestProcess(), view(p_in_set, :, i), p_out
                     )
                 end
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
+                @test isapprox(diffProb, groundtruth, atol=ATOL, rtol=RTOL)
             end
 
             @testset "compute matrix-matrix" begin
-                diffCS = unsafe_probability(
+                diffProb = unsafe_probability(
                     TestProcess(),
                     TestModel(),
                     TestPhasespaceDef(),
@@ -98,7 +98,7 @@ include("test_implementation.jl")
                         )
                     end
                 end
-                @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
+                @test isapprox(diffProb, groundtruth, atol=ATOL, rtol=RTOL)
             end
 
             @testset "fail vector-vector" begin

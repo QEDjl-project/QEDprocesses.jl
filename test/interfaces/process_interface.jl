@@ -57,7 +57,7 @@ end
         @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
     end
 
-    @testset "matrix element" begin
+    @testset "averaging norm" begin
         test_avg_norm = QEDprocesses._averaging_norm(TestProcess())
         groundtruth = _groundtruth_averaging_norm(TestProcess())
         @test isapprox(test_avg_norm, groundtruth, atol=ATOL, rtol=RTOL)
@@ -72,6 +72,31 @@ end
         for i in eachindex(test_matrix_element)
             @test isapprox(test_matrix_element[i], groundtruth[i], atol=ATOL, rtol=RTOL)
         end
+    end
+    
+    @testset "is in phasespace" begin
+        @test QEDprocesses._is_in_phasespace(
+            TestProcess(),
+            TestModel(),
+            TestPhasespaceDef(),
+            IN_PS,
+            TestPhasespaceDef(),
+            OUT_PS,
+        )
+
+        IN_PS_unphysical = deepcopy(IN_PS)
+        IN_PS_unphysical[1] = SFourMomentum(zeros(4))
+
+
+        @test !QEDprocesses._is_in_phasespace(
+            TestProcess(),
+            TestModel(),
+            TestPhasespaceDef(),
+            IN_PS_unphysical,
+            TestPhasespaceDef(),
+            OUT_PS,
+        )
+        
     end
 
     @testset "phase space factor" begin

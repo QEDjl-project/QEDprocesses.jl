@@ -117,7 +117,10 @@ function _differential_cross_section(
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
 
     # consider wrapping the unchecked diffCS in a function
-    if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
+    # if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
+    #     return zero(eltype(T))
+    # end
+    if !_is_in_phasespace(proc, model, in_phase_space_def, in_phase_space, out_phase_space_def, out_phase_space)
         return zero(eltype(T))
     end
 
