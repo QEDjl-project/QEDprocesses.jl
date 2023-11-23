@@ -6,7 +6,7 @@ RNG = MersenneTwister(137137)
 ATOL = 0.0
 RTOL = sqrt(eps())
 
-include("../test_implementation.jl")
+include("../utils/utils.jl")
 
 @testset "interface fail" for (PROC, MODEL) in Iterators.product(
     (TestProcess(), TestProcess_FAIL()), (TestModel(), TestModel_FAIL())

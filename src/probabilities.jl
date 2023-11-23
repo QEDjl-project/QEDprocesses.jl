@@ -120,7 +120,7 @@ function _probability(
     #     return zero(eltype(T))
     # end
     
-    if _is_in_phasespace(proc, model, in_phase_space_def, in_phase_space, out_phase_space_def, out_phase_space)
+    if !_is_in_phasespace(proc, model, in_phase_space_def, in_phase_space, out_phase_space_def, out_phase_space)
         return zero(eltype(T))
     end
 
@@ -186,15 +186,15 @@ function probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_ps, 1) == number_incoming_paricles(proc) || throw(
-        InvalidInputError(
-            "The number of incoming particles <$(number_incoming_paricles(proc))> is inconsistent with input size <$(size(in_ps,1))>",
+    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
+        DimensionMismatch(
+            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
         ),
     )
 
-    size(out_ps, 1) == number_outgoing_paricles(proc) || throw(
-        InvalidInputError(
-            "The number of outgoing particles <$(number_outgoing_paricles(proc))> is inconsistent with input size <$(size(out_ps,1))>",
+    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
+        DimensionMismatch(
+            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),
     )
 
