@@ -23,5 +23,4 @@ end
 #
 # Currently, elements can be either four-momenta, or real numbers,
 # i.e. coordinates.
-AbstractPhasespaceElement= Union{QEDbase.AbstractFourMomentum,Real}
-
+AbstractPhasespaceElement = Union{QEDbase.AbstractFourMomentum,Real}
