@@ -43,7 +43,7 @@ function _unsafe_differential_probability(
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
         res[i] = _unsafe_differential_probability(
@@ -67,7 +67,7 @@ function _unsafe_differential_probability(
     in_phase_space::AbstractMatrix{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i, :] .= _unsafe_differential_probability(
@@ -163,8 +163,35 @@ function _differential_probability(
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVector{T},
+) where {T<:Real}
+
+    in_momenta, out_momenta = _generate_momenta(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space
+    )
+    return _differential_probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_momenta,
+        out_phase_space_def,
+       out_momenta 
+    )
+end
+    
+function _differential_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
         res[i] = _differential_probability(
@@ -188,7 +215,7 @@ function _differential_probability(
     in_phase_space::AbstractMatrix{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i, :] .= _differential_probability(

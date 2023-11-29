@@ -18,3 +18,10 @@ struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfRefer
     coord_sys::CS
     frame::F
 end
+
+# abstract type for generic phase spaces
+#
+# Currently, elements can be either four-momenta, or real numbers,
+# i.e. coordinates.
+AbstractPhasespaceElement= Union{QEDbase.AbstractFourMomentum,Real}
+
