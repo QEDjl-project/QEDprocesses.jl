@@ -238,14 +238,13 @@ function _differential_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:Real}
-
     in_momenta, out_momenta = _generate_momenta(
         proc,
         model,
         in_phase_space_def,
         in_phase_space,
         out_phase_space_def,
-        out_phase_space
+        out_phase_space,
     )
     return _differential_probability(
         proc,
