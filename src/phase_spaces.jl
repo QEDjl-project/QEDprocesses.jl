@@ -19,6 +19,19 @@ struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfRefer
     frame::F
 end
 
+"""
+_generate_momenta(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVector{T},
+) where {T<:Real}
+"""
+function _generate_momenta end
+
+
 # abstract type for generic phase spaces
 #
 # Currently, elements can be either four-momenta, or real numbers,
