@@ -146,6 +146,8 @@ function _averaging_norm end
         out_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
+Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
+is physical, i.e. all momenta are on-shell and some sort of energy-momentum conservation holds.
 """
 function _is_in_phasespace end
 
