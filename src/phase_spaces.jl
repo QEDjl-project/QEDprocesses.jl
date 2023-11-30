@@ -1,7 +1,7 @@
 #####################
 # phase spaces  
 #
-# This file contains a colection of types and functions to handle phase spaces
+# This file contains a collection of types and functions to handle phase spaces
 # for scattering processes.
 #####################
 
