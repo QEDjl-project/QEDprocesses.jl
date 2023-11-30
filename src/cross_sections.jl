@@ -76,6 +76,11 @@ function _unsafe_differential_cross_section(
     return res
 end
 
+
+"""
+
+\
+"""
 function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -185,6 +190,10 @@ function _differential_cross_section(
     return res
 end
 
+"""
+
+\
+"""
 function differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,

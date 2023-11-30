@@ -76,6 +76,10 @@ function _unsafe_probability(
     return res
 end
 
+"""
+TODO: write this doc string
+
+"""
 function unsafe_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -185,6 +189,10 @@ function _probability(
     return res
 end
 
+"""
+TODO: write this doc string
+
+"""
 function probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
