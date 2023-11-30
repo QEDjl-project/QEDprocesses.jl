@@ -35,11 +35,11 @@ export AbstractPhasespaceDefinition, PhasespaceDefinition
 using QEDbase
 
 include("utils.jl")
+include("phase_spaces.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
 include("propagators.jl")
-include("phase_spaces.jl")
 include("probabilities.jl")
 include("cross_sections.jl")
 end
