@@ -152,6 +152,29 @@ is physical, i.e. all momenta are on-shell and some sort of energy-momentum cons
 function _is_in_phasespace end
 
 """
+
+Fallback for cooridinate-based phasespace check. This function should be implemented for special cases if available.
+"""
+function _is_in_phasespace(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVector{T},
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVector{T}
+        ) where {T<:Real}
+    in_momenta, out_momenta = _generate_momenta(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+    return _is_in_phasespace(proc,model,in_phase_space_def,in_phase_space,out_phase_space_def,out_phase_space)
+end
+
+"""
     _phase_space_factor(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
