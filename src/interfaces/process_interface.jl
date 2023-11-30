@@ -92,17 +92,14 @@ This function needs to be given to implement the scattering process interface.
 """
 function outgoing_particles end
 
-##############
-#
-# incident flux
-#
-##############
 """
     _incident_flux(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
+
+Interface function, which returns the incident flux of the given scatteing process for a given incoming phase-space.
 
 """
 function _incident_flux end
@@ -115,7 +112,7 @@ function _incident_flux end
         out_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
+Interface function, which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
 """
 function _matrix_element end
 
@@ -134,6 +131,7 @@ end
         proc::AbstractProcessDefinition
         )
 
+Interface function, which returns a normalization for the avering squared matrix elements over spins and polarizations. 
 """
 function _averaging_norm end
 
@@ -148,6 +146,8 @@ function _averaging_norm end
         out_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
+Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
+is physical, i.e. all momenta are on-shell and some sort of energy-momentum conservation holds.
 """
 function _is_in_phasespace end
 
@@ -160,6 +160,17 @@ function _is_in_phasespace end
         out_ps_def::OutPhasespaceDefinition,
         out_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
+
+Interface function, which returns the pre-differential factor of the invariant phase space intergral measure. 
+
+!!! note "Convention"
+
+    It is assumed, that this function returns the value of 
+
+    ```math
+    \\mathrm{d}\\Pi_n:= \\prod_{i=1}^N \\frac{\\mathrm{p}^3p_i}{(2\\pi)^3 2 p_i^0} H(P_t, p_1, \\dots, p_N),
+    ```
+where ``H(\\dots)`` is the constraining of the phase space, e.g. ``\\delta^{(4)}(P_t - \\sum_i p_i)``.  
 """
 function _phase_space_factor end
 
