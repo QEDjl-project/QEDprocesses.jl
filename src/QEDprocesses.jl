@@ -16,7 +16,7 @@ export differential_probability, unsafe_differential_probability
 export total_probability
 
 # probabilities
-export probability, unsafe_probability
+export differential_probability, unsafe_differential_probability
 
 # differential cross section
 export differential_cross_section, unsafe_differential_cross_section
