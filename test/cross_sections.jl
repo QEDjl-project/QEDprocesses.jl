@@ -689,10 +689,10 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         end
     end
 
-    @testset "probability" begin
+    @testset "differential probability" begin
         @testset "unsafe compute" begin
             for (P_IN, P_OUT) in p_combs_phys
-                prob = unsafe_probability(
+                prob = unsafe_differential_probability(
                     TestProcess(),
                     TestModel(),
                     TestPhasespaceDef(),
@@ -710,7 +710,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
                 # filter out all valid combinations
                 if !((P_IN, P_OUT) in p_combs_valid)
-                    @test_throws DimensionMismatch unsafe_probability(
+                    @test_throws DimensionMismatch unsafe_differential_probability(
                         TestProcess(),
                         TestModel(),
                         TestPhasespaceDef(),
@@ -723,7 +723,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         end
         @testset "safe compute" begin
             for (P_IN, P_OUT) in p_combs_valid
-                prob = probability(
+                prob = differential_probability(
                     TestProcess(),
                     TestModel(),
                     TestPhasespaceDef(),
@@ -741,7 +741,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
                 # filter out all valid combinations
                 if !((P_IN, P_OUT) in p_combs_valid)
-                    @test_throws DimensionMismatch probability(
+                    @test_throws DimensionMismatch differential_probability(
                         TestProcess(),
                         TestModel(),
                         TestPhasespaceDef(),
