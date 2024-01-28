@@ -22,7 +22,7 @@ function _unsafe_differential_cross_section(
 ) where {T<:QEDbase.AbstractFourMomentum}
     I = 1 / (4 * _incident_flux(proc, model, in_phase_space))
 
-    return I * _unsafe_probability(
+    return I * _unsafe_differential_probability(
         proc,
         model,
         in_phase_space_def,
@@ -79,7 +79,16 @@ end
 
 """
 
-\
+    function unsafe_differential_cross_section(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVecOrMat{T},
+    ) where {T<:QEDbase.AbstractFourMomentum}
+
+Return the differential cross section without checking if the given phase space(s) are physical.
 """
 function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -191,8 +200,17 @@ function _differential_cross_section(
 end
 
 """
+    differential_cross_section(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVecOrMat{T},
+    ) where {T<:QEDbase.AbstractFourMomentum}
 
-\
+Return differential cross section if the given phase spaces are physical and zero, otherwise.
+
 """
 function differential_cross_section(
     proc::AbstractProcessDefinition,

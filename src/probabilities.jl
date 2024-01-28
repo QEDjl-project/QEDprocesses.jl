@@ -6,7 +6,7 @@
 # constraint.
 ############
 
-function _unsafe_probability(
+function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -32,7 +32,7 @@ function _unsafe_probability(
     return normalization * sum(matrix_elements_sq) * ps_fac
 end
 
-function _unsafe_probability(
+function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -42,7 +42,7 @@ function _unsafe_probability(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
-        res[i] = _unsafe_probability(
+        res[i] = _unsafe_differential_probability(
             proc,
             model,
             in_phase_space_def,
@@ -54,7 +54,7 @@ function _unsafe_probability(
     return res
 end
 
-function _unsafe_probability(
+function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -64,7 +64,7 @@ function _unsafe_probability(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
-        res[i, :] .= _unsafe_probability(
+        res[i, :] .= _unsafe_differential_probability(
             proc,
             model,
             in_phase_space_def,
@@ -77,10 +77,18 @@ function _unsafe_probability(
 end
 
 """
-TODO: write this doc string
+    unsafe_differential_probability(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVecOrMat{T},
+    ) where {T<:QEDbase.AbstractFourMomentum}
 
+Return differential probability without checking if the given phase space(s) are physical.
 """
-function unsafe_probability(
+function unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -100,7 +108,7 @@ function unsafe_probability(
         ),
     )
 
-    return _unsafe_probability(
+    return _unsafe_differential_probability(
         proc,
         model,
         in_phase_space_def,
@@ -110,7 +118,7 @@ function unsafe_probability(
     )
 end
 
-function _probability(
+function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -118,11 +126,6 @@ function _probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-
-    # consider wrapping the unchecked diffCS in a function
-    # if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
-    #     return zero(eltype(T))
-    # end
 
     if !_is_in_phasespace(
         proc,
@@ -135,7 +138,7 @@ function _probability(
         return zero(eltype(T))
     end
 
-    return _unsafe_probability(
+    return _unsafe_differential_probability(
         proc,
         model,
         in_phase_space_def,
@@ -145,7 +148,7 @@ function _probability(
     )
 end
 
-function _probability(
+function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -155,7 +158,7 @@ function _probability(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
-        res[i] = _probability(
+        res[i] = _differential_probability(
             proc,
             model,
             in_phase_space_def,
@@ -167,7 +170,7 @@ function _probability(
     return res
 end
 
-function _probability(
+function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -177,7 +180,7 @@ function _probability(
 ) where {T<:QEDbase.AbstractFourMomentum}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
-        res[i, :] .= _probability(
+        res[i, :] .= _differential_probability(
             proc,
             model,
             in_phase_space_def,
@@ -190,10 +193,18 @@ function _probability(
 end
 
 """
-TODO: write this doc string
+    differential_probability(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVecOrMat{T},
+    ) where {T<:QEDbase.AbstractFourMomentum}
 
+Return the differential cross section if the given phase spaces are physical, and zero otherwise. 
 """
-function probability(
+function differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
@@ -213,7 +224,7 @@ function probability(
         ),
     )
 
-    return _probability(
+    return _differential_probability(
         proc,
         model,
         in_phase_space_def,
