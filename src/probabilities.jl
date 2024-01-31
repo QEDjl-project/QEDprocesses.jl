@@ -126,7 +126,6 @@ function _differential_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-
     if !_is_in_phasespace(
         proc,
         model,

@@ -76,7 +76,6 @@ function _unsafe_differential_cross_section(
     return res
 end
 
-
 """
 
     function unsafe_differential_cross_section(
