@@ -58,3 +58,12 @@ function QEDprocesses._phase_space_factor(
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_phase_space_factor(in_ps, out_ps)
 end
+
+function QEDprocesses._total_probability(
+    proc::TestProcess,
+    model::TestModel,
+    in_ps_def::TestPhasespaceDef,
+    in_ps::AbstractVector{T},
+) where {T<:QEDbase.AbstractFourMomentum}
+    return _groundtruth_total_probability(in_ps)
+end
