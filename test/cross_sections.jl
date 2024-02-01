@@ -659,5 +659,27 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
             end
         end
+
+        @testset "total probability" begin
+            @testset "compute" begin
+                for P_IN in (p_in_phys, p_in_set_phys)
+                    groundtruth = _groundtruth_total_probability(P_IN)
+                    totCS_on_moms = total_probability(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+
+                    @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                end
+            end
+            @testset "invalid input" begin
+                for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
+                    @test_throws DimensionMismatch total_probability(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+
+                end
+            end
+        end
+
     end
 end
