@@ -271,6 +271,16 @@ function _total_cross_section(
     return res
 end
 
+"""
+    total_cross_section(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+    ) where {T<:QEDbase.AbstractFourMomentum}
+
+Return the total cross section for a given combination of scattering process and compute model.
+"""
 function total_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,

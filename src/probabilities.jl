@@ -252,6 +252,16 @@ function _total_probability(
     return res
 end
 
+"""
+    total_probability(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractMatrix{T},
+    ) where {T<:QEDbase.AbstractFourMomentum}
+
+Return the total probability of a given model and process combination.
+"""
 function total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
