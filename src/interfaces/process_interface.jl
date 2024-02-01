@@ -57,6 +57,20 @@ interface functions need to be implemented
         ) where {T<:QEDbase.AbstractFourMomentum}
 ```
 
+Optional is the implementation of 
+
+```Julia
+
+    _total_probability(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+    ) where {T<: QEDbase.AbstractFourMomentum}
+
+```
+to enable the calculation of total probabilities and cross sections.
+
 """
 abstract type AbstractProcessDefinition end
 
@@ -186,38 +200,46 @@ Return the number of outgoing particles of a given process.
     return length(outgoing_particles(proc_def))
 end
 
-#
-#     _total_cross_section(
-#         proc_def::AbstractProcessDefinition,
-#         model_def::AbstractModelDefinition,
-#         in_phasespace::AbstractVector{T},
-#     ) where {T<:QEDbase.AbstractFourMomentum} end
-#
-# Interface function for the combination of scattering processes and physical models. Return the total cross section of a 
-# given process and model for a passed initial phase space. The elements of the `AbstractVector` representing the initial phase space
-# are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
-# check if the length of the passed initial phase spaces match number of incoming particles. 
-#
-# !!! note "cross section interface"
-#
-#     Given an implementation of this method, the following *unsafe* generic implementation is provided:
-#
-#     ```julia
-#
-#     _total_cross_section(proc_def,model_def,in_phasespace::AbstractMatrix{T})
-#
-#     ```
-#
-#     where `T<:QEDbase.AbstractFourMomentum`. Although, `_total_cross_section` is also implemented for a vector of initial phase space points.
-#     Furthermore, a safe version of `_total_cross_section` is also implemented: [`total_cross_section`](@ref).
-#
-#
-# !!! note 
-#     
-#     Each instance of this function does not check the validity of the input. 
-#     This function is not exported and should be used with caution. To add a method in order to implement the cross section interface, 
-#     it is recommented to directly use `QEDprocesses._total_cross_section` instead of globally `using QEDprocesses: _total_cross_section`.
-#
+"""
+    _total_probability(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_ps_def::InPhasespaceDefinition,
+        in_ps::AbstractVector{T}
+    ) where {T<: QEDbase.AbstractFourMomentum}
+
+Interface function for the combination of scattering processes and physical models. Return the total of a 
+given process and model for a passed initial phase space definition and point. The elements of the `AbstractVector` representing the initial phase space
+are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
+check if the length of the passed initial phase spaces match number of incoming particles. 
+
+!!! note "probability interface"
+
+    Given an implementation of this method, the following *unsafe* generic implementation is provided:
+
+    ```julia
+
+    _total_probability(proc_def,model_def,in_phasespace::AbstractMatrix{T})
+
+    ```
+
+    where `T<:QEDbase.AbstractFourMomentum`. Although, `_total_probability` is also implemented for a vector of initial phase space points.
+    Furthermore, a safe version of `_total_probability` is also implemented: [`total_probability`](@ref).
+
+!!! note "total cross section"
+    
+    Given an implementaion of this method and [`_incident_flux`](@ref), the respective functions for the total cross section are available,
+    i.e. `_total_cross_section` (unsafe and not exported), and [`total_cross_section`](@ref), respectively.
+
+!!! note 
+    
+    Each instance of this function does not check the validity of the input. 
+    This function is not exported and should be used with caution. To add a method in order to implement the cross section interface, 
+    it is recommented to directly use `QEDprocesses._total_cross_section` instead of globally `using QEDprocesses: _total_cross_section`.
+
+"""
+function _total_probability end
+
 # """
 # function _total_cross_section end
 #

@@ -171,3 +171,30 @@ function _groundtruth_safe_diffCS(proc, in_ps::AbstractMatrix, out_ps::AbstractM
     end
     return res
 end
+
+function _groundtruth_total_probability(in_ps::AbstractVector)
+    Ptot = sum(in_ps)
+    return Ptot * Ptot
+end
+
+function _groundtruth_total_probability(in_ps::AbstractMatrix)
+    res = Vector{Float64}(undef, size(in_ps, 2))
+    for i in 1:size(in_ps, 2)
+        res[i] = _groundtruth_total_probability(view(in_ps, :, i))
+    end
+    return res
+end
+
+function _groundtruth_total_cross_section(in_ps)
+    init_flux = _groundtruth_incident_flux(in_ps)
+    return _groundtruth_total_probability(in_ps) / (4 * init_flux)
+end
+
+function _groundtruth_total_cross_section(in_ps::AbstractMatrix)
+    res = Vector{Float64}(undef, size(in_ps, 2))
+    for i in 1:size(in_ps, 2)
+        res[i] = _groundtruth_total_cross_section(view(in_ps, :, i))
+    end
+    return res
+end
+

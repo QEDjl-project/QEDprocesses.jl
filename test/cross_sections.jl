@@ -1,4 +1,5 @@
 using Random
+using Suppressor
 using QEDbase
 using QEDprocesses
 
@@ -14,8 +15,9 @@ include("utils/utils.jl")
     INCOMING_PARTICLES = rand(RNG, PARTICLE_SET, N_INCOMING)
     OUTGOING_PARTICLES = rand(RNG, PARTICLE_SET, N_OUTGOING)
 
-    QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
-    QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+    # overwrite interface, suppress warning
+    @suppress QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
+    @suppress QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
 
     # single ps points
     p_in_phys = _rand_momenta(RNG, N_INCOMING)
@@ -133,37 +135,24 @@ include("utils/utils.jl")
                 end
             end
         end
-        # @testset "total cross section" begin
-        #     @testset "compute vector" begin
-        #         totCS = total_cross_section(TestProcess(), TestModel(), p_in)
-        #         groundtruth = _groundtruth_totCS(p_in)
-        #         @test isapprox(totCS, groundtruth, atol=ATOL, rtol=RTOL)
-        #     end
-        #
-        #     @testset "compute matrix" begin
-        #         totCS = total_cross_section(TestProcess(), TestModel(), p_in_set)
-        #
-        #         groundtruth = Vector{QEDprocesses._base_component_type(p_in)}(
-        #             undef, size(p_in_set, 2)
-        #         )
-        #         for i in 1:size(p_in_set, 2)
-        #             groundtruth[i] = _groundtruth_totCS(view(p_in_set, :, i))
-        #         end
-        #         @test isapprox(totCS, groundtruth, atol=ATOL, rtol=RTOL)
-        #     end
-        #
-        #     @testset "fail vector" begin
-        #         @test_throws DimensionMismatch total_cross_section(
-        #             TestProcess(), TestModel(), _rand_momenta(RNG, N_INCOMING + 1)
-        #         )
-        #     end
-        #
-        #     @testset "fail matrix" begin
-        #         @test_throws DimensionMismatch total_cross_section(
-        #             TestProcess(), TestModel(), _rand_momenta(RNG, N_INCOMING + 1, 2)
-        #         )
-        #     end
-        # end
+        @testset "total cross section" begin
+            @testset "compute" begin
+                for P_IN in (p_in_phys, p_in_set_phys)
+                    groundtruth = _groundtruth_total_cross_section(P_IN)
+                    totCS_on_moms = total_cross_section(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+                    @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                end
+            end
+            @testset "invalid input" begin
+                for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
+                    @test_throws DimensionMismatch total_cross_section(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+                end
+            end
+        end
     end
 
     @testset "differential probability" begin
@@ -229,5 +218,27 @@ include("utils/utils.jl")
                 end
             end
         end
+
+        @testset "total probability" begin
+            @testset "compute" begin
+                for P_IN in (p_in_phys, p_in_set_phys)
+                    groundtruth = _groundtruth_total_probability(P_IN)
+                    totCS_on_moms = total_probability(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+
+                    @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                end
+            end
+            @testset "invalid input" begin
+                for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
+                    @test_throws DimensionMismatch total_probability(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+
+                end
+            end
+        end
+
     end
 end

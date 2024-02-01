@@ -1,4 +1,5 @@
 using Random
+using Suppressor
 using QEDbase
 using QEDprocesses
 
@@ -41,8 +42,8 @@ end
     IN_PS = _rand_momenta(RNG, N_INCOMING)
     OUT_PS = _rand_momenta(RNG, N_OUTGOING)
 
-    QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
-    QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+    @suppress QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
+    @suppress QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
 
     @testset "incoming/outgoing particles" begin
         @test incoming_particles(TestProcess()) == INCOMING_PARTICLES
