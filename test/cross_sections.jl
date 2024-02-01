@@ -235,10 +235,8 @@ include("utils/utils.jl")
                     @test_throws DimensionMismatch total_probability(
                         TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
                     )
-
                 end
             end
         end
-
     end
 end

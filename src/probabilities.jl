@@ -266,4 +266,3 @@ function total_probability(
 
     return _total_probability(proc, model, in_phase_space_def, in_phase_space)
 end
-
