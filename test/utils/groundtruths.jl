@@ -197,4 +197,3 @@ function _groundtruth_total_cross_section(in_ps::AbstractMatrix)
     end
     return res
 end
-
