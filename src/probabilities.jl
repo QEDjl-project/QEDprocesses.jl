@@ -389,6 +389,16 @@ function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+) where {T<:Real}
+    in_momenta = _generate_incoming_momenta(proc, model, in_phase_space_def, in_phase_space)
+    return _total_probability(proc, model, in_phase_space_def, in_momenta)
+end
+
+function _total_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(in_phase_space, 2))
