@@ -247,15 +247,10 @@ function _differential_probability(
         out_phase_space,
     )
     return _differential_probability(
-        proc,
-        model,
-        in_phase_space_def,
-        in_momenta,
-        out_phase_space_def,
-       out_momenta 
+        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
     )
 end
-    
+
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
