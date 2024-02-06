@@ -124,6 +124,18 @@ function unsafe_differential_cross_section(
     )
 end
 
+"""
+    unsafe_differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+
+TBW
+"""
 function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -138,7 +150,7 @@ function unsafe_differential_cross_section(
         ),
     )
 
-    size(out_phase_space, 1) == out_phase_space_dimension(proc,model) || throw(
+    size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
         DimensionMismatch(
             "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),
@@ -297,6 +309,18 @@ function differential_cross_section(
     )
 end
 
+"""
+    differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+
+TBW
+"""
 function differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -311,7 +335,7 @@ function differential_cross_section(
         ),
     )
 
-    size(out_phase_space, 1) == out_phase_space_dimension(proc,model) || throw(
+    size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
         DimensionMismatch(
             "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),

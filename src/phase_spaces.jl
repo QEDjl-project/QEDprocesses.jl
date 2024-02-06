@@ -22,7 +22,7 @@ struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfRefer
 end
 
 """
-    _generate_momenta(
+    _generate_incoming_momenta
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         in_phase_space_def::AbstractPhasespaceDefinition,
@@ -32,7 +32,7 @@ end
 function _generate_incoming_momenta end
 
 """
-    _generate_momenta(
+    _generate_outgoing_momenta
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         out_phase_space_def::AbstractPhasespaceDefinition,
@@ -40,7 +40,6 @@ function _generate_incoming_momenta end
     ) where {T<:Real}
 """
 function _generate_outgoing_momenta end
-
 
 # abstract type for generic phase spaces
 #
