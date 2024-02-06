@@ -176,6 +176,17 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         @test_throws DimensionMismatch unsafe_differential_cross_section(
                             TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                         )
+
+                        COORDS_IN = flat_components(P_IN)
+                        COORDS_OUT = flat_components(P_OUT)
+                        @test_throws DimensionMismatch unsafe_differential_cross_section(
+                            TestProcess(),
+                            TestModel(),
+                            TestPhasespaceDef(),
+                            COORDS_IN,
+                            TestPhasespaceDef(),
+                            COORDS_OUT,
+                        )
                     end
                 end
             end
@@ -454,7 +465,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         @testset "safe" begin
             @testset "compute" begin
                 for (P_IN, P_OUT) in p_combs_valid
-                    diffCS = differential_cross_section(
+                    diffCS_on_moms = differential_cross_section(
                         TestProcess(),
                         TestModel(),
                         TestPhasespaceDef(),
@@ -462,8 +473,19 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         TestPhasespaceDef(),
                         P_OUT,
                     )
+                    COORDS_IN = flat_components(P_IN)
+                    COORDS_OUT = flat_components(P_OUT)
+                    diffCS_on_coords = differential_cross_section(
+                        TestProcess(),
+                        TestModel(),
+                        TestPhasespaceDef(),
+                        COORDS_IN,
+                        TestPhasespaceDef(),
+                        COORDS_OUT,
+                    )
                     groundtruth = _groundtruth_safe_diffCS(TestProcess(), P_IN, P_OUT)
-                    @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(diffCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(diffCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
 
@@ -479,6 +501,17 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                             P_IN,
                             TestPhasespaceDef(),
                             P_OUT,
+                        )
+
+                        COORDS_IN = flat_components(P_IN)
+                        COORDS_OUT = flat_components(P_OUT)
+                        @test_throws DimensionMismatch differential_cross_section(
+                            TestProcess(),
+                            TestModel(),
+                            TestPhasespaceDef(),
+                            COORDS_IN,
+                            TestPhasespaceDef(),
+                            COORDS_OUT,
                         )
                     end
                 end
@@ -516,7 +549,14 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                     totCS_on_moms = total_cross_section(
                         TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                     )
+
+                    COORDS_IN = flat_components(P_IN)
+                    totCS_on_coords = total_cross_section(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), COORDS_IN
+                    )
+
                     @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
             @testset "invalid input" begin
@@ -591,33 +631,21 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                     @test_throws DimensionMismatch total_probability(
                         TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                     )
+
+                    COORDS_IN = flat_components(P_IN)
+                    @test_throws DimensionMismatch total_cross_section(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), COORDS_IN
+                    )
                 end
             end
         end
     end
 
     @testset "differential probability" begin
-        @testset "unsafe compute" begin
-            for (P_IN, P_OUT) in p_combs_phys
-                prob = unsafe_differential_probability(
-                    TestProcess(),
-                    TestModel(),
-                    TestPhasespaceDef(),
-                    P_IN,
-                    TestPhasespaceDef(),
-                    P_OUT,
-                )
-                groundtruth = _groundtruth_unsafe_probability(TestProcess(), P_IN, P_OUT)
-                @test isapprox(prob, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-        end
-
-        @testset "unsafe invalid input" begin
-            for (P_IN, P_OUT) in p_combs
-
-                # filter out all valid combinations
-                if !((P_IN, P_OUT) in p_combs_valid)
-                    @test_throws DimensionMismatch unsafe_differential_probability(
+        @testset "unsafe" begin
+            @testset "compute" begin
+                for (P_IN, P_OUT) in p_combs_phys
+                    prob_on_moms = unsafe_differential_probability(
                         TestProcess(),
                         TestModel(),
                         TestPhasespaceDef(),
@@ -625,30 +653,56 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         TestPhasespaceDef(),
                         P_OUT,
                     )
+                    COORDS_IN = flat_components(P_IN)
+                    COORDS_OUT = flat_components(P_OUT)
+                    prob_on_coords = unsafe_differential_probability(
+                        TestProcess(),
+                        TestModel(),
+                        TestPhasespaceDef(),
+                        COORDS_IN,
+                        TestPhasespaceDef(),
+                        COORDS_OUT,
+                    )
+                    groundtruth = _groundtruth_unsafe_probability(
+                        TestProcess(), P_IN, P_OUT
+                    )
+                    @test isapprox(prob_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(prob_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
+                end
+            end
+
+            @testset "invalid input" begin
+                for (P_IN, P_OUT) in p_combs
+
+                    # filter out all valid combinations
+                    if !((P_IN, P_OUT) in p_combs_valid)
+                        @test_throws DimensionMismatch unsafe_differential_probability(
+                            TestProcess(),
+                            TestModel(),
+                            TestPhasespaceDef(),
+                            P_IN,
+                            TestPhasespaceDef(),
+                            P_OUT,
+                        )
+
+                        COORDS_IN = flat_components(P_IN)
+                        COORDS_OUT = flat_components(P_OUT)
+                        @test_throws DimensionMismatch unsafe_differential_probability(
+                            TestProcess(),
+                            TestModel(),
+                            TestPhasespaceDef(),
+                            COORDS_IN,
+                            TestPhasespaceDef(),
+                            COORDS_OUT,
+                        )
+                    end
                 end
             end
         end
-        @testset "safe compute" begin
-            for (P_IN, P_OUT) in p_combs_valid
-                prob = differential_probability(
-                    TestProcess(),
-                    TestModel(),
-                    TestPhasespaceDef(),
-                    P_IN,
-                    TestPhasespaceDef(),
-                    P_OUT,
-                )
-                groundtruth = _groundtruth_safe_probability(TestProcess(), P_IN, P_OUT)
-                @test isapprox(prob, groundtruth, atol=ATOL, rtol=RTOL)
-            end
-        end
-
-        @testset "safe invalid input" begin
-            for (P_IN, P_OUT) in p_combs
-
-                # filter out all valid combinations
-                if !((P_IN, P_OUT) in p_combs_valid)
-                    @test_throws DimensionMismatch differential_probability(
+        @testset "safe" begin
+            @testset "compute" begin
+                for (P_IN, P_OUT) in p_combs_valid
+                    prob_on_moms = differential_probability(
                         TestProcess(),
                         TestModel(),
                         TestPhasespaceDef(),
@@ -656,10 +710,51 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         TestPhasespaceDef(),
                         P_OUT,
                     )
+
+                    COORDS_IN = flat_components(P_IN)
+                    COORDS_OUT = flat_components(P_OUT)
+                    prob_on_coords = differential_probability(
+                        TestProcess(),
+                        TestModel(),
+                        TestPhasespaceDef(),
+                        COORDS_IN,
+                        TestPhasespaceDef(),
+                        COORDS_OUT,
+                    )
+                    groundtruth = _groundtruth_safe_probability(TestProcess(), P_IN, P_OUT)
+                    @test isapprox(prob_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(prob_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
+                end
+            end
+
+            @testset "invalid input" begin
+                for (P_IN, P_OUT) in p_combs
+
+                    # filter out all valid combinations
+                    if !((P_IN, P_OUT) in p_combs_valid)
+                        @test_throws DimensionMismatch differential_probability(
+                            TestProcess(),
+                            TestModel(),
+                            TestPhasespaceDef(),
+                            P_IN,
+                            TestPhasespaceDef(),
+                            P_OUT,
+                        )
+
+                        COORDS_IN = flat_components(P_IN)
+                        COORDS_OUT = flat_components(P_OUT)
+                        @test_throws DimensionMismatch differential_probability(
+                            TestProcess(),
+                            TestModel(),
+                            TestPhasespaceDef(),
+                            COORDS_IN,
+                            TestPhasespaceDef(),
+                            COORDS_OUT,
+                        )
+                    end
                 end
             end
         end
-
         @testset "total probability" begin
             @testset "compute" begin
                 for P_IN in (p_in_phys, p_in_set_phys)
@@ -668,13 +763,24 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
                     )
 
+                    COORDS_IN = flat_components(P_IN)
+                    totCS_on_coords = total_probability(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), COORDS_IN
+                    )
+
                     @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
             @testset "invalid input" begin
                 for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
                     @test_throws DimensionMismatch total_probability(
                         TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                    )
+
+                    COORDS_IN = flat_components(P_IN)
+                    @test_throws DimensionMismatch total_probability(
+                        TestProcess(), TestModel(), TestPhasespaceDef(), COORDS_IN
                     )
                 end
             end

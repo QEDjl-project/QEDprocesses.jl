@@ -1,8 +1,10 @@
 #####################
 # phase spaces  
 #
-# This file contains a collection of types and functions to handle phase spaces
+# This file contains a colection of types and functions to handle phase spaces
 # for scattering processes.
+#
+# TODO: ship to interfaces!
 #####################
 
 abstract type AbstractCoordinateSystem end
@@ -20,16 +22,24 @@ struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfRefer
 end
 
 """
-_generate_momenta(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
-) where {T<:Real}
+    _generate_momenta(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVector{T},
+    ) where {T<:Real}
 """
-function _generate_momenta end
+function _generate_incoming_momenta end
+
+"""
+    _generate_momenta(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVector{T},
+    ) where {T<:Real}
+"""
+function _generate_outgoing_momenta end
 
 
 # abstract type for generic phase spaces

@@ -271,6 +271,36 @@ function differential_probability(
     )
 end
 
+function differential_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
+        DimensionMismatch(
+            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
+        ),
+    )
+
+    size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
+        DimensionMismatch(
+            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model ))> is inconsistent with input size <$(size(out_phase_space,1))>",
+        ),
+    )
+
+    return _differential_probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+end
+
 ###########
 # Total probability
 ###########
@@ -280,8 +310,18 @@ function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+) where {T<:Real}
+    in_momenta = _generate_incoming_momenta(proc, model, in_phase_space_def, in_phase_space)
+    return _total_probability(proc, model, in_phase_space_def, in_momenta)
+end
+
+function _total_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(in_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i] = _total_probability(
@@ -299,7 +339,7 @@ end
         in_phase_space::AbstractMatrix{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the total probability of a given model and process combination.
+Return the total probability of a given model and process combination, evaluated at the particle momenta.
 """
 function total_probability(
     proc::AbstractProcessDefinition,
@@ -310,6 +350,31 @@ function total_probability(
     size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
         DimensionMismatch(
             "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+        ),
+    )
+
+    return _total_probability(proc, model, in_phase_space_def, in_phase_space)
+end
+
+"""
+    total_probability(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractMatrix{T},
+    ) where {T<:Real}
+
+Return the total probability of a given model and process combination, evaluated at the coordinates.
+"""
+function total_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
+        DimensionMismatch(
+            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
         ),
     )
 

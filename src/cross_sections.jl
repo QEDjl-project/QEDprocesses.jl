@@ -134,13 +134,13 @@ function unsafe_differential_cross_section(
 ) where {T<:Real}
     size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
         DimensionMismatch(
-            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
         ),
     )
 
-    size(out_phase_space, 1) == out_phase_space_dimension(proc) || throw(
+    size(out_phase_space, 1) == out_phase_space_dimension(proc,model) || throw(
         DimensionMismatch(
-            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
+            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),
     )
 
@@ -307,13 +307,13 @@ function differential_cross_section(
 ) where {T<:Real}
     size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
         DimensionMismatch(
-            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
         ),
     )
 
-    size(out_phase_space, 1) == out_phase_space_dimension(proc) || throw(
+    size(out_phase_space, 1) == out_phase_space_dimension(proc,model) || throw(
         DimensionMismatch(
-            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
+            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),
     )
 
@@ -349,7 +349,7 @@ function _total_cross_section(
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(in_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i] = _total_cross_section(
@@ -367,7 +367,7 @@ end
         in_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the total cross section for a given combination of scattering process and compute model.
+Return the total cross section for a given combination of scattering process and compute model, evaluated at the particle momenta.
 """
 function total_cross_section(
     proc::AbstractProcessDefinition,
@@ -384,3 +384,27 @@ function total_cross_section(
     return _total_cross_section(proc, model, in_phase_space_def, in_phase_space)
 end
 
+"""
+    total_cross_section(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+    ) where {T<:Real}
+
+Return the total cross section for a given combination of scattering process and compute model, evaluated at the coordinates.
+"""
+function QEDprocesses.total_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
+        DimensionMismatch(
+            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
+        ),
+    )
+
+    return _total_cross_section(proc, model, in_phase_space_def, in_phase_space)
+end
