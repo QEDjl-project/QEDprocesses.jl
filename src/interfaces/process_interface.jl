@@ -239,4 +239,3 @@ check if the length of the passed initial phase spaces match number of incoming 
 
 """
 function _total_probability end
-
