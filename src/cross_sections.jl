@@ -1,14 +1,12 @@
 ########################
-# differential cross sections and probabilities.
+# differential and total cross sections.
 #
 # This file contains default implementations for differential and total cross
 # sections based on the scattering process interface
 ########################
 
 ############
-#
 # differential cross sections
-#
 ############
 
 # differential cross sections without energy momentum conservation check
