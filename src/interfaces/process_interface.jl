@@ -175,9 +175,9 @@ function _is_in_phasespace(
         proc,
         model,
         in_phase_space_def,
-        in_phase_space,
+        in_momenta,
         out_phase_space_def,
-        out_phase_space,
+        out_momenta,
     )
 end
 
@@ -323,7 +323,13 @@ end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         )
-TBW
+
+Return the number of degrees of freedom to determine the incoming phase space. 
+
+!!! note "Convention"
+
+    The current implementation only supports the case, where two of the incoming particles collide heads-on. 
+
 """
 function in_phase_space_dimension end
 
@@ -332,7 +338,8 @@ function in_phase_space_dimension end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         )
-TBW
+
+Return the number of degrees of freedom to determine the outgoing phase space. 
 """
 function out_phase_space_dimension end
 
