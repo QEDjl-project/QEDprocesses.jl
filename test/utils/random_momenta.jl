@@ -33,7 +33,7 @@ end
 
 """
 Return a collection of phase space points, where the first point is failing the phase space constraint, 
-i.e. the first entry of the vector is the null momentum, but the others pass. 
+i.e. the first entry of the matrix is the null momentum, but the others pass. 
 """
 function _rand_momenta_failed_mix(rng::AbstractRNG, N1, N2)
     moms = _rand_momenta(rng, N1, N2)

@@ -14,6 +14,7 @@ end
 function _groundtruth_averaging_norm(proc)
     return 1.0 / (number_incoming_particles(proc) + number_outgoing_particles(proc))
 end
+
 function _groundtruth_is_in_phasespace(in_ps, out_ps)
     if in_ps[1] == SFourMomentum(zeros(4))
         return false

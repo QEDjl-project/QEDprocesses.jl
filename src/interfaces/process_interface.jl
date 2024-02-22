@@ -17,7 +17,7 @@ outgoing_particles(proc_def::AbstractProcessDefinition)
 
 which return a tuple of the incoming and outgoing particles, respectively.
 
-Furthermore, to calculate scatteing probabilities and differential cross sections, the following 
+Furthermore, to calculate scattering probabilities and differential cross sections, the following 
 interface functions need to be implemented
 
 ```Julia
@@ -99,7 +99,7 @@ function outgoing_particles end
         in_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
-Interface function, which returns the incident flux of the given scatteing process for a given incoming phase-space.
+Interface function, which returns the incident flux of the given scattering process for a given incoming phase-space.
 
 """
 function _incident_flux end
@@ -170,7 +170,7 @@ Interface function, which returns the pre-differential factor of the invariant p
     ```math
     \\mathrm{d}\\Pi_n:= \\prod_{i=1}^N \\frac{\\mathrm{p}^3p_i}{(2\\pi)^3 2 p_i^0} H(P_t, p_1, \\dots, p_N),
     ```
-where ``H(\\dots)`` is the constraining of the phase space, e.g. ``\\delta^{(4)}(P_t - \\sum_i p_i)``.  
+where ``H(\\dots)`` is a characteristic function (or distribution) which constrains the phase space, e.g. ``\\delta^{(4)}(P_t - \\sum_i p_i)``.  
 """
 function _phase_space_factor end
 
@@ -209,9 +209,10 @@ end
     ) where {T<: QEDbase.AbstractFourMomentum}
 
 Interface function for the combination of scattering processes and physical models. Return the total of a 
-given process and model for a passed initial phase space definition and point. The elements of the `AbstractVector` representing the initial phase space
-are the momenta of the respective particles. The implementation of this function for a concrete process and model must not 
-check if the length of the passed initial phase spaces match number of incoming particles. 
+given process and model for a passed initial phase space definition and point. The elements of `in_ps`,
+which represent the initial phase space, are the momenta of the respective particles.
+The implementation of this function for a concrete process and model must not check if the length of 
+the passed initial phase spaces match the number of incoming particles. 
 
 !!! note "probability interface"
 

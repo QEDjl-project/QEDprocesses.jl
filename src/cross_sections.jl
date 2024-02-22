@@ -208,7 +208,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return differential cross section if the given phase spaces are physical and zero, otherwise.
+If the given phase spaces are physical, return differential cross section. Zero otherwise
 
 """
 function differential_cross_section(
