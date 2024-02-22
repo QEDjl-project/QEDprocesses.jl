@@ -1,5 +1,14 @@
 module QEDprocesses
 
+# constants
+export 
+    ALPHA,
+    ALPHA_SQUARE,
+    ELEMENTARY_CHARGE,
+    ELEMENTARY_CHARGE_SQUARE,
+    ELECTRONMASS,
+    ONE_OVER_FOURPI
+
 # Abstract model interface
 export AbstractModelDefinition, fundamental_interaction_type
 
@@ -37,13 +46,26 @@ export AbstractPhasespaceDefinition, PhasespaceDefinition
 
 using QEDbase
 
-include("utils.jl")
+###
+# Generic implementations
+###
+
+include("constants.jl")
 include("phase_spaces.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
+
+include("models/models.jl")
+
 include("momentum_generation.jl")
 include("propagators.jl")
 include("probabilities.jl")
 include("cross_sections.jl")
+
+include("processes/one_photon_compton/one_photon_compton.jl")
+
+include("utils.jl")
+
+include("patch_QEDbase.jl")
 end
