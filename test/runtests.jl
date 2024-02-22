@@ -21,4 +21,5 @@ begin
     @time @safetestset "cross section & probability" begin
         include("cross_sections.jl")
     end
+    include("processes/run_process_test.jl")
 end
