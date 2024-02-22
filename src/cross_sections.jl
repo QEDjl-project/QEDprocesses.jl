@@ -12,6 +12,7 @@
 ############
 
 # differential cross sections without energy momentum conservation check
+# single in phase space points/ single out phase space point
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -32,6 +33,8 @@ function _unsafe_differential_cross_section(
     )
 end
 
+# differential cross sections without energy momentum conservation check
+# single in phase space points/ several out phase space point(s)
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -54,6 +57,8 @@ function _unsafe_differential_cross_section(
     return res
 end
 
+# differential cross sections without energy momentum conservation check
+# several in phase space points/ one, or several, out phase space point
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -120,6 +125,7 @@ function unsafe_differential_cross_section(
 end
 
 # differential cross sections with energy momentum conservation check
+# single in phase space points/ single out phase space point
 function _differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -129,10 +135,6 @@ function _differential_cross_section(
     out_phase_space::AbstractVector{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
 
-    # consider wrapping the unchecked diffCS in a function
-    # if (!isapprox(sum(in_phase_space), sum(out_phase_space); rtol=sqrt(eps())))
-    #     return zero(eltype(T))
-    # end
     if !_is_in_phasespace(
         proc,
         model,
@@ -154,6 +156,8 @@ function _differential_cross_section(
     )
 end
 
+# differential cross sections with energy momentum conservation check
+# single in phase space points/ several out phase space point(s)
 function _differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -176,6 +180,8 @@ function _differential_cross_section(
     return res
 end
 
+# differential cross sections with energy momentum conservation check
+# several in phase space points/ one, or several, out phase space point
 function _differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -245,6 +251,7 @@ end
 # Total cross sections
 ############
 
+# total cross section on single phase space point
 function _total_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -256,6 +263,7 @@ function _total_cross_section(
     return I * _total_probability(proc, model, in_phase_space_def, in_phase_space)
 end
 
+# total cross section on several phase space points
 function _total_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,

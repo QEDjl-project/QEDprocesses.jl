@@ -6,6 +6,8 @@
 # constraint.
 ############
 
+# differential probability without energy momentum conservation check
+# single in phase space points/ single out phase space point
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -32,6 +34,8 @@ function _unsafe_differential_probability(
     return normalization * sum(matrix_elements_sq) * ps_fac
 end
 
+# differential probability without energy momentum conservation check
+# single in phase space points/ several out phase space point
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -54,6 +58,8 @@ function _unsafe_differential_probability(
     return res
 end
 
+# differential probability without energy momentum conservation check
+# several in phase space points/ one or several out phase space point
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -118,6 +124,8 @@ function unsafe_differential_probability(
     )
 end
 
+# differential probability with energy momentum conservation check
+# one in phase space points/ one out phase space point
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -147,6 +155,8 @@ function _differential_probability(
     )
 end
 
+# differential probability with energy momentum conservation check
+# one in phase space points/ several out phase space point
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -169,6 +179,8 @@ function _differential_probability(
     return res
 end
 
+# differential probability with energy momentum conservation check
+# several in phase space points/ one or several out phase space point
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -237,6 +249,7 @@ end
 # Total probability
 ###########
 
+# total probability on several phase space point
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
