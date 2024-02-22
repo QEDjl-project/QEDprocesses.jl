@@ -1,0 +1,7 @@
+
+const ALPHA = inv(137.035999074)
+const ALPHA_SQUARE = ALPHA^2
+const ELEMENTARY_CHARGE = sqrt(4 * pi * ALPHA)
+const ELEMENTARY_CHARGE_SQUARE = 4 * pi * ALPHA
+const ELECTRONMASS = 0.510998928e6 # eV
+const ONE_OVER_FOURPI = 1 / (4 * pi)
