@@ -19,6 +19,9 @@ function _groundtruth_is_in_phasespace(in_ps, out_ps)
     if in_ps[1] == SFourMomentum(zeros(4))
         return false
     end
+    if out_ps[end] == ones(SFourMomentum)
+        return false
+    end
     return true
 end
 

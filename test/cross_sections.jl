@@ -22,20 +22,28 @@ include("utils/utils.jl")
     # single ps points
     p_in_phys = _rand_momenta(RNG, N_INCOMING)
     p_in_phys_invalid = _rand_momenta(RNG, N_INCOMING + 1)
-    p_in_unphys = _rand_momenta_failed(RNG, N_INCOMING)
-    p_in_unphys_invalid = _rand_momenta_failed(RNG, N_INCOMING + 1)
+    p_in_unphys = _rand_in_momenta_failed(RNG, N_INCOMING)
+    p_in_unphys_invalid = _rand_in_momenta_failed(RNG, N_INCOMING + 1)
+
     p_out_phys = _rand_momenta(RNG, N_OUTGOING)
     p_out_phys_invalid = _rand_momenta(RNG, N_OUTGOING + 1)
+    p_out_unphys = _rand_out_momenta_failed(RNG, N_OUTGOING)
+    p_out_unphys_invalid = _rand_out_momenta_failed(RNG, N_OUTGOING + 1)
 
     # sets of ps points
     p_in_set_phys = _rand_momenta(RNG, N_INCOMING, 2)
-    p_in_set_unphys_mix = _rand_momenta_failed_mix(RNG, N_INCOMING, 2)
-    p_in_set_unphys_all = _rand_momenta_failed_all(RNG, N_INCOMING, 2)
+    p_in_set_unphys_mix = _rand_in_momenta_failed_mix(RNG, N_INCOMING, 2)
+    p_in_set_unphys_all = _rand_in_momenta_failed_all(RNG, N_INCOMING, 2)
     p_in_set_phys_invalid = _rand_momenta(RNG, N_INCOMING + 1, 2)
-    p_in_set_unphys_mix_invalid = _rand_momenta_failed_mix(RNG, N_INCOMING + 1, 2)
-    p_in_set_unphys_all_invalid = _rand_momenta_failed_all(RNG, N_INCOMING + 1, 2)
+    p_in_set_unphys_mix_invalid = _rand_in_momenta_failed_mix(RNG, N_INCOMING + 1, 2)
+    p_in_set_unphys_all_invalid = _rand_in_momenta_failed_all(RNG, N_INCOMING + 1, 2)
+
     p_out_set_phys = _rand_momenta(RNG, N_OUTGOING, 2)
+    p_out_set_unphys_mix = _rand_out_momenta_failed_mix(RNG, N_OUTGOING, 2)
+    p_out_set_unphys_all = _rand_out_momenta_failed_all(RNG, N_OUTGOING, 2)
     p_out_set_phys_invalid = _rand_momenta(RNG, N_OUTGOING + 1, 2)
+    p_out_set_unphys_mix_invalid = _rand_out_momenta_failed_mix(RNG, N_OUTGOING + 1, 2)
+    p_out_set_unphys_all_invalid = _rand_out_momenta_failed_all(RNG, N_OUTGOING + 1, 2)
 
     p_in_all = (
         p_in_phys,
@@ -50,7 +58,18 @@ include("utils/utils.jl")
         p_in_set_unphys_all_invalid,
     )
 
-    p_out_all = (p_out_phys, p_out_phys_invalid, p_out_set_phys, p_out_set_phys_invalid)
+    p_out_all = (
+        p_out_phys,
+        p_out_phys_invalid,
+        p_out_unphys,
+        p_out_unphys_invalid,
+        p_out_set_phys,
+        p_out_set_unphys_mix,
+        p_out_set_unphys_all,
+        p_out_set_phys_invalid,
+        p_out_set_unphys_mix_invalid,
+        p_out_set_unphys_all_invalid,
+    )
     # all combinations
     p_combs = Iterators.product(p_in_all, p_out_all)
 
@@ -58,10 +77,12 @@ include("utils/utils.jl")
         p_in_phys, p_in_unphys, p_in_set_phys, p_in_set_unphys_mix, p_in_set_unphys_all
     )
 
-    p_out_all_valid = (p_out_phys, p_out_set_phys)
+    p_out_all_valid = (
+        p_out_phys, p_out_unphys, p_out_set_phys, p_out_set_unphys_mix, p_out_set_unphys_all
+    )
 
     # all valid combinations
-    p_combs_valid = collect(Iterators.product(p_in_all_valid, p_out_all_valid))
+    p_combs_valid = Iterators.product(p_in_all_valid, p_out_all_valid)
 
     p_in_all_phys = (p_in_phys, p_in_set_phys)
     p_out_all_phys = (p_out_phys, p_out_set_phys)

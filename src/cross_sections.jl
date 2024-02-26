@@ -134,7 +134,6 @@ function _differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 )::Float64 where {T<:QEDbase.AbstractFourMomentum}
-
     if !_is_in_phasespace(
         proc,
         model,
