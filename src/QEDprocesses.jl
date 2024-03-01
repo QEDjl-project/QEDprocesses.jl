@@ -28,7 +28,6 @@ export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
 
-using DocStringExtensions
 using QEDbase
 
 include("utils.jl")
