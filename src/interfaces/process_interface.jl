@@ -24,14 +24,14 @@ interface functions need to be implemented
     _incident_flux(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
     _matrix_element(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
-        out_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
+        out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
     _averaging_norm(
@@ -42,18 +42,18 @@ interface functions need to be implemented
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
         out_ps_def::OutPhasespaceDefinition,
-        out_ps::AbstractVector{T}
+        out_phase_space::AbstractVector{T}
     )
 
     _phase_space_factor(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
         out_ps_def::OutPhasespaceDefinition,
-        out_ps::AbstractVector{T}
+        out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 ```
 
@@ -65,7 +65,7 @@ Optional is the implementation of
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
     ) where {T<: QEDbase.AbstractFourMomentum}
 
 ```
@@ -96,7 +96,7 @@ function outgoing_particles end
     _incident_flux(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
 Interface function, which returns the incident flux of the given scattering process for a given incoming phase-space.
@@ -108,8 +108,8 @@ function _incident_flux end
     _matrix_element(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
-        out_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
+        out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
 Interface function, which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
@@ -119,10 +119,10 @@ function _matrix_element end
 function _matrix_element_square(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_ps::AbstractVector{T},
-    out_ps::AbstractVector{T},
+    in_phase_space::AbstractVector{T},
+    out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    mat_el = _matrix_element(proc, model, in_ps, out_ps)
+    mat_el = _matrix_element(proc, model, in_phase_space, out_phase_space)
     return abs2.(mat_el)
 end
 
@@ -141,9 +141,9 @@ function _averaging_norm end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
         out_ps_def::OutPhasespaceDefinition,
-        out_ps::AbstractVector{T}
+        out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
 Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
@@ -156,9 +156,9 @@ function _is_in_phasespace end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
         out_ps_def::OutPhasespaceDefinition,
-        out_ps::AbstractVector{T}
+        out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
 Interface function, which returns the pre-differential factor of the invariant phase space intergral measure. 
@@ -205,11 +205,11 @@ end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
         in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
+        in_phase_space::AbstractVector{T}
     ) where {T<: QEDbase.AbstractFourMomentum}
 
 Interface function for the combination of a scattering process and a physical model. Return the total of a 
-given process and model for a passed initial phase space definition and point. The elements of `in_ps`,
+given process and model for a passed initial phase space definition and point. The elements of `in_phase_space`,
 which represent the initial phase space, are the momenta of the respective particles.
 The implementation of this function for a concrete process and model must not check if the length of 
 the passed initial phase spaces match the number of incoming particles. 
