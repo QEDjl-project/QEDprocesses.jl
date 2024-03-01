@@ -131,7 +131,7 @@ end
         proc::AbstractProcessDefinition
         )
 
-Interface function, which returns a normalization for the avering squared matrix elements over spins and polarizations. 
+Interface function, which returns a normalization for the averaging of the squared matrix elements over spins and polarizations. 
 """
 function _averaging_norm end
 
@@ -168,7 +168,7 @@ Interface function, which returns the pre-differential factor of the invariant p
     It is assumed, that this function returns the value of 
 
     ```math
-    \\mathrm{d}\\Pi_n:= \\prod_{i=1}^N \\frac{\\mathrm{p}^3p_i}{(2\\pi)^3 2 p_i^0} H(P_t, p_1, \\dots, p_N),
+    \\mathrm{d}\\Pi_n:= \\prod_{i=1}^N \\frac{\\mathrm{d}^3p_i}{(2\\pi)^3 2 p_i^0} H(P_t, p_1, \\dots, p_N),
     ```
 where ``H(\\dots)`` is a characteristic function (or distribution) which constrains the phase space, e.g. ``\\delta^{(4)}(P_t - \\sum_i p_i)``.  
 """
@@ -208,7 +208,7 @@ end
         in_ps::AbstractVector{T}
     ) where {T<: QEDbase.AbstractFourMomentum}
 
-Interface function for the combination of scattering processes and physical models. Return the total of a 
+Interface function for the combination of a scattering process and a physical model. Return the total of a 
 given process and model for a passed initial phase space definition and point. The elements of `in_ps`,
 which represent the initial phase space, are the momenta of the respective particles.
 The implementation of this function for a concrete process and model must not check if the length of 
