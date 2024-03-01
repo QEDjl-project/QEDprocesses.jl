@@ -216,7 +216,7 @@ the passed initial phase spaces match the number of incoming particles.
 
 !!! note "probability interface"
 
-    Given an implementation of this method, the following *unsafe* generic implementation is provided:
+    Given an implementation of this method, the following generic implementation without input check is provided:
 
     ```julia
 
@@ -224,7 +224,7 @@ the passed initial phase spaces match the number of incoming particles.
 
     ```
 
-    where `T<:QEDbase.AbstractFourMomentum`. Although, `_total_probability` is also implemented for a vector of initial phase space points.
+    where `T<:QEDbase.AbstractFourMomentum`, i.e. `_total_probability` is also implemented for a vector of initial phase space points.
     Furthermore, a safe version of `_total_probability` is also implemented: [`total_probability`](@ref).
 
 !!! note "total cross section"
