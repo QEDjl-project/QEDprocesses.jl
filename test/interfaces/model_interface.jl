@@ -1,14 +1,13 @@
 using QEDprocesses
 
-struct TestModel <: AbstractModelDefinition end
-fundamental_interaction_type(::TestModel) = :test_interaction
-
-struct TestModel_FAIL <: AbstractModelDefinition end
+include("../test_implementation/TestImplementation.jl")
 
 @testset "hard interface" begin
-    @test fundamental_interaction_type(TestModel()) == :test_interaction
+    TESTMODEL = TestImplementation.TestModel()
+    @test fundamental_interaction_type(TESTMODEL) == :test_interaction
 end
 
 @testset "interface fail" begin
-    @test_throws MethodError fundamental_interaction_type(TestModel_FAIL())
+    TESTMODEL_FAIL = TestImplementation.TestModel_FAIL()
+    @test_throws MethodError fundamental_interaction_type(TESTMODEL_FAIL)
 end

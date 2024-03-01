@@ -7,43 +7,59 @@ RNG = MersenneTwister(137137)
 ATOL = 0.0
 RTOL = sqrt(eps())
 
-include("utils/utils.jl")
+include("test_implementation/TestImplementation.jl")
+TESTMODEL = TestImplementation.TestModel()
+TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
 @testset "($N_INCOMING,$N_OUTGOING)" for (N_INCOMING, N_OUTGOING) in Iterators.product(
     (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
 )
-    INCOMING_PARTICLES = rand(RNG, PARTICLE_SET, N_INCOMING)
-    OUTGOING_PARTICLES = rand(RNG, PARTICLE_SET, N_OUTGOING)
+    INCOMING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING)
+    OUTGOING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING)
 
-    # overwrite interface, suppress warning
-    @suppress QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
-    @suppress QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+    # # overwrite interface, suppress warning
+    # @suppress QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
+    # @suppress QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+    #
+    TESTPROC = TestImplementation.TestProcess(INCOMING_PARTICLES, OUTGOING_PARTICLES)
 
     # single ps points
-    p_in_phys = _rand_momenta(RNG, N_INCOMING)
-    p_in_phys_invalid = _rand_momenta(RNG, N_INCOMING + 1)
-    p_in_unphys = _rand_in_momenta_failed(RNG, N_INCOMING)
-    p_in_unphys_invalid = _rand_in_momenta_failed(RNG, N_INCOMING + 1)
+    p_in_phys = TestImplementation._rand_momenta(RNG, N_INCOMING)
+    p_in_phys_invalid = TestImplementation._rand_momenta(RNG, N_INCOMING + 1)
+    p_in_unphys = TestImplementation._rand_in_momenta_failed(RNG, N_INCOMING)
+    p_in_unphys_invalid = TestImplementation._rand_in_momenta_failed(RNG, N_INCOMING + 1)
 
-    p_out_phys = _rand_momenta(RNG, N_OUTGOING)
-    p_out_phys_invalid = _rand_momenta(RNG, N_OUTGOING + 1)
-    p_out_unphys = _rand_out_momenta_failed(RNG, N_OUTGOING)
-    p_out_unphys_invalid = _rand_out_momenta_failed(RNG, N_OUTGOING + 1)
+    p_out_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING)
+    p_out_phys_invalid = TestImplementation._rand_momenta(RNG, N_OUTGOING + 1)
+    p_out_unphys = TestImplementation._rand_out_momenta_failed(RNG, N_OUTGOING)
+    p_out_unphys_invalid = TestImplementation._rand_out_momenta_failed(RNG, N_OUTGOING + 1)
 
     # sets of ps points
-    p_in_set_phys = _rand_momenta(RNG, N_INCOMING, 2)
-    p_in_set_unphys_mix = _rand_in_momenta_failed_mix(RNG, N_INCOMING, 2)
-    p_in_set_unphys_all = _rand_in_momenta_failed_all(RNG, N_INCOMING, 2)
-    p_in_set_phys_invalid = _rand_momenta(RNG, N_INCOMING + 1, 2)
-    p_in_set_unphys_mix_invalid = _rand_in_momenta_failed_mix(RNG, N_INCOMING + 1, 2)
-    p_in_set_unphys_all_invalid = _rand_in_momenta_failed_all(RNG, N_INCOMING + 1, 2)
+    p_in_set_phys = TestImplementation._rand_momenta(RNG, N_INCOMING, 2)
+    p_in_set_unphys_mix = TestImplementation._rand_in_momenta_failed_mix(RNG, N_INCOMING, 2)
+    p_in_set_unphys_all = TestImplementation._rand_in_momenta_failed_all(RNG, N_INCOMING, 2)
+    p_in_set_phys_invalid = TestImplementation._rand_momenta(RNG, N_INCOMING + 1, 2)
+    p_in_set_unphys_mix_invalid = TestImplementation._rand_in_momenta_failed_mix(
+        RNG, N_INCOMING + 1, 2
+    )
+    p_in_set_unphys_all_invalid = TestImplementation._rand_in_momenta_failed_all(
+        RNG, N_INCOMING + 1, 2
+    )
 
-    p_out_set_phys = _rand_momenta(RNG, N_OUTGOING, 2)
-    p_out_set_unphys_mix = _rand_out_momenta_failed_mix(RNG, N_OUTGOING, 2)
-    p_out_set_unphys_all = _rand_out_momenta_failed_all(RNG, N_OUTGOING, 2)
-    p_out_set_phys_invalid = _rand_momenta(RNG, N_OUTGOING + 1, 2)
-    p_out_set_unphys_mix_invalid = _rand_out_momenta_failed_mix(RNG, N_OUTGOING + 1, 2)
-    p_out_set_unphys_all_invalid = _rand_out_momenta_failed_all(RNG, N_OUTGOING + 1, 2)
+    p_out_set_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING, 2)
+    p_out_set_unphys_mix = TestImplementation._rand_out_momenta_failed_mix(
+        RNG, N_OUTGOING, 2
+    )
+    p_out_set_unphys_all = TestImplementation._rand_out_momenta_failed_all(
+        RNG, N_OUTGOING, 2
+    )
+    p_out_set_phys_invalid = TestImplementation._rand_momenta(RNG, N_OUTGOING + 1, 2)
+    p_out_set_unphys_mix_invalid = TestImplementation._rand_out_momenta_failed_mix(
+        RNG, N_OUTGOING + 1, 2
+    )
+    p_out_set_unphys_all_invalid = TestImplementation._rand_out_momenta_failed_all(
+        RNG, N_OUTGOING + 1, 2
+    )
 
     p_in_all = (
         p_in_phys,
@@ -94,14 +110,11 @@ include("utils/utils.jl")
             @testset "compute" begin
                 for (P_IN, P_OUT) in p_combs_phys
                     diffCS = unsafe_differential_cross_section(
-                        TestProcess(),
-                        TestModel(),
-                        TestPhasespaceDef(),
-                        P_IN,
-                        TestPhasespaceDef(),
-                        P_OUT,
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                     )
-                    groundtruth = _groundtruth_unsafe_diffCS(TestProcess(), P_IN, P_OUT)
+                    groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
+                        TESTPROC, P_IN, P_OUT
+                    )
                     @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
@@ -112,12 +125,7 @@ include("utils/utils.jl")
                     # filter out all valid combinations
                     if !((P_IN, P_OUT) in p_combs_valid)
                         @test_throws DimensionMismatch unsafe_differential_cross_section(
-                            TestProcess(),
-                            TestModel(),
-                            TestPhasespaceDef(),
-                            P_IN,
-                            TestPhasespaceDef(),
-                            P_OUT,
+                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                         )
                     end
                 end
@@ -127,14 +135,11 @@ include("utils/utils.jl")
             @testset "compute" begin
                 for (P_IN, P_OUT) in p_combs_valid
                     diffCS = differential_cross_section(
-                        TestProcess(),
-                        TestModel(),
-                        TestPhasespaceDef(),
-                        P_IN,
-                        TestPhasespaceDef(),
-                        P_OUT,
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                     )
-                    groundtruth = _groundtruth_safe_diffCS(TestProcess(), P_IN, P_OUT)
+                    groundtruth = TestImplementation._groundtruth_safe_diffCS(
+                        TESTPROC, P_IN, P_OUT
+                    )
                     @test isapprox(diffCS, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
@@ -145,12 +150,7 @@ include("utils/utils.jl")
                     # filter out all valid combinations
                     if !((P_IN, P_OUT) in p_combs_valid)
                         @test_throws DimensionMismatch differential_cross_section(
-                            TestProcess(),
-                            TestModel(),
-                            TestPhasespaceDef(),
-                            P_IN,
-                            TestPhasespaceDef(),
-                            P_OUT,
+                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                         )
                     end
                 end
@@ -159,9 +159,9 @@ include("utils/utils.jl")
         @testset "total cross section" begin
             @testset "compute" begin
                 for P_IN in (p_in_phys, p_in_set_phys)
-                    groundtruth = _groundtruth_total_cross_section(P_IN)
+                    groundtruth = TestImplementation._groundtruth_total_cross_section(P_IN)
                     totCS_on_moms = total_cross_section(
-                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                     )
                     @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -169,7 +169,7 @@ include("utils/utils.jl")
             @testset "invalid input" begin
                 for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
                     @test_throws DimensionMismatch total_cross_section(
-                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                     )
                 end
             end
@@ -180,14 +180,11 @@ include("utils/utils.jl")
         @testset "unsafe compute" begin
             for (P_IN, P_OUT) in p_combs_phys
                 prob = unsafe_differential_probability(
-                    TestProcess(),
-                    TestModel(),
-                    TestPhasespaceDef(),
-                    P_IN,
-                    TestPhasespaceDef(),
-                    P_OUT,
+                    TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                 )
-                groundtruth = _groundtruth_unsafe_probability(TestProcess(), P_IN, P_OUT)
+                groundtruth = TestImplementation._groundtruth_unsafe_probability(
+                    TESTPROC, P_IN, P_OUT
+                )
                 @test isapprox(prob, groundtruth, atol=ATOL, rtol=RTOL)
             end
         end
@@ -198,12 +195,7 @@ include("utils/utils.jl")
                 # filter out all valid combinations
                 if !((P_IN, P_OUT) in p_combs_valid)
                     @test_throws DimensionMismatch unsafe_differential_probability(
-                        TestProcess(),
-                        TestModel(),
-                        TestPhasespaceDef(),
-                        P_IN,
-                        TestPhasespaceDef(),
-                        P_OUT,
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                     )
                 end
             end
@@ -211,14 +203,11 @@ include("utils/utils.jl")
         @testset "safe compute" begin
             for (P_IN, P_OUT) in p_combs_valid
                 prob = differential_probability(
-                    TestProcess(),
-                    TestModel(),
-                    TestPhasespaceDef(),
-                    P_IN,
-                    TestPhasespaceDef(),
-                    P_OUT,
+                    TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                 )
-                groundtruth = _groundtruth_safe_probability(TestProcess(), P_IN, P_OUT)
+                groundtruth = TestImplementation._groundtruth_safe_probability(
+                    TESTPROC, P_IN, P_OUT
+                )
                 @test isapprox(prob, groundtruth, atol=ATOL, rtol=RTOL)
             end
         end
@@ -229,12 +218,7 @@ include("utils/utils.jl")
                 # filter out all valid combinations
                 if !((P_IN, P_OUT) in p_combs_valid)
                     @test_throws DimensionMismatch differential_probability(
-                        TestProcess(),
-                        TestModel(),
-                        TestPhasespaceDef(),
-                        P_IN,
-                        TestPhasespaceDef(),
-                        P_OUT,
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
                     )
                 end
             end
@@ -243,10 +227,8 @@ include("utils/utils.jl")
         @testset "total probability" begin
             @testset "compute" begin
                 for P_IN in (p_in_phys, p_in_set_phys)
-                    groundtruth = _groundtruth_total_probability(P_IN)
-                    totCS_on_moms = total_probability(
-                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
-                    )
+                    groundtruth = TestImplementation._groundtruth_total_probability(P_IN)
+                    totCS_on_moms = total_probability(TESTPROC, TESTMODEL, TESTPSDEF, P_IN)
 
                     @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -254,7 +236,7 @@ include("utils/utils.jl")
             @testset "invalid input" begin
                 for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
                     @test_throws DimensionMismatch total_probability(
-                        TestProcess(), TestModel(), TestPhasespaceDef(), P_IN
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                     )
                 end
             end

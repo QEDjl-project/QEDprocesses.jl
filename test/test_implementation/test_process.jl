@@ -5,15 +5,37 @@ struct TestParticle2 <: AbstractParticle end
 struct TestParticle3 <: AbstractParticle end
 struct TestParticle4 <: AbstractParticle end
 
-PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
+const PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
 
-# dummy process + failing process
-struct TestProcess <: AbstractProcessDefinition end
-struct TestProcess_FAIL <: AbstractProcessDefinition end
+"""
 
-# dummy model + failing model
-struct TestModel <: AbstractModelDefinition end
-struct TestModel_FAIL <: AbstractModelDefinition end
+    TestProcess(rng,incoming_particles,outgoing_particles)
+
+"""
+struct TestProcess{IP<:AbstractVector,OP<:AbstractVector} <: AbstractProcessDefinition
+    incoming_particles::IP
+    outgoing_particles::OP
+end
+
+function TestProcess(rng::AbstractRNG, N_in::Int, N_out::Int)
+    in_particles = rand(rng, PARTICLE_SET, N_in)
+    out_particles = rand(rng, PARTICLE_SET, N_out)
+    return TestProcess(in_particles, out_particles)
+end
+
+QEDprocesses.incoming_particles(proc::TestProcess) = proc.incoming_particles
+QEDprocesses.outgoing_particles(proc::TestProcess) = proc.outgoing_particles
+
+struct TestProcess_FAIL{IP<:AbstractVector,OP<:AbstractVector} <: AbstractProcessDefinition
+    incoming_particles::IP
+    outgoing_particles::OP
+end
+
+function TestProcess_FAIL(rng::AbstractRNG, N_in::Int, N_out::Int)
+    in_particles = rand(rng, PARTICLE_SET, N_in)
+    out_particles = rand(rng, PARTICLE_SET, N_out)
+    return TestProcess_FAIL(in_particles, out_particles)
+end
 
 # dummy phase space definition + failing phase space definition
 struct TestPhasespaceDef <: AbstractPhasespaceDefinition end
