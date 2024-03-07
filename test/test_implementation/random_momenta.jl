@@ -9,6 +9,7 @@ function _rand_momenta(rng::AbstractRNG, N)
     end
     return moms
 end
+
 """
 Return a matrix of random four momenta, i.e. a collection of phase space points
 """
@@ -26,7 +27,7 @@ end
 Return a random phase space point, which is failing the incoming phase space constraint, 
 i.e. the first entry of the vector is the null momentum.
 """
-function _rand_in_momenta_failed(rng::AbstractRNG, N)
+function _rand_in_momenta_failing(rng::AbstractRNG, N)
     moms = _rand_momenta(rng, N)
     moms[1] = zero(SFourMomentum)
     return moms
@@ -36,7 +37,7 @@ end
 Return a random phase space point, which is failing the outgoing phase space constraint, 
 i.e. the last entry of the vector is the unit momentum.
 """
-function _rand_out_momenta_failed(rng::AbstractRNG, N)
+function _rand_out_momenta_failing(rng::AbstractRNG, N)
     moms = _rand_momenta(rng, N)
     moms[end] = ones(SFourMomentum)
     return moms
@@ -46,7 +47,7 @@ end
 Return a collection of incoming phase space points, where the first point is failing the phase space constraint, 
 i.e. the first entry of the matrix is the null momentum, but the others pass. 
 """
-function _rand_in_momenta_failed_mix(rng::AbstractRNG, N1, N2)
+function _rand_in_momenta_failing_mix(rng::AbstractRNG, N1, N2)
     moms = _rand_momenta(rng, N1, N2)
     moms[1, 1] = zero(SFourMomentum)
     return moms
@@ -56,7 +57,7 @@ end
 Return a collection of incoming phase space points, where all points are failing the phase space constraint, 
 i.e. their first entries are null momenta.
 """
-function _rand_in_momenta_failed_all(rng::AbstractRNG, N1, N2)
+function _rand_in_momenta_failing_all(rng::AbstractRNG, N1, N2)
     moms = _rand_momenta(rng, N1, N2)
     for n in 1:N2
         moms[1, n] = zero(SFourMomentum)
@@ -68,7 +69,7 @@ end
 Return a collection of outgoing phase space points, where the first point is failing the phase space constraint, 
 i.e. the last entry of the matrix is the unit momentum, but the others pass. 
 """
-function _rand_out_momenta_failed_mix(rng::AbstractRNG, N1, N2)
+function _rand_out_momenta_failing_mix(rng::AbstractRNG, N1, N2)
     moms = _rand_momenta(rng, N1, N2)
     moms[end, 1] = ones(SFourMomentum)
     return moms
@@ -78,7 +79,7 @@ end
 Return a collection of outgoing phase space points, where all points are failing the phase space constraint, 
 i.e. their last entries are unit momenta.
 """
-function _rand_out_momenta_failed_all(rng::AbstractRNG, N1, N2)
+function _rand_out_momenta_failing_all(rng::AbstractRNG, N1, N2)
     moms = _rand_momenta(rng, N1, N2)
     for n in 1:N2
         moms[end, n] = ones(SFourMomentum)

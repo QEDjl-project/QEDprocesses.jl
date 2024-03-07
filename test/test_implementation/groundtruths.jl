@@ -40,7 +40,7 @@ end
 """
     _groundtruth_is_in_phasespace(in_ps, out_ps)
 
-Test implementation of the phase space check. Return `false`` if either the momentum of the first incoming particle is exactly `zero(SFourMomentum)`, or if the momentum of the last outgoing momentum is exactly `ones(SFourMomentum)`. Otherwise, return true.
+Test implementation of the phase space check. Return `false` if either the momentum of the first incoming particle is exactly `zero(SFourMomentum)`, or if the momentum of the last outgoing momentum is exactly `ones(SFourMomentum)`. Otherwise, return true.
 """
 function _groundtruth_is_in_phasespace(in_ps, out_ps)
     if in_ps[1] == SFourMomentum(zeros(4))

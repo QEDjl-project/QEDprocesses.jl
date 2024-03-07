@@ -17,47 +17,47 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     INCOMING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING)
     OUTGOING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING)
 
-    # # overwrite interface, suppress warning
-    # @suppress QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
-    # @suppress QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
-    #
     TESTPROC = TestImplementation.TestProcess(INCOMING_PARTICLES, OUTGOING_PARTICLES)
 
     # single ps points
     p_in_phys = TestImplementation._rand_momenta(RNG, N_INCOMING)
     p_in_phys_invalid = TestImplementation._rand_momenta(RNG, N_INCOMING + 1)
-    p_in_unphys = TestImplementation._rand_in_momenta_failed(RNG, N_INCOMING)
-    p_in_unphys_invalid = TestImplementation._rand_in_momenta_failed(RNG, N_INCOMING + 1)
+    p_in_unphys = TestImplementation._rand_in_momenta_failing(RNG, N_INCOMING)
+    p_in_unphys_invalid = TestImplementation._rand_in_momenta_failing(RNG, N_INCOMING + 1)
 
     p_out_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING)
     p_out_phys_invalid = TestImplementation._rand_momenta(RNG, N_OUTGOING + 1)
-    p_out_unphys = TestImplementation._rand_out_momenta_failed(RNG, N_OUTGOING)
-    p_out_unphys_invalid = TestImplementation._rand_out_momenta_failed(RNG, N_OUTGOING + 1)
+    p_out_unphys = TestImplementation._rand_out_momenta_failing(RNG, N_OUTGOING)
+    p_out_unphys_invalid = TestImplementation._rand_out_momenta_failing(RNG, N_OUTGOING + 1)
 
     # sets of ps points
     p_in_set_phys = TestImplementation._rand_momenta(RNG, N_INCOMING, 2)
-    p_in_set_unphys_mix = TestImplementation._rand_in_momenta_failed_mix(RNG, N_INCOMING, 2)
-    p_in_set_unphys_all = TestImplementation._rand_in_momenta_failed_all(RNG, N_INCOMING, 2)
+    p_in_set_unphys_mix = TestImplementation._rand_in_momenta_failing_mix(
+        RNG, N_INCOMING, 2
+    )
+    p_in_set_unphys_all = TestImplementation._rand_in_momenta_failing_all(
+        RNG, N_INCOMING, 2
+    )
     p_in_set_phys_invalid = TestImplementation._rand_momenta(RNG, N_INCOMING + 1, 2)
-    p_in_set_unphys_mix_invalid = TestImplementation._rand_in_momenta_failed_mix(
+    p_in_set_unphys_mix_invalid = TestImplementation._rand_in_momenta_failing_mix(
         RNG, N_INCOMING + 1, 2
     )
-    p_in_set_unphys_all_invalid = TestImplementation._rand_in_momenta_failed_all(
+    p_in_set_unphys_all_invalid = TestImplementation._rand_in_momenta_failing_all(
         RNG, N_INCOMING + 1, 2
     )
 
     p_out_set_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING, 2)
-    p_out_set_unphys_mix = TestImplementation._rand_out_momenta_failed_mix(
+    p_out_set_unphys_mix = TestImplementation._rand_out_momenta_failing_mix(
         RNG, N_OUTGOING, 2
     )
-    p_out_set_unphys_all = TestImplementation._rand_out_momenta_failed_all(
+    p_out_set_unphys_all = TestImplementation._rand_out_momenta_failing_all(
         RNG, N_OUTGOING, 2
     )
     p_out_set_phys_invalid = TestImplementation._rand_momenta(RNG, N_OUTGOING + 1, 2)
-    p_out_set_unphys_mix_invalid = TestImplementation._rand_out_momenta_failed_mix(
+    p_out_set_unphys_mix_invalid = TestImplementation._rand_out_momenta_failing_mix(
         RNG, N_OUTGOING + 1, 2
     )
-    p_out_set_unphys_all_invalid = TestImplementation._rand_out_momenta_failed_all(
+    p_out_set_unphys_all_invalid = TestImplementation._rand_out_momenta_failing_all(
         RNG, N_OUTGOING + 1, 2
     )
 

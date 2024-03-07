@@ -38,6 +38,7 @@ include("../test_implementation/TestImplementation.jl")
             out_ps = TestImplementation._rand_momenta(RNG, 2)
             if TestImplementation._any_fail(PROC, MODEL)
                 @test_throws MethodError QEDprocesses._incident_flux(PROC, MODEL, in_ps)
+                @test_throws MethodError QEDprocesses._averaging_norm(PROC, MODEL)
                 @test_throws MethodError QEDprocesses._matrix_element(
                     PROC, MODEL, in_ps, out_ps
                 )
@@ -93,6 +94,16 @@ include("../test_implementation/TestImplementation.jl")
 
         @test !QEDprocesses._is_in_phasespace(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, TESTPSDEF, OUT_PS
+        )
+
+        OUT_PS_unphysical = deepcopy(OUT_PS)
+        OUT_PS_unphysical[end] = ones(SFourMomentum)
+
+        @test !QEDprocesses._is_in_phasespace(
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, TESTPSDEF, OUT_PS_unphysical
+        )
+        @test !QEDprocesses._is_in_phasespace(
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, TESTPSDEF, OUT_PS_unphysical
         )
     end
 
