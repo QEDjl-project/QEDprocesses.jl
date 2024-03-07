@@ -1,5 +1,6 @@
 
 using Random
+using Suppressor
 using QEDbase
 using QEDprocesses
 
@@ -177,8 +178,8 @@ struct TestProcessSetupFAIL <: AbstractProcessSetup end
         INCOMING_PARTICLES = rand(RNG, PARTICLE_SET, N_INCOMING)
         OUTGOING_PARTICLES = rand(RNG, PARTICLE_SET, N_OUTGOING)
 
-        QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
-        QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
+        @suppress QEDprocesses.incoming_particles(::TestProcess) = INCOMING_PARTICLES
+        @suppress QEDprocesses.outgoing_particles(::TestProcess) = OUTGOING_PARTICLES
 
         @testset "delegated functions" begin
             stp = TestProcessSetup()

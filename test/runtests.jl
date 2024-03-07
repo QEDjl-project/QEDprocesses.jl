@@ -3,7 +3,7 @@ using Test
 using SafeTestsets
 
 begin
-    # Interfaces
+    # # Interfaces
     @time @safetestset "model interface" begin
         include("interfaces/model_interface.jl")
     end
@@ -17,5 +17,8 @@ begin
     # modules
     @time @safetestset "propagators" begin
         include("propagators.jl")
+    end
+    @time @safetestset "cross section & probability" begin
+        include("cross_sections.jl")
     end
 end
