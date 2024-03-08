@@ -152,22 +152,6 @@ is physical, i.e. all momenta are on-shell and some sort of energy-momentum cons
 function _is_in_phasespace end
 
 """
-
-    _is_in_phasespace(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
-        in_phase_space::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
-        out_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
-
-Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
-is physical, i.e. all momenta are on-shell and some sort of energy-momentum conservation holds.
-"""
-function _is_in_phasespace end
-
-"""
     _phase_space_factor(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
@@ -215,6 +199,24 @@ Return the number of outgoing particles of a given process.
 @inline function number_outgoing_particles(proc_def::AbstractProcessDefinition)
     return length(outgoing_particles(proc_def))
 end
+
+"""
+    in_phase_space_dimension(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        )
+TBW
+"""
+function in_phase_space_dimension end
+
+"""
+    out_phase_space_dimension(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        )
+TBW
+"""
+function out_phase_space_dimension end
 
 """
     _total_probability(

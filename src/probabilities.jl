@@ -8,6 +8,7 @@
 
 # differential probability without energy momentum conservation check
 # single in phase space points/ single out phase space point
+# based on four-momenta
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -32,6 +33,29 @@ function _unsafe_differential_probability(
     )
 
     return normalization * sum(matrix_elements_sq) * ps_fac
+end
+
+# differential probability without energy momentum conservation check
+# based on coordinates
+function _unsafe_differential_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVector{T},
+) where {T<:Real}
+    in_momenta, out_momenta = _generate_momenta(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+    return _unsafe_differential_probability(
+        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
+    )
 end
 
 # differential probability without energy momentum conservation check
@@ -124,8 +148,51 @@ function unsafe_differential_probability(
     )
 end
 
+"""
+    unsafe_differential_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+
+TBW
+"""
+function unsafe_differential_probability(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
+        DimensionMismatch(
+            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
+        ),
+    )
+
+    size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
+        DimensionMismatch(
+            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
+        ),
+    )
+
+    return _unsafe_differential_probability(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+end
+
 # differential probability with energy momentum conservation check
 # one in phase space points/ one out phase space point
+# based on four-momenta
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -133,7 +200,7 @@ function _differential_probability(
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
-) where {T<:AbstractPhasespaceElement}
+) where {T<:QEDbase.AbstractFourMomentum}
     if !_is_in_phasespace(
         proc,
         model,
@@ -156,7 +223,8 @@ function _differential_probability(
 end
 
 # differential probability with energy momentum conservation check
-# one in phase space points/ several out phase space point
+# one in phase space points/ one out phase space point
+# based on coordinates
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -178,6 +246,8 @@ function _differential_probability(
     )
 end
 
+# differential probability with energy momentum conservation check
+# one in phase space points/ several out phase space point
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -312,7 +382,8 @@ end
 # Total probability
 ###########
 
-# total probability on several phase space point
+# total probability on a phase space point
+# based on coorinates
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -323,6 +394,7 @@ function _total_probability(
     return _total_probability(proc, model, in_phase_space_def, in_momenta)
 end
 
+# total probability on several phase space points
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
