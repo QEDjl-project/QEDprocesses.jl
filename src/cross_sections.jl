@@ -115,7 +115,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the differential cross section without checking if the given phase space(s) are physical.
+Return the differential cross section evaluated at the four-momenta without checking if the given phase space(s) are physical.
 """
 function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -157,7 +157,7 @@ end
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
 
-TBW
+Return the differential cross section evaluated at the coordinates without checking if the given phase space(s) are physical.
 """
 function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -299,7 +299,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-If the given phase spaces are physical, return differential cross section. Zero otherwise
+If the given phase spaces are physical, return differential cross section evaluated at the four-momenta. Zero otherwise.
 
 """
 function differential_cross_section(
@@ -342,7 +342,7 @@ end
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
 
-TBW
+If the given phase spaces are physical, return differential cross section evaluated at the coordinates. Zero otherwise.
 """
 function differential_cross_section(
     proc::AbstractProcessDefinition,

@@ -116,7 +116,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return differential probability without checking if the given phase space(s) are physical.
+Return differential probability evaluated at the four-momenta without checking if the given phase space(s) are physical.
 """
 function unsafe_differential_probability(
     proc::AbstractProcessDefinition,
@@ -150,15 +150,15 @@ end
 
 """
     unsafe_differential_probability(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVecOrMat{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
-    out_phase_space::AbstractVecOrMat{T},
-) where {T<:Real}
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+        out_phase_space_def::AbstractPhasespaceDefinition,
+        out_phase_space::AbstractVecOrMat{T},
+    ) where {T<:Real}
 
-TBW
+Return differential probability evaluated at the coordinates without checking if the given phase space(s) are physical.
 """
 function unsafe_differential_probability(
     proc::AbstractProcessDefinition,
@@ -304,7 +304,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the differential cross section if the given phase spaces are physical, and zero otherwise. 
+If the given phase spaces are physical, return differential probability evaluated at the four-momenta. Zero otherwise.
 """
 function differential_probability(
     proc::AbstractProcessDefinition,
@@ -346,7 +346,7 @@ end
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
 
-TBW
+If the given phase spaces are physical, return differential probability evaluated at the coordinates. Zero otherwise.
 """
 function differential_probability(
     proc::AbstractProcessDefinition,
@@ -383,7 +383,7 @@ end
 ###########
 
 # total probability on a phase space point
-# based on coorinates
+# based on coordinates
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,

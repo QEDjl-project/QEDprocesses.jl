@@ -15,31 +15,18 @@ struct CenterOfMomentumFrame <: AbstractFrameOfReference end
 struct ElectronRestFrame <: AbstractFrameOfReference end
 
 abstract type AbstractPhasespaceDefinition end
+
+"""
+
+    PhasespaceDefinition(coord_sys::AbstractCoordinateSystem, frame::AbstractFrameOfReference)
+
+Convenient type to dispatch on coordiante systems and frames of reference.
+"""
 struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfReference} <:
        AbstractPhasespaceDefinition
     coord_sys::CS
     frame::F
 end
-
-"""
-    _generate_incoming_momenta
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition,
-        in_phase_space_def::AbstractPhasespaceDefinition,
-        in_phase_space::AbstractVector{T},
-    ) where {T<:Real}
-"""
-function _generate_incoming_momenta end
-
-"""
-    _generate_outgoing_momenta
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition,
-        out_phase_space_def::AbstractPhasespaceDefinition,
-        out_phase_space::AbstractVector{T},
-    ) where {T<:Real}
-"""
-function _generate_outgoing_momenta end
 
 # abstract type for generic phase spaces
 #

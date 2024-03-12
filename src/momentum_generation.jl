@@ -1,13 +1,45 @@
+#####
+# Generation of four-momenta from coordinates
+#
+# This file contains the interface and functionality to compute momenta from
+# given coordinates.
+#####
 
 """
-    _generate_momenta(
+    _generate_incoming_momenta
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         in_phase_space_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVector{T},
+    ) where {T<:Real}
+
+Interface function to generate the four-momenta of the incoming particles from coordinates for a given phase-space definition.
+"""
+function _generate_incoming_momenta end
+
+"""
+    _generate_outgoing_momenta
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
         out_phase_space_def::AbstractPhasespaceDefinition,
         out_phase_space::AbstractVector{T},
     ) where {T<:Real}
+
+Interface function to generate the four-momenta of the outgoing particles from coordinates for a given phase-space definition.
+"""
+function _generate_outgoing_momenta end
+
+"""
+    _generate_momenta(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVector{T},
+) where {T<:Real}
+
+Return four-momenta for incoming and outgoing particles for given coordinate based phase-space points. 
 """
 function _generate_momenta(
     proc::AbstractProcessDefinition,
