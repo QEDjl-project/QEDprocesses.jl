@@ -191,7 +191,7 @@ function unsafe_differential_probability(
 end
 
 # differential probability with energy momentum conservation check
-# one in phase space points/ one out phase space point
+# one in phase space point/ one out phase space point
 # based on four-momenta
 function _differential_probability(
     proc::AbstractProcessDefinition,
@@ -223,7 +223,7 @@ function _differential_probability(
 end
 
 # differential probability with energy momentum conservation check
-# one in phase space points/ one out phase space point
+# one in phase space point/ one out phase space point
 # based on coordinates
 function _differential_probability(
     proc::AbstractProcessDefinition,
