@@ -20,7 +20,7 @@ end
 flat_components(moms) = _unroll_moms(moms)
 
 # collect components of four-momenta from a vector of coordinates
-function _furl_moms(ps_coords::AbstractVector{T}) where {T<:Real}
+function __furl_moms(ps_coords::AbstractVector{T}) where {T<:Real}
     return SFourMomentum.(eachcol(reshape(ps_coords, 4, :)))
 end
 
