@@ -182,7 +182,7 @@ function _differential_probability(
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
-) where {T<:AbstractPhasespaceElement}
+) where {T<:QEDbase.AbstractFourMomentum}
     if !_is_in_phasespace(
         proc,
         model,
@@ -230,27 +230,6 @@ end
 
 # differential probability with energy momentum conservation check
 # one in phase space points/ several out phase space point
-function _differential_probability(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
-) where {T<:Real}
-    in_momenta, out_momenta = _generate_momenta(
-        proc,
-        model,
-        in_phase_space_def,
-        in_phase_space,
-        out_phase_space_def,
-        out_phase_space,
-    )
-    return _differential_probability(
-        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
-    )
-end
-
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -380,16 +359,6 @@ function _total_probability(
 end
 
 # total probability on several phase space points
-function _total_probability(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-) where {T<:Real}
-    in_momenta = _generate_incoming_momenta(proc, model, in_phase_space_def, in_phase_space)
-    return _total_probability(proc, model, in_phase_space_def, in_momenta)
-end
-
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,

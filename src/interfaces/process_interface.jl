@@ -96,124 +96,6 @@ function outgoing_particles end
     _incident_flux(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
-
-Interface function, which returns the incident flux of the given scatteing process for a given incoming phase-space.
-
-"""
-function _incident_flux end
-
-"""
-    _matrix_element(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_ps::AbstractVector{T}
-        out_ps::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
-
-Interface function, which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
-"""
-function _matrix_element end
-
-function _matrix_element_square(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_ps::AbstractVector{T},
-    out_ps::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    mat_el = _matrix_element(proc, model, in_ps, out_ps)
-    return abs2.(mat_el)
-end
-
-"""
-    _averaging_norm(
-        proc::AbstractProcessDefinition
-        )
-
-Interface function, which returns a normalization for the avering squared matrix elements over spins and polarizations. 
-"""
-function _averaging_norm end
-
-"""
-
-    _is_in_phasespace(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
-        out_ps::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
-
-Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
-is physical, i.e. all momenta are on-shell and some sort of energy-momentum conservation holds.
-"""
-function _is_in_phasespace end
-
-"""
-
-Fallback for cooridinate-based phasespace check. This function should be implemented for special cases if available.
-"""
-function _is_in_phasespace(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
-) where {T<:Real}
-    in_momenta, out_momenta = _generate_momenta(
-        proc,
-        model,
-        in_phase_space_def,
-        in_phase_space,
-        out_phase_space_def,
-        out_phase_space,
-    )
-    return _is_in_phasespace(
-        proc,
-        model,
-        in_phase_space_def,
-        in_momenta,
-        out_phase_space_def,
-        out_momenta,
-    )
-end
-
-"""
-    _phase_space_factor(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
-        in_ps::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
-        out_ps::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
-
-Interface function, which returns the pre-differential factor of the invariant phase space intergral measure. 
-
-!!! note "Convention"
-
-    It is assumed, that this function returns the value of 
-
-    ```math
-    \\mathrm{d}\\Pi_n:= \\prod_{i=1}^N \\frac{\\mathrm{p}^3p_i}{(2\\pi)^3 2 p_i^0} H(P_t, p_1, \\dots, p_N),
-    ```
-where ``H(\\dots)`` is the constraining of the phase space, e.g. ``\\delta^{(4)}(P_t - \\sum_i p_i)``.  
-"""
-function _phase_space_factor end
-
-#######################
-#
-# utility functions
-#
-#######################
-
-"""
-    _incident_flux(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
         in_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
@@ -323,13 +205,7 @@ end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         )
-
-Return the number of degrees of freedom to determine the incoming phase space. 
-
-!!! note "Convention"
-
-    The current implementation only supports the case, where two of the incoming particles collide heads-on. 
-
+TBW
 """
 function in_phase_space_dimension end
 
@@ -338,8 +214,7 @@ function in_phase_space_dimension end
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
         )
-
-Return the number of degrees of freedom to determine the outgoing phase space. 
+TBW
 """
 function out_phase_space_dimension end
 

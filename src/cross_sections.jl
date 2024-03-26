@@ -231,27 +231,6 @@ function _differential_cross_section(
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
-)::Float64 where {T<:Real}
-    in_momenta, out_momenta = _generate_momenta(
-        proc,
-        model,
-        in_phase_space_def,
-        in_phase_space,
-        out_phase_space_def,
-        out_phase_space,
-    )
-    return _differential_cross_section(
-        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
-    )
-end
-
-function _differential_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
