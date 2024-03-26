@@ -1,13 +1,8 @@
 module QEDprocesses
 
 # constants
-export 
-    ALPHA,
-    ALPHA_SQUARE,
-    ELEMENTARY_CHARGE,
-    ELEMENTARY_CHARGE_SQUARE,
-    ELECTRONMASS,
-    ONE_OVER_FOURPI
+export ALPHA,
+    ALPHA_SQUARE, ELEMENTARY_CHARGE, ELEMENTARY_CHARGE_SQUARE, ELECTRONMASS, ONE_OVER_FOURPI
 
 # Abstract model interface
 export AbstractModelDefinition, fundamental_interaction_type

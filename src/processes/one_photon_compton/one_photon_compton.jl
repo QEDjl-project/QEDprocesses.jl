@@ -8,7 +8,6 @@
 export Compton
 export omega_prime
 
-
 include("process.jl")
 include("perturbative/kinematics.jl")
 include("perturbative/cross_section.jl")
