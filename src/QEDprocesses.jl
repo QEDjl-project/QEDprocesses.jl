@@ -44,28 +44,31 @@ export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
 
+# specific compute models
+export PerturbativeQED
+
+# specific scattering processes
+export Compton, omega_prime
+
 using QEDbase
+using StaticArrays
 
 ###
 # Generic implementations
 ###
-
 include("constants.jl")
+include("utils.jl")
 include("phase_spaces.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
-
 include("models/models.jl")
-
 include("momentum_generation.jl")
 include("propagators.jl")
 include("probabilities.jl")
 include("cross_sections.jl")
 
 include("processes/one_photon_compton/one_photon_compton.jl")
-
-include("utils.jl")
 
 include("patch_QEDbase.jl")
 end

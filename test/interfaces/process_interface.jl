@@ -86,29 +86,6 @@ include("../test_implementation/TestImplementation.jl")
 
     @testset "is in phasespace" begin
         @test QEDprocesses._is_in_phasespace(
-            TestProcess(),
-            TestModel(),
-            TestPhasespaceDef(),
-            IN_PS,
-            TestPhasespaceDef(),
-            OUT_PS,
-        )
-
-        IN_PS_unphysical = deepcopy(IN_PS)
-        IN_PS_unphysical[1] = SFourMomentum(zeros(4))
-
-        @test !QEDprocesses._is_in_phasespace(
-            TestProcess(),
-            TestModel(),
-            TestPhasespaceDef(),
-            IN_PS_unphysical,
-            TestPhasespaceDef(),
-            OUT_PS,
-        )
-    end
-
-    @testset "is in phasespace" begin
-        @test QEDprocesses._is_in_phasespace(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, TESTPSDEF, OUT_PS
         )
 
