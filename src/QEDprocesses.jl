@@ -5,8 +5,11 @@ export AbstractModelDefinition, fundamental_interaction_type
 
 # Abstract process interface
 export AbstractProcessDefinition, incoming_particles, outgoing_particles
-export in_phasespace_dimension, out_phasespace_dimension
 export number_incoming_particles, number_outgoing_particles
+
+# probabilities
+export differential_probability, unsafe_differential_probability
+export total_probability
 
 # probabilities
 export differential_probability, unsafe_differential_probability
@@ -31,11 +34,12 @@ export AbstractPhasespaceDefinition, PhasespaceDefinition
 using QEDbase
 
 include("utils.jl")
+include("phase_spaces.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
+include("momentum_generation.jl")
 include("propagators.jl")
-include("phase_spaces.jl")
 include("probabilities.jl")
 include("cross_sections.jl")
 end

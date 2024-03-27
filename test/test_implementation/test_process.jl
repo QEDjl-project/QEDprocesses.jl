@@ -37,6 +37,13 @@ function TestProcess_FAIL(rng::AbstractRNG, N_in::Int, N_out::Int)
     return TestProcess_FAIL(in_particles, out_particles)
 end
 
+function QEDprocesses.in_phase_space_dimension(proc::TestProcess, ::TestModel)
+    return number_incoming_particles(proc) * 4
+end
+function QEDprocesses.out_phase_space_dimension(proc::TestProcess, ::TestModel)
+    return number_outgoing_particles(proc) * 4
+end
+
 # dummy phase space definition + failing phase space definition
 struct TestPhasespaceDef <: AbstractPhasespaceDefinition end
 struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
@@ -79,6 +86,24 @@ function QEDprocesses._phase_space_factor(
     out_ps::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_phase_space_factor(in_ps, out_ps)
+end
+
+function QEDprocesses._generate_incoming_momenta(
+    proc::TestProcess,
+    model::TestModel,
+    in_phase_space_def::TestPhasespaceDef,
+    in_phase_space::AbstractVector{T},
+) where {T<:Real}
+    return _groundtruth_generate_momenta(in_phase_space)
+end
+
+function QEDprocesses._generate_outgoing_momenta(
+    proc::TestProcess,
+    model::TestModel,
+    out_phase_space_def::TestPhasespaceDef,
+    out_phase_space::AbstractVector{T},
+) where {T<:Real}
+    return _groundtruth_generate_momenta(out_phase_space)
 end
 
 function QEDprocesses._total_probability(

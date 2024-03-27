@@ -63,6 +63,10 @@ function _groundtruth_phase_space_factor(in_ps, out_ps)
     return 1 / (prod(en_in) * prod(en_out))
 end
 
+function _groundtruth_generate_momenta(ps_coords)
+    moms = _furl_moms(ps_coords)
+    return moms
+end
 """
     _groundtruth_unsafe_probability(proc, in_ps, out_ps)
 
