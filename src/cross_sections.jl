@@ -1,5 +1,5 @@
 ########################
-# differential and total cross sections.
+# differential and total cross sections
 #
 # This file contains default implementations for differential and total cross
 # sections based on the scattering process interface
