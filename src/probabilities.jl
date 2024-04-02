@@ -126,17 +126,8 @@ function unsafe_differential_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
-
-    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _unsafe_differential_probability(
         proc,
@@ -168,17 +159,8 @@ function unsafe_differential_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
-    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
-
-    size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _unsafe_differential_probability(
         proc,
@@ -314,17 +296,8 @@ function differential_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
-
-    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _differential_probability(
         proc,
@@ -356,17 +329,8 @@ function differential_probability(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
-    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
-
-    size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model ))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _differential_probability(
         proc,
@@ -426,11 +390,7 @@ function total_probability(
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
 
     return _total_probability(proc, model, in_phase_space_def, in_phase_space)
 end
@@ -451,11 +411,7 @@ function total_probability(
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
-    size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
 
     return _total_probability(proc, model, in_phase_space_def, in_phase_space)
 end
