@@ -15,14 +15,6 @@ export number_incoming_particles, number_outgoing_particles
 export differential_probability, unsafe_differential_probability
 export total_probability
 
-# probabilities
-export differential_probability, unsafe_differential_probability
-export total_probability
-
-# probabilities
-export differential_probability, unsafe_differential_probability
-export total_probability
-
 # differential cross section
 export differential_cross_section, unsafe_differential_cross_section
 export total_cross_section
@@ -48,10 +40,12 @@ export Compton, omega_prime
 using QEDbase
 using StaticArrays
 
+include("constants.jl")
 include("utils.jl")
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
+include("models/models.jl")
 include("phase_spaces.jl")
 include("momentum_generation.jl")
 include("propagators.jl")
