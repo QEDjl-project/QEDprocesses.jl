@@ -1,18 +1,17 @@
 ########################
-# differential cross sections and probabilities.
+# differential and total cross sections.
 #
 # This file contains default implementations for differential and total cross
 # sections based on the scattering process interface
 ########################
 
 ############
-#
 # differential cross sections
-#
 ############
 
 # differential cross sections without energy momentum conservation check
 # single in phase space point/ single out phase space point
+# based on four-momenta
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -34,6 +33,30 @@ function _unsafe_differential_cross_section(
 end
 
 # differential cross sections without energy momentum conservation check
+# single in phase space point/ single out phase space point
+# based on coordinates
+function _unsafe_differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVector{T},
+) where {T<:Real}
+    in_momenta, out_momenta = _generate_momenta(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+    return _unsafe_differential_cross_section(
+        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
+    )
+end
+
+# differential cross sections without energy momentum conservation check
 # single in phase space point/ several out phase space points
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -42,7 +65,7 @@ function _unsafe_differential_cross_section(
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
         res[i] = _unsafe_differential_cross_section(
@@ -66,7 +89,7 @@ function _unsafe_differential_cross_section(
     in_phase_space::AbstractMatrix{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i, :] .= _unsafe_differential_cross_section(
@@ -92,7 +115,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the differential cross section without checking if the given phase space(s) are physical.
+Return the differential cross section evaluated at the four-momenta without checking if the given phase space(s) are physical.
 """
 function unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -102,17 +125,41 @@ function unsafe_differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
-    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
+    return _unsafe_differential_cross_section(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
     )
+end
+
+"""
+    unsafe_differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+
+Return the differential cross section evaluated at the coordinates without checking if the given phase space(s) are physical.
+"""
+function unsafe_differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _unsafe_differential_cross_section(
         proc,
@@ -163,8 +210,29 @@ function _differential_cross_section(
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVector{T},
+)::Float64 where {T<:Real}
+    in_momenta, out_momenta = _generate_momenta(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
+    )
+    return _differential_cross_section(
+        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
+    )
+end
+
+function _differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
         res[i] = _differential_cross_section(
@@ -188,7 +256,7 @@ function _differential_cross_section(
     in_phase_space::AbstractMatrix{T},
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i, :] .= _differential_cross_section(
@@ -213,7 +281,7 @@ end
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-If the given phase spaces are physical, return differential cross section. Zero otherwise
+If the given phase spaces are physical, return differential cross section evaluated at the four-momenta. Zero otherwise.
 
 """
 function differential_cross_section(
@@ -224,17 +292,41 @@ function differential_cross_section(
     out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
-    size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
+    return _differential_cross_section(
+        proc,
+        model,
+        in_phase_space_def,
+        in_phase_space,
+        out_phase_space_def,
+        out_phase_space,
     )
+end
+
+"""
+    differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+
+If the given phase spaces are physical, return differential cross section evaluated at the coordinates. Zero otherwise.
+"""
+function differential_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+    out_phase_space_def::AbstractPhasespaceDefinition,
+    out_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+    _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _differential_cross_section(
         proc,
@@ -251,6 +343,7 @@ end
 ############
 
 # total cross section on single phase space point
+# based on four-momenta
 function _total_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
@@ -262,13 +355,25 @@ function _total_cross_section(
     return I * _total_probability(proc, model, in_phase_space_def, in_phase_space)
 end
 
+# total cross section on single phase space point
+# based on coordinates
+function _total_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVector{T},
+) where {T<:Real}
+    in_momenta = _generate_incoming_momenta(proc, model, in_phase_space_def, in_phase_space)
+    return _total_cross_section(proc, model, in_phase_space_def, in_momenta)
+end
+
 # total cross section on several phase space points
 function _total_cross_section(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(in_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i] = _total_cross_section(
@@ -286,7 +391,7 @@ end
         in_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
-Return the total cross section for a given combination of scattering process and compute model.
+Return the total cross section for a given combination of scattering process and compute model, evaluated at the particle momenta.
 """
 function total_cross_section(
     proc::AbstractProcessDefinition,
@@ -294,11 +399,28 @@ function total_cross_section(
     in_phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
+
+    return _total_cross_section(proc, model, in_phase_space_def, in_phase_space)
+end
+
+"""
+    total_cross_section(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        in_phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::AbstractVecOrMat{T},
+    ) where {T<:Real}
+
+Return the total cross section for a given combination of scattering process and compute model, evaluated at the coordinates.
+"""
+function total_cross_section(
+    proc::AbstractProcessDefinition,
+    model::AbstractModelDefinition,
+    in_phase_space_def::AbstractPhasespaceDefinition,
+    in_phase_space::AbstractVecOrMat{T},
+) where {T<:Real}
+    _check_in_phase_space_dimension(proc, model, in_phase_space)
 
     return _total_cross_section(proc, model, in_phase_space_def, in_phase_space)
 end
