@@ -30,6 +30,7 @@ export propagator
 export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
+export ParticleStateful, PhaseSpacePoint
 
 using QEDbase
 
