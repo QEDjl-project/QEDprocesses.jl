@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 QEDbase = "0.1"
