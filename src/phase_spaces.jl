@@ -98,10 +98,13 @@ end
 
 Representation of a particle with a state. It has four fields:
 - `mom::AbstractPhasespaceElement`: The momentum of the particle.
-- `type::AbstractParticle`: The type of the particle, [`Electron`](@ref)(), [`Positron`](@ref)() etc..
-- `spinorpol::AbstractSpinOrPolarization`: The spin or polarization of the particle, [`SpinUp`](@ref)(), [`PolX`](@ref)() etc.. Can only use spins with fermions and polarizations with bosons.
-- `dir::ParticleDirection`: The direction of the particle, [`Incoming`](@ref)() or [`Outgoing`](@ref)().
+- `type::AbstractParticle`: The type of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc..
+- `spinorpol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc.. Can only use spins with fermions and polarizations with bosons.
+- `dir::ParticleDirection`: The direction of the particle, `QEDbase.Incoming()` or `QEDbase.Outgoing()`.
 
+Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, and `QEDbase.is_outgoing` are provided, delegating the call to the correct field.
+
+The legality of the combination of `type` and `spinorpol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
 """
 struct ParticleStateful{ElType<:AbstractPhasespaceElement}
     mom::ElType
@@ -133,6 +136,13 @@ struct ParticleStateful{ElType<:AbstractPhasespaceElement}
     end
 end
 
+"""
+    PhaseSpacePoint
+
+Representation of a point in the phase space of a process. Contains the process ([`AbstractProcessDefinition`](@ref)), the model ([`AbstractModelDefinition`](@ref)), the phase space definition ([`AbstractPhasespaceDefinition`]), and stateful incoming and outgoing particles ([`ParticleStateful`](@ref)).
+
+The legality of the combination of the given process and the incoming and outgoing particles is checked on construction. If the numbers of particles mismatch, the types of particles mismatch (note that order is important), or incoming particles have a `Outgoing` direction, an error is thrown.
+"""
 struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
     MODEL<:AbstractModelDefinition,
@@ -158,16 +168,40 @@ struct PhaseSpacePoint{
         IN_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
         OUT_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
     }
-        @assert length(incoming_particles(proc)) == length(in_p)
-        @assert length(outgoing_particles(proc)) == length(out_p)
+        length(incoming_particles(proc)) == length(in_p) || throw(
+            InvalidInputError(
+                "The number of incoming particles given by the process ($(incoming_particles(proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
+            ),
+        )
+        length(outgoing_particles(proc)) == length(out_p) || throw(
+            InvalidInputError(
+                "The number of outgoing particles given by the process ($(outgoing_particles(proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
+            ),
+        )
 
         for (proc_p, p) in zip(incoming_particles(proc), in_p)
-            @assert proc_p == p.type "Process given particle type ($(proc_p)) does not match stateful particle type ($(p.type))"
-            @assert is_incoming(p) "Stateful particle $(p) is given as an incoming particle but is outgoing"
+            proc_p == p.type || throw(
+                InvalidInputError(
+                    "Process given particle type ($(proc_p)) does not match stateful particle type ($(p.type))",
+                ),
+            )
+            is_incoming(p) || throw(
+                InvalidInputError(
+                    "Stateful particle $(p) is given as an incoming particle but is outgoing",
+                ),
+            )
         end
         for (proc_p, p) in zip(outgoing_particles(proc), out_p)
-            @assert proc_p == p.type "Process given particle type ($(proc_p)) does not match stateful particle type ($(p.type))"
-            @assert is_outgoing(p) "Stateful particle $(p) is given as an outgoing particle but is incoming"
+            proc_p == p.type || throw(
+                InvalidInputError(
+                    "Process given particle type ($(proc_p)) does not match stateful particle type ($(p.type))",
+                ),
+            )
+            is_outgoing(p) || throw(
+                InvalidInputError(
+                    "Stateful particle $(p) is given as an outgoing particle but is incoming",
+                ),
+            )
         end
 
         return new{PROC,MODEL,PSDEF,PhaseSpaceElementType,length(in_p),length(out_p)}(
