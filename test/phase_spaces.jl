@@ -57,4 +57,20 @@ end
     phasespace_def = TESTPSDEF
 
     PhaseSpacePoint(process, model, phasespace_def, in_particles_valid, out_particles_valid)
+
+    @test_throws r"Stateful particle (.*) is given as an incoming particle but is outgoing" PhaseSpacePoint(
+        process, model, phasespace_def, in_particles_invalid, out_particles_valid
+    )
+
+    @test_throws r"Stateful particle (.*) is given as an outgoing particle but is incoming" PhaseSpacePoint(
+        process, model, phasespace_def, in_particles_valid, out_particles_invalid
+    )
+
+    @test_throws r"Process given particle type \((.*)Electron\(\)\) does not match stateful particle type \((.*)Photon\(\)\)" PhaseSpacePoint(
+        process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
+    )
+
+    @test_throws r"Process given particle type \((.*)Electron\(\)\) does not match stateful particle type \((.*)Photon\(\)\)" PhaseSpacePoint(
+        process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
+    )
 end

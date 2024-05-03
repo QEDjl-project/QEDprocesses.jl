@@ -147,6 +147,33 @@ struct PhaseSpacePoint{
 
     in_particles::SVector{N_IN_PARTICLES,ParticleStateful{PhaseSpaceElementType}}
     out_particles::SVector{N_OUT_PARTICLES,ParticleStateful{PhaseSpaceElementType}}
+
+    function PhaseSpacePoint(
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_P, out_p::OUT_P
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        PhaseSpaceElementType<:AbstractPhasespaceElement,
+        IN_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
+        OUT_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
+    }
+        @assert length(incoming_particles(proc)) == length(in_p)
+        @assert length(outgoing_particles(proc)) == length(out_p)
+
+        for (proc_p, p) in zip(incoming_particles(proc), in_p)
+            @assert proc_p == p.type "Process given particle type ($(proc_p)) does not match stateful particle type ($(p.type))"
+            @assert is_incoming(p) "Stateful particle $(p) is given as an incoming particle but is outgoing"
+        end
+        for (proc_p, p) in zip(outgoing_particles(proc), out_p)
+            @assert proc_p == p.type "Process given particle type ($(proc_p)) does not match stateful particle type ($(p.type))"
+            @assert is_outgoing(p) "Stateful particle $(p) is given as an outgoing particle but is incoming"
+        end
+
+        return new{PROC,MODEL,PSDEF,PhaseSpaceElementType,length(in_p),length(out_p)}(
+            proc, model, ps_def, in_p, out_p
+        )
+    end
 end
 
 @inline is_incoming(particle::ParticleStateful) = is_incoming(particle.dir)
