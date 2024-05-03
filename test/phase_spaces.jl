@@ -1,11 +1,16 @@
 using Random
+using StaticArrays
 using QEDbase
 using QEDprocesses
 
 # can be removed when QEDbase exports them
 import QEDbase.is_incoming, QEDbase.is_outgoing
 
-@testset "Phasespace Point" begin
+include("test_implementation/TestImplementation.jl")
+TESTMODEL = TestImplementation.TestModel()
+TESTPSDEF = TestImplementation.TestPhasespaceDef()
+
+@testset "Stateful Particle" begin
     DIRECTIONS = [Incoming(), Outgoing()]
     PARTICLES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
     SPINANDPOLS = [AllSpin(), SpinUp(), SpinDown(), AllPol(), PolX(), PolY()]
@@ -30,4 +35,26 @@ import QEDbase.is_incoming, QEDbase.is_outgoing
             )
         end
     end
+end
+
+@testset "Phasespace Point" begin
+    in_el = ParticleStateful(rand(SFourMomentum), Electron(), AllSpin(), Incoming())
+    in_ph = ParticleStateful(rand(SFourMomentum), Photon(), AllPol(), Incoming())
+    out_el = ParticleStateful(rand(SFourMomentum), Electron(), AllSpin(), Outgoing())
+    out_ph = ParticleStateful(rand(SFourMomentum), Photon(), AllPol(), Outgoing())
+
+    in_particles_valid = SVector(in_el, in_ph)
+    in_particles_invalid = SVector(in_el, out_ph)
+
+    out_particles_valid = SVector(out_el, out_ph)
+    out_particles_invalid = SVector(out_el, in_ph)
+
+    model = TESTMODEL
+    process = TestImplementation.TestProcess(
+        SVector{2,AbstractParticle}(Electron(), Photon()),
+        SVector{2,AbstractParticle}(Electron(), Photon()),
+    )
+    phasespace_def = TESTPSDEF
+
+    PhaseSpacePoint(process, model, phasespace_def, in_particles_valid, out_particles_valid)
 end
