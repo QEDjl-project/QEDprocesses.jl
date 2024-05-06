@@ -155,9 +155,9 @@ end
     particle.spin_or_pol
 @inline spin(particle::ParticleStateful) = _spin(particle.species, particle)
 
-@inline _pol(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
+@inline _polarization(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
     particle.spin_or_pol
-@inline pol(particle::ParticleStateful) = _pol(particle.species, particle)
+@inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
 
 """
     PhaseSpacePoint
@@ -252,10 +252,10 @@ function Base.getindex(psp::PhaseSpacePoint, ::Outgoing, n::Int)
 end
 
 """
-    nth_momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
+    momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
 
 Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref) which has direction `dir`. If `n` is outside the valid range for this phase space point, a `BoundsError` is thrown.
 """
-function nth_momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
+function momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
     return psp[dir, n].mom
 end

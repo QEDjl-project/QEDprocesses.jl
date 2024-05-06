@@ -36,9 +36,9 @@ RNG = Random.MersenneTwister(727)
 
             if (is_fermion(species))
                 @test spin(particle_stateful) == spin_or_pol
-                @test_throws MethodError pol(particle_stateful)
+                @test_throws MethodError polarization(particle_stateful)
             else
-                @test pol(particle_stateful) == spin_or_pol
+                @test polarization(particle_stateful) == spin_or_pol
                 @test_throws MethodError spin(particle_stateful)
             end
         else
@@ -76,10 +76,10 @@ end
         process, model, phasespace_def, in_particles_valid, out_particles_valid
     )
 
-    @test nth_momentum(psp, Incoming(), 1) == in_el.mom
-    @test nth_momentum(psp, Incoming(), 2) == in_ph.mom
-    @test nth_momentum(psp, Outgoing(), 1) == out_el.mom
-    @test nth_momentum(psp, Outgoing(), 2) == out_ph.mom
+    @test momentum(psp, Incoming(), 1) == in_el.mom
+    @test momentum(psp, Incoming(), 2) == in_ph.mom
+    @test momentum(psp, Outgoing(), 1) == out_el.mom
+    @test momentum(psp, Outgoing(), 2) == out_ph.mom
 
     @test psp[Incoming(), 1] == in_el
     @test psp[Incoming(), 2] == in_ph
@@ -105,10 +105,10 @@ end
         )
     end
 
-    @test_throws BoundsError nth_momentum(psp, Incoming(), -1)
-    @test_throws BoundsError nth_momentum(psp, Outgoing(), -1)
-    @test_throws BoundsError nth_momentum(psp, Incoming(), 4)
-    @test_throws BoundsError nth_momentum(psp, Outgoing(), 4)
+    @test_throws BoundsError momentum(psp, Incoming(), -1)
+    @test_throws BoundsError momentum(psp, Outgoing(), -1)
+    @test_throws BoundsError momentum(psp, Incoming(), 4)
+    @test_throws BoundsError momentum(psp, Outgoing(), 4)
 
     @test_throws BoundsError psp[Incoming(), -1]
     @test_throws BoundsError psp[Outgoing(), -1]
