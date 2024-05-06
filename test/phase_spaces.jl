@@ -72,7 +72,19 @@ end
     )
     phasespace_def = TESTPSDEF
 
-    PhaseSpacePoint(process, model, phasespace_def, in_particles_valid, out_particles_valid)
+    psp = PhaseSpacePoint(
+        process, model, phasespace_def, in_particles_valid, out_particles_valid
+    )
+
+    @test nth_momentum(psp, Incoming(), 1) == in_el.mom
+    @test nth_momentum(psp, Incoming(), 2) == in_ph.mom
+    @test nth_momentum(psp, Outgoing(), 1) == out_el.mom
+    @test nth_momentum(psp, Outgoing(), 2) == out_ph.mom
+
+    @test psp[Incoming(), 1] == in_el
+    @test psp[Incoming(), 2] == in_ph
+    @test psp[Outgoing(), 1] == out_el
+    @test psp[Outgoing(), 2] == out_ph
 
     if (VERSION >= v"1.8")
         # julia versions before 1.8 did not have support for regex matching in @test_throws
@@ -92,6 +104,16 @@ end
             process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
         )
     end
+
+    @test_throws BoundsError nth_momentum(psp, Incoming(), -1)
+    @test_throws BoundsError nth_momentum(psp, Outgoing(), -1)
+    @test_throws BoundsError nth_momentum(psp, Incoming(), 4)
+    @test_throws BoundsError nth_momentum(psp, Outgoing(), 4)
+
+    @test_throws BoundsError psp[Incoming(), -1]
+    @test_throws BoundsError psp[Outgoing(), -1]
+    @test_throws BoundsError psp[Incoming(), 4]
+    @test_throws BoundsError psp[Outgoing(), 4]
 
     @test_throws InvalidInputError PhaseSpacePoint(
         process, model, phasespace_def, in_particles_invalid, out_particles_valid

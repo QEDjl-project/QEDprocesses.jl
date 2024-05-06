@@ -142,6 +142,23 @@ struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
     end
 end
 
+@inline is_incoming(particle::ParticleStateful) = is_incoming(particle.dir)
+@inline is_outgoing(particle::ParticleStateful) = is_outgoing(particle.dir)
+@inline is_fermion(particle::ParticleStateful) = is_fermion(particle.species)
+@inline is_boson(particle::ParticleStateful) = is_boson(particle.species)
+@inline is_particle(particle::ParticleStateful) = is_particle(particle.species)
+@inline is_anti_particle(particle::ParticleStateful) = is_anti_particle(particle.species)
+@inline mass(particle::ParticleStateful) = mass(particle.species)
+@inline charge(particle::ParticleStateful) = charge(particle.species)
+
+@inline _spin(::Species, particle::ParticleStateful) where {Species<:FermionLike} =
+    particle.spin_or_pol
+@inline spin(particle::ParticleStateful) = _spin(particle.species, particle)
+
+@inline _pol(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
+    particle.spin_or_pol
+@inline pol(particle::ParticleStateful) = _pol(particle.species, particle)
+
 """
     PhaseSpacePoint
 
@@ -216,19 +233,29 @@ struct PhaseSpacePoint{
     end
 end
 
-@inline is_incoming(particle::ParticleStateful) = is_incoming(particle.dir)
-@inline is_outgoing(particle::ParticleStateful) = is_outgoing(particle.dir)
-@inline is_fermion(particle::ParticleStateful) = is_fermion(particle.species)
-@inline is_boson(particle::ParticleStateful) = is_boson(particle.species)
-@inline is_particle(particle::ParticleStateful) = is_particle(particle.species)
-@inline is_anti_particle(particle::ParticleStateful) = is_anti_particle(particle.species)
-@inline mass(particle::ParticleStateful) = mass(particle.species)
-@inline charge(particle::ParticleStateful) = charge(particle.species)
+"""
+    Base.getindex(psp::PhaseSpacePoint, dir::Incoming, n::Int)
 
-@inline _spin(::Species, particle::ParticleStateful) where {Species<:FermionLike} =
-    particle.spin_or_pol
-@inline spin(particle::ParticleStateful) = _spin(particle.species, particle)
+Overload for the array indexing operator `[]`. Returns the nth incoming particle in this phase space point.
+"""
+function Base.getindex(psp::PhaseSpacePoint, ::Incoming, n::Int)
+    return psp.in_particles[n]
+end
 
-@inline _pol(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
-    particle.spin_or_pol
-@inline pol(particle::ParticleStateful) = _pol(particle.species, particle)
+"""
+    Base.getindex(psp::PhaseSpacePoint, dir::Outgoing, n::Int)
+
+Overload for the array indexing operator `[]`. Returns the nth outgoing particle in this phase space point.
+"""
+function Base.getindex(psp::PhaseSpacePoint, ::Outgoing, n::Int)
+    return psp.out_particles[n]
+end
+
+"""
+    nth_momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
+
+Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref) which has direction `dir`. If `n` is outside the valid range for this phase space point, an `BoundsError` is thrown.
+"""
+function nth_momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
+    return psp[dir, n].mom
+end
