@@ -82,7 +82,7 @@ struct InvalidInputError <: AbstractInvalidInputException
     msg::String
 end
 function Base.showerror(io::IO, err::InvalidInputError)
-    return println(io, "InvalidInputError: $(err.msg).")
+    return println(io, "InvalidInputError: $(err.msg)")
 end
 
 """

@@ -67,7 +67,7 @@ AbstractPhasespaceElement = Union{AbstractFourMomentum,Real}
 ) where {T<:AbstractFourMomentum}
     return size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
         DimensionMismatch(
-            "The number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
+            "the number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
         ),
     )
 end
@@ -79,7 +79,7 @@ end
 ) where {T<:AbstractFourMomentum}
     return size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
         DimensionMismatch(
-            "The number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
+            "the number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),
     )
 end
@@ -91,7 +91,7 @@ end
 ) where {T<:Real}
     return size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
         DimensionMismatch(
-            "The dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
+            "the dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
         ),
     )
 end
@@ -103,7 +103,7 @@ end
 ) where {T<:Real}
     return size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
         DimensionMismatch(
-            "The dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
+            "the dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
         ),
     )
 end
@@ -193,36 +193,36 @@ struct PhaseSpacePoint{
     }
         length(incoming_particles(proc)) == length(in_p) || throw(
             InvalidInputError(
-                "The number of incoming particles given by the process ($(incoming_particles(proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
+                "the number of incoming particles given by the process ($(incoming_particles(proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
             ),
         )
         length(outgoing_particles(proc)) == length(out_p) || throw(
             InvalidInputError(
-                "The number of outgoing particles given by the process ($(outgoing_particles(proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
+                "the number of outgoing particles given by the process ($(outgoing_particles(proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
             ),
         )
 
         for (proc_p, p) in zip(incoming_particles(proc), in_p)
             proc_p == p.species || throw(
                 InvalidInputError(
-                    "Process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
+                    "process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
                 ),
             )
             is_incoming(p) || throw(
                 InvalidInputError(
-                    "Stateful particle $(p) is given as an incoming particle but is outgoing",
+                    "stateful particle $(p) is given as an incoming particle but is outgoing",
                 ),
             )
         end
         for (proc_p, p) in zip(outgoing_particles(proc), out_p)
             proc_p == p.species || throw(
                 InvalidInputError(
-                    "Process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
+                    "process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
                 ),
             )
             is_outgoing(p) || throw(
                 InvalidInputError(
-                    "Stateful particle $(p) is given as an outgoing particle but is incoming",
+                    "stateful particle $(p) is given as an outgoing particle but is incoming",
                 ),
             )
         end
