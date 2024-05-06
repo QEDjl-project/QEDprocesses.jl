@@ -41,18 +41,16 @@ interface functions need to be implemented
     _is_in_phasespace(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
+        ps_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
         out_phase_space::AbstractVector{T}
     )
 
     _phase_space_factor(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
+        ps_def::InPhasespaceDefinition,
         in_phase_space::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
         out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 ```
@@ -64,7 +62,7 @@ Optional is the implementation of
     _total_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
+        ps_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVector{T}
     ) where {T<: QEDbase.AbstractFourMomentum}
 
@@ -140,9 +138,8 @@ function _averaging_norm end
     _is_in_phasespace(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
+        ps_def::AbstractPhasespaceDefinition,
         in_ps::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
         out_ps::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
@@ -155,9 +152,8 @@ function _is_in_phasespace end
     _phase_space_factor(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
+        ps_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVector{T}
-        out_ps_def::OutPhasespaceDefinition,
         out_phase_space::AbstractVector{T}
         ) where {T<:QEDbase.AbstractFourMomentum}
 
@@ -222,7 +218,7 @@ function out_phase_space_dimension end
     _total_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition, 
-        in_ps_def::InPhasespaceDefinition,
+        ps_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVector{T}
     ) where {T<: QEDbase.AbstractFourMomentum}
 

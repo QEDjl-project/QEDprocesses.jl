@@ -110,7 +110,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             @testset "compute" begin
                 for (P_IN, P_OUT) in p_combs_phys
                     diffCS = unsafe_differential_cross_section(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                     )
                     groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
                         TESTPROC, P_IN, P_OUT
@@ -125,13 +125,13 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                     # filter out all valid combinations
                     if !((P_IN, P_OUT) in p_combs_valid)
                         @test_throws DimensionMismatch unsafe_differential_cross_section(
-                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                         )
 
                         COORDS_IN = TestImplementation.flat_components(P_IN)
                         COORDS_OUT = TestImplementation.flat_components(P_OUT)
                         @test_throws DimensionMismatch unsafe_differential_cross_section(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, TESTPSDEF, COORDS_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                         )
                     end
                 end
@@ -141,12 +141,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 @testset "compute" begin
                     for (P_IN, P_OUT) in p_combs_valid
                         diffCS_on_moms = differential_cross_section(
-                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                         )
                         COORDS_IN = TestImplementation.flat_components(P_IN)
                         COORDS_OUT = TestImplementation.flat_components(P_OUT)
                         diffCS_on_coords = differential_cross_section(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, TESTPSDEF, COORDS_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                         )
                         groundtruth = TestImplementation._groundtruth_safe_diffCS(
                             TESTPROC, P_IN, P_OUT
@@ -162,7 +162,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         # filter out all valid combinations
                         if !((P_IN, P_OUT) in p_combs_valid)
                             @test_throws DimensionMismatch differential_cross_section(
-                                TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                                TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                             )
 
                             COORDS_IN = TestImplementation.flat_components(P_IN)
@@ -172,7 +172,6 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                                 TESTMODEL,
                                 TESTPSDEF,
                                 COORDS_IN,
-                                TESTPSDEF,
                                 COORDS_OUT,
                             )
                         end
@@ -219,12 +218,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 @testset "compute" begin
                     for (P_IN, P_OUT) in p_combs_phys
                         prob_on_moms = unsafe_differential_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                         )
                         COORDS_IN = TestImplementation.flat_components(P_IN)
                         COORDS_OUT = TestImplementation.flat_components(P_OUT)
                         prob_on_coords = unsafe_differential_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, TESTPSDEF, COORDS_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                         )
                         groundtruth = TestImplementation._groundtruth_unsafe_probability(
                             TESTPROC, P_IN, P_OUT
@@ -240,7 +239,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         # filter out all valid combinations
                         if !((P_IN, P_OUT) in p_combs_valid)
                             @test_throws DimensionMismatch unsafe_differential_probability(
-                                TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                                TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                             )
 
                             COORDS_IN = TestImplementation.flat_components(P_IN)
@@ -250,7 +249,6 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                                 TESTMODEL,
                                 TESTPSDEF,
                                 COORDS_IN,
-                                TESTPSDEF,
                                 COORDS_OUT,
                             )
                         end
@@ -261,13 +259,13 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 @testset "compute" begin
                     for (P_IN, P_OUT) in p_combs_valid
                         prob_on_moms = differential_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                         )
 
                         COORDS_IN = TestImplementation.flat_components(P_IN)
                         COORDS_OUT = TestImplementation.flat_components(P_OUT)
                         prob_on_coords = differential_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, TESTPSDEF, COORDS_OUT
+                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                         )
                         groundtruth = TestImplementation._groundtruth_safe_probability(
                             TESTPROC, P_IN, P_OUT
@@ -283,7 +281,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         # filter out all valid combinations
                         if !((P_IN, P_OUT) in p_combs_valid)
                             @test_throws DimensionMismatch differential_probability(
-                                TESTPROC, TESTMODEL, TESTPSDEF, P_IN, TESTPSDEF, P_OUT
+                                TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                             )
 
                             COORDS_IN = TestImplementation.flat_components(P_IN)
@@ -293,7 +291,6 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                                 TESTMODEL,
                                 TESTPSDEF,
                                 COORDS_IN,
-                                TESTPSDEF,
                                 COORDS_OUT,
                             )
                         end

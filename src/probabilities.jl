@@ -12,9 +12,8 @@
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     matrix_elements_sq = _matrix_element_square(
@@ -26,9 +25,8 @@ function _unsafe_differential_probability(
     ps_fac = _phase_space_factor(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
 
@@ -40,21 +38,19 @@ end
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:Real}
     in_momenta, out_momenta = _generate_momenta(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
     return _unsafe_differential_probability(
-        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
+        proc, model, phase_space_def, in_momenta, out_momenta
     )
 end
 
@@ -63,9 +59,8 @@ end
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
@@ -73,9 +68,8 @@ function _unsafe_differential_probability(
         res[i] = _unsafe_differential_probability(
             proc,
             model,
-            in_phase_space_def,
+            phase_space_def,
             in_phase_space,
-            out_phase_space_def,
             view(out_phase_space, :, i),
         )
     end
@@ -87,9 +81,8 @@ end
 function _unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
@@ -97,9 +90,8 @@ function _unsafe_differential_probability(
         res[i, :] .= _unsafe_differential_probability(
             proc,
             model,
-            in_phase_space_def,
+            phase_space_def,
             view(in_phase_space, :, i),
-            out_phase_space_def,
             out_phase_space,
         )
     end
@@ -110,9 +102,8 @@ end
     unsafe_differential_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        in_phase_space_def::AbstractPhasespaceDefinition,
+        phase_space_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVecOrMat{T},
-        out_phase_space_def::AbstractPhasespaceDefinition,
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
@@ -121,9 +112,8 @@ Return differential probability evaluated at the four-momenta without checking i
 function unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     _check_in_phase_space_dimension(proc, model, in_phase_space)
@@ -132,9 +122,8 @@ function unsafe_differential_probability(
     return _unsafe_differential_probability(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
 end
@@ -143,9 +132,8 @@ end
     unsafe_differential_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        in_phase_space_def::AbstractPhasespaceDefinition,
+        phase_space_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVecOrMat{T},
-        out_phase_space_def::AbstractPhasespaceDefinition,
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:Real}
 
@@ -154,9 +142,8 @@ Return differential probability evaluated at the coordinates without checking if
 function unsafe_differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
     _check_in_phase_space_dimension(proc, model, in_phase_space)
@@ -165,9 +152,8 @@ function unsafe_differential_probability(
     return _unsafe_differential_probability(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
 end
@@ -178,17 +164,15 @@ end
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     if !_is_in_phasespace(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
         return zero(eltype(T))
@@ -197,9 +181,8 @@ function _differential_probability(
     return _unsafe_differential_probability(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
 end
@@ -210,21 +193,19 @@ end
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVector{T},
 ) where {T<:Real}
     in_momenta, out_momenta = _generate_momenta(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
     return _differential_probability(
-        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
+        proc, model, phase_space_def, in_momenta, out_momenta
     )
 end
 
@@ -233,9 +214,8 @@ end
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractMatrix{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
@@ -243,9 +223,8 @@ function _differential_probability(
         res[i] = _differential_probability(
             proc,
             model,
-            in_phase_space_def,
+            phase_space_def,
             in_phase_space,
-            out_phase_space_def,
             view(out_phase_space, :, i),
         )
     end
@@ -257,9 +236,8 @@ end
 function _differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
@@ -267,9 +245,8 @@ function _differential_probability(
         res[i, :] .= _differential_probability(
             proc,
             model,
-            in_phase_space_def,
+            phase_space_def,
             view(in_phase_space, :, i),
-            out_phase_space_def,
             out_phase_space,
         )
     end
@@ -280,9 +257,8 @@ end
     differential_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        in_phase_space_def::AbstractPhasespaceDefinition,
+        phase_space_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractVecOrMat{T},
-        out_phase_space_def::AbstractPhasespaceDefinition,
         out_phase_space::AbstractVecOrMat{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
@@ -291,9 +267,8 @@ If the given phase spaces are physical, return differential probability evaluate
 function differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     _check_in_phase_space_dimension(proc, model, in_phase_space)
@@ -302,9 +277,8 @@ function differential_probability(
     return _differential_probability(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
 end
@@ -313,9 +287,8 @@ end
     differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
 
@@ -324,9 +297,8 @@ If the given phase spaces are physical, return differential probability evaluate
 function differential_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
     out_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
     _check_in_phase_space_dimension(proc, model, in_phase_space)
@@ -335,9 +307,8 @@ function differential_probability(
     return _differential_probability(
         proc,
         model,
-        in_phase_space_def,
+        phase_space_def,
         in_phase_space,
-        out_phase_space_def,
         out_phase_space,
     )
 end
@@ -351,24 +322,24 @@ end
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVector{T},
 ) where {T<:Real}
-    in_momenta = _generate_incoming_momenta(proc, model, in_phase_space_def, in_phase_space)
-    return _total_probability(proc, model, in_phase_space_def, in_momenta)
+    in_momenta = _generate_incoming_momenta(proc, model, phase_space_def, in_phase_space)
+    return _total_probability(proc, model, phase_space_def, in_momenta)
 end
 
 # total probability on several phase space points
 function _total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractMatrix{T},
 ) where {T<:AbstractPhasespaceElement}
     res = Vector{eltype(T)}(undef, size(in_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i] = _total_probability(
-            proc, model, in_phase_space_def, view(in_phase_space, :, i)
+            proc, model, phase_space_def, view(in_phase_space, :, i)
         )
     end
     return res
@@ -378,7 +349,7 @@ end
     total_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        in_phase_space_def::AbstractPhasespaceDefinition,
+        phase_space_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractMatrix{T},
     ) where {T<:QEDbase.AbstractFourMomentum}
 
@@ -387,19 +358,19 @@ Return the total probability of a given model and process combination, evaluated
 function total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     _check_in_phase_space_dimension(proc, model, in_phase_space)
 
-    return _total_probability(proc, model, in_phase_space_def, in_phase_space)
+    return _total_probability(proc, model, phase_space_def, in_phase_space)
 end
 
 """
     total_probability(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        in_phase_space_def::AbstractPhasespaceDefinition,
+        phase_space_def::AbstractPhasespaceDefinition,
         in_phase_space::AbstractMatrix{T},
     ) where {T<:Real}
 
@@ -408,10 +379,10 @@ Return the total probability of a given model and process combination, evaluated
 function total_probability(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
+    phase_space_def::AbstractPhasespaceDefinition,
     in_phase_space::AbstractVecOrMat{T},
 ) where {T<:Real}
     _check_in_phase_space_dimension(proc, model, in_phase_space)
 
-    return _total_probability(proc, model, in_phase_space_def, in_phase_space)
+    return _total_probability(proc, model, phase_space_def, in_phase_space)
 end
