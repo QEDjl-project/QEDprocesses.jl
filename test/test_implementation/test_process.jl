@@ -1,11 +1,12 @@
 
 # dummy particles
-struct TestParticle1 <: AbstractParticle end
-struct TestParticle2 <: AbstractParticle end
-struct TestParticle3 <: AbstractParticle end
-struct TestParticle4 <: AbstractParticle end
+struct TestParticleFermion <: FermionLike end
+struct TestParticleBoson <: BosonLike end
 
-const PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
+const PARTICLE_SET = [
+  TestParticleFermion(), 
+  TestParticleBoson(), 
+]
 
 """
 

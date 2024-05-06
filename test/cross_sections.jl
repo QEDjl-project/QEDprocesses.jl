@@ -15,7 +15,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
 )
     INCOMING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING)
+  @show INCOMING_PARTICLES
     OUTGOING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING)
+  @show OUTGOING_PARTICLES
 
     TESTPROC = TestImplementation.TestProcess(INCOMING_PARTICLES, OUTGOING_PARTICLES)
 
