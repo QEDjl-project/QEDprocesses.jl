@@ -17,12 +17,13 @@ RNG = Random.MersenneTwister(727)
     PARTICLES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
     SPINANDPOLS = [AllSpin(), SpinUp(), SpinDown(), AllPol(), PolX(), PolY()]
 
-    for (particle, dir, spinorpol) in Iterators.product(PARTICLES, DIRECTIONS, SPINANDPOLS)
+    for (particle, dir, spin_or_pol) in
+        Iterators.product(PARTICLES, DIRECTIONS, SPINANDPOLS)
         momentum = rand(RNG, SFourMomentum)
 
-        if (is_fermion(particle) && (spinorpol isa AbstractSpin)) ||
-            (is_boson(particle) && (spinorpol isa AbstractPolarization))
-            particle_stateful = ParticleStateful(momentum, particle, spinorpol, dir)
+        if (is_fermion(particle) && (spin_or_pol isa AbstractSpin)) ||
+            (is_boson(particle) && (spin_or_pol isa AbstractPolarization))
+            particle_stateful = ParticleStateful(dir, particle, momentum, spin_or_pol)
 
             @test particle_stateful.mom == momentum
             @test is_fermion(particle_stateful) == is_fermion(particle)
@@ -34,22 +35,20 @@ RNG = Random.MersenneTwister(727)
         else
             if (VERSION >= v"1.8")
                 # julia versions before 1.8 did not have support for regex matching in @test_throws
-                @test_throws "Tried to construct a stateful $(is_fermion(particle) ? "fermion" : "boson") with a $(spinorpol) instead of a $(is_fermion(particle) ? "spin" : "polarization")" ParticleStateful(
-                    momentum, particle, spinorpol, dir
+                @test_throws "MethodError: no method matching ParticleStateful" ParticleStateful(
+                    dir, particle, momentum, spin_or_pol
                 )
             end
-            @test_throws InvalidInputError ParticleStateful(
-                momentum, particle, spinorpol, dir
-            )
+            @test_throws MethodError ParticleStateful(dir, particle, momentum, spin_or_pol)
         end
     end
 end
 
 @testset "Phasespace Point" begin
-    in_el = ParticleStateful(rand(RNG, SFourMomentum), Electron(), AllSpin(), Incoming())
-    in_ph = ParticleStateful(rand(RNG, SFourMomentum), Photon(), AllPol(), Incoming())
-    out_el = ParticleStateful(rand(RNG, SFourMomentum), Electron(), AllSpin(), Outgoing())
-    out_ph = ParticleStateful(rand(RNG, SFourMomentum), Photon(), AllPol(), Outgoing())
+    in_el = ParticleStateful(Incoming(), Electron(), rand(RNG, SFourMomentum))
+    in_ph = ParticleStateful(Incoming(), Photon(), rand(RNG, SFourMomentum))
+    out_el = ParticleStateful(Outgoing(), Electron(), rand(RNG, SFourMomentum))
+    out_ph = ParticleStateful(Outgoing(), Photon(), rand(RNG, SFourMomentum))
 
     in_particles_valid = SVector(in_el, in_ph)
     in_particles_invalid = SVector(in_el, out_ph)
@@ -76,11 +75,11 @@ end
             process, model, phasespace_def, in_particles_valid, out_particles_invalid
         )
 
-        @test_throws r"Process given particle type \((.*)Electron\(\)\) does not match stateful particle type \((.*)Photon\(\)\)" PhaseSpacePoint(
+        @test_throws r"Process given particle species \((.*)Electron\(\)\) does not match stateful particle species \((.*)Photon\(\)\)" PhaseSpacePoint(
             process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
         )
 
-        @test_throws r"Process given particle type \((.*)Electron\(\)\) does not match stateful particle type \((.*)Photon\(\)\)" PhaseSpacePoint(
+        @test_throws r"Process given particle species \((.*)Electron\(\)\) does not match stateful particle species \((.*)Photon\(\)\)" PhaseSpacePoint(
             process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
         )
     end
