@@ -14,32 +14,41 @@ RNG = Random.MersenneTwister(727)
 
 @testset "Stateful Particle" begin
     DIRECTIONS = [Incoming(), Outgoing()]
-    PARTICLES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
+    SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
     SPINANDPOLS = [AllSpin(), SpinUp(), SpinDown(), AllPol(), PolX(), PolY()]
 
-    for (particle, dir, spin_or_pol) in
-        Iterators.product(PARTICLES, DIRECTIONS, SPINANDPOLS)
+    for (species, dir, spin_or_pol) in Iterators.product(SPECIES, DIRECTIONS, SPINANDPOLS)
         momentum = rand(RNG, SFourMomentum)
 
-        if (is_fermion(particle) && (spin_or_pol isa AbstractSpin)) ||
-            (is_boson(particle) && (spin_or_pol isa AbstractPolarization))
-            particle_stateful = ParticleStateful(dir, particle, momentum, spin_or_pol)
+        if (is_fermion(species) && (spin_or_pol isa AbstractSpin)) ||
+            (is_boson(species) && (spin_or_pol isa AbstractPolarization))
+            particle_stateful = ParticleStateful(dir, species, momentum, spin_or_pol)
 
             @test particle_stateful.mom == momentum
-            @test is_fermion(particle_stateful) == is_fermion(particle)
-            @test is_boson(particle_stateful) == is_boson(particle)
-            @test is_particle(particle_stateful) == is_particle(particle)
-            @test is_anti_particle(particle_stateful) == is_anti_particle(particle)
+            @test is_fermion(particle_stateful) == is_fermion(species)
+            @test is_boson(particle_stateful) == is_boson(species)
+            @test is_particle(particle_stateful) == is_particle(species)
+            @test is_anti_particle(particle_stateful) == is_anti_particle(species)
             @test is_incoming(particle_stateful) == is_incoming(dir)
             @test is_outgoing(particle_stateful) == is_outgoing(dir)
+            @test mass(particle_stateful) == mass(species)
+            @test charge(particle_stateful) == charge(species)
+
+            if (is_fermion(species))
+                @test spin(particle_stateful) == spin_or_pol
+                @test_throws MethodError pol(particle_stateful)
+            else
+                @test pol(particle_stateful) == spin_or_pol
+                @test_throws MethodError spin(particle_stateful)
+            end
         else
             if (VERSION >= v"1.8")
                 # julia versions before 1.8 did not have support for regex matching in @test_throws
                 @test_throws "MethodError: no method matching ParticleStateful" ParticleStateful(
-                    dir, particle, momentum, spin_or_pol
+                    dir, species, momentum, spin_or_pol
                 )
             end
-            @test_throws MethodError ParticleStateful(dir, particle, momentum, spin_or_pol)
+            @test_throws MethodError ParticleStateful(dir, species, momentum, spin_or_pol)
         end
     end
 end

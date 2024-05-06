@@ -224,3 +224,11 @@ end
 @inline is_anti_particle(particle::ParticleStateful) = is_anti_particle(particle.species)
 @inline mass(particle::ParticleStateful) = mass(particle.species)
 @inline charge(particle::ParticleStateful) = charge(particle.species)
+
+@inline _spin(::Species, particle::ParticleStateful) where {Species<:FermionLike} =
+    particle.spin_or_pol
+@inline spin(particle::ParticleStateful) = _spin(particle.species, particle)
+
+@inline _pol(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
+    particle.spin_or_pol
+@inline pol(particle::ParticleStateful) = _pol(particle.species, particle)
