@@ -113,13 +113,13 @@ end
 
 Representation of a particle with a state. It has four fields:
 - `dir::ParticleDirection`: The direction of the particle, `QEDbase.Incoming()` or `QEDbase.Outgoing()`.
-- `species::AbstractParticleType`: The species of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc..
+- `species::AbstractParticleType`: The species of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc.
 - `mom::AbstractFourMomentum`: The momentum of the particle.
-- `spin_or_pol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc.. Can only use spins with fermions and polarizations with bosons.
+- `spin_or_pol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc. Can only use spins with fermions and polarizations with bosons.
 
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
 
-The legality of the combination of `type` and `spinorpol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
+The legality of the combination of `species` and `spin_or_pol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
 """
 struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
     dir::ParticleDirection
@@ -164,7 +164,7 @@ end
 
 Representation of a point in the phase space of a process. Contains the process ([`AbstractProcessDefinition`](@ref)), the model ([`AbstractModelDefinition`](@ref)), the phase space definition ([`AbstractPhasespaceDefinition`]), and stateful incoming and outgoing particles ([`ParticleStateful`](@ref)).
 
-The legality of the combination of the given process and the incoming and outgoing particles is checked on construction. If the numbers of particles mismatch, the types of particles mismatch (note that order is important), or incoming particles have a `Outgoing` direction, an error is thrown.
+The legality of the combination of the given process and the incoming and outgoing particles is checked on construction. If the numbers of particles mismatch, the types of particles mismatch (note that order is important), or incoming particles have an `Outgoing` direction, an error is thrown.
 """
 struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
@@ -254,7 +254,7 @@ end
 """
     nth_momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
 
-Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref) which has direction `dir`. If `n` is outside the valid range for this phase space point, an `BoundsError` is thrown.
+Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref) which has direction `dir`. If `n` is outside the valid range for this phase space point, a `BoundsError` is thrown.
 """
 function nth_momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
     return psp[dir, n].mom
