@@ -12,6 +12,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
 RNG = Random.MersenneTwister(727)
 
+
+@testset "broadcast" begin
+  test_func(ps_def) = ps_def 
+  @test test_func.(TESTPSDEF) == TESTPSDEF 
+end
+
 @testset "Stateful Particle" begin
     DIRECTIONS = [Incoming(), Outgoing()]
     SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#

@@ -53,6 +53,12 @@ include("../test_implementation/TestImplementation.jl")
             end
         end
     end
+
+  @testset "broadcast" begin
+    test_func(proc) = proc
+    @test test_func.(TESTPROC) == TESTPROC
+  end
+
     @testset "incoming/outgoing particles" begin
         @test incoming_particles(TESTPROC) == INCOMING_PARTICLES
         @test outgoing_particles(TESTPROC) == OUTGOING_PARTICLES

@@ -6,6 +6,7 @@
 # constraint.
 ############
 
+
 # differential probability without energy momentum conservation check
 # single in phase space points/ single out phase space point
 # based on four-momenta
@@ -96,6 +97,16 @@ function _unsafe_differential_probability(
         )
     end
     return res
+end
+
+function unsafe_differential_probability(phase_space_point::PhaseSpacePoint)
+  return _unsafe_differential_probability(
+    phase_space_point.proc,
+    phase_space_point.model,
+    phase_space_point.ps_def,
+    momentum.(phase_space_point.in_particles),
+    momentum.(phase_space_point.out_particles)
+  )
 end
 
 """
@@ -251,6 +262,16 @@ function _differential_probability(
         )
     end
     return res
+end
+
+function differential_probability(phase_space_point::PhaseSpacePoint)
+  return differential_probability(
+    phase_space_point.proc,
+    phase_space_point.model,
+    phase_space_point.ps_def,
+    momentum.(phase_space_point.in_particles),
+    momentum.(phase_space_point.out_particles)
+  )
 end
 
 """
