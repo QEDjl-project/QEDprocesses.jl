@@ -3,10 +3,7 @@
 struct TestParticleFermion <: FermionLike end
 struct TestParticleBoson <: BosonLike end
 
-const PARTICLE_SET = [
-  TestParticleFermion(), 
-  TestParticleBoson(), 
-]
+const PARTICLE_SET = [TestParticleFermion(), TestParticleBoson()]
 
 """
 
@@ -106,10 +103,7 @@ function QEDprocesses._generate_outgoing_momenta(
 end
 
 function QEDprocesses._total_probability(
-    proc::TestProcess,
-    model::TestModel,
-    ps_def::TestPhasespaceDef,
-    in_ps::AbstractVector{T},
+    proc::TestProcess, model::TestModel, ps_def::TestPhasespaceDef, in_ps::AbstractVector{T}
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_total_probability(in_ps)
 end

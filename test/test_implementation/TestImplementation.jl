@@ -28,6 +28,7 @@ export TestPhasespaceDef, TestPhasespaceDef_FAIL
 using Random
 using QEDbase
 using QEDprocesses
+using StaticArrays
 
 include("groundtruths.jl")
 include("test_model.jl")

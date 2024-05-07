@@ -45,4 +45,5 @@ include("momentum_generation.jl")
 include("propagators.jl")
 include("probabilities.jl")
 include("cross_sections.jl")
+include("patch_QEDbase.jl")
 end

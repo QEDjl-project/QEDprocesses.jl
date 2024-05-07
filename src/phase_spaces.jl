@@ -39,7 +39,9 @@ struct CenterOfMomentumFrame <: AbstractFrameOfReference end
 struct ElectronRestFrame <: AbstractFrameOfReference end
 
 abstract type AbstractPhasespaceDefinition end
+
 Broadcast.broadcastable(ps_def::AbstractPhasespaceDefinition) = Ref(ps_def)
+
 
 """
 
@@ -52,7 +54,6 @@ struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfRefer
     coord_sys::CS
     frame::F
 end
-
 
 # abstract type for generic phase spaces
 #
@@ -161,17 +162,6 @@ end
     particle.spin_or_pol
 @inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
 
-const PHASESPACE_VALIDITY_CHECK= Ref(true)
-
-macro valid_phase_space(ex)
-    return quote
-        PHASESPACE_VALIDITY_CHECK.x = false
-        local val = $(esc(ex))
-        PHASESPACE_VALIDITY_CHECK.x = true
-        val
-    end
-end
-
 """
     PhaseSpacePoint
 
@@ -204,7 +194,6 @@ struct PhaseSpacePoint{
         IN_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
         OUT_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
     }
-    if PHASESPACE_VALIDITY_CHECK[]
         length(incoming_particles(proc)) == length(in_p) || throw(
             InvalidInputError(
                 "the number of incoming particles given by the process ($(incoming_particles(proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
@@ -240,7 +229,6 @@ struct PhaseSpacePoint{
                 ),
             )
         end
-    end
 
         return new{PROC,MODEL,PSDEF,PhaseSpaceElementType,length(in_p),length(out_p)}(
             proc, model, ps_def, in_p, out_p
