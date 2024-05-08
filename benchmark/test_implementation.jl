@@ -7,7 +7,7 @@ struct TestBoson <: BosonLike end
 QEDbase.mass(::TestBoson) = 0.0
 QEDbase.charge(::TestBoson) = -2.0
 
-const PARTICLE_SET = [TestFermion(),TestBoson()]
+const PARTICLE_SET = [TestFermion(), TestBoson()]
 
 """
 
@@ -32,4 +32,3 @@ struct TestPhasespaceDef <: AbstractPhasespaceDefinition end
 
 struct TestModel <: AbstractModelDefinition end
 QEDprocesses.fundamental_interaction_type(::TestModel) = :test_interaction
-

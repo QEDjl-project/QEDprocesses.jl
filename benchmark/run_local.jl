@@ -1,11 +1,11 @@
-import Pkg
+using Pkg: Pkg
 
 Pkg.activate(".")
-Pkg.develop(path="./..")
+Pkg.develop(; path="./..")
 
 include("benchmark.jl")
 
 tune!(SUITE)
-result = run(SUITE,verbose=true)
+result = run(SUITE; verbose=true)
 
-BenchmarkTools.save("bench.json",result)
+BenchmarkTools.save("bench.json", result)
