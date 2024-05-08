@@ -54,16 +54,15 @@ RNG = Random.MersenneTwister(727)
 end
 
 @testset "Phasespace Point" begin
-
     in_el_mom = rand(RNG, SFourMomentum)
     in_ph_mom = rand(RNG, SFourMomentum)
     out_el_mom = rand(RNG, SFourMomentum)
     out_ph_mom = rand(RNG, SFourMomentum)
 
-    in_el = ParticleStateful(Incoming(), Electron(),in_el_mom) 
-    in_ph = ParticleStateful(Incoming(), Photon(),in_ph_mom)
-    out_el = ParticleStateful(Outgoing(), Electron(), out_el_mom) 
-    out_ph = ParticleStateful(Outgoing(), Photon(), out_ph_mom) 
+    in_el = ParticleStateful(Incoming(), Electron(), in_el_mom)
+    in_ph = ParticleStateful(Incoming(), Photon(), in_ph_mom)
+    out_el = ParticleStateful(Outgoing(), Electron(), out_el_mom)
+    out_ph = ParticleStateful(Outgoing(), Photon(), out_ph_mom)
 
     in_particles_valid = SVector(in_el, in_ph)
     in_particles_invalid = SVector(in_el, out_ph)
@@ -82,7 +81,7 @@ end
         process, model, phasespace_def, in_particles_valid, out_particles_valid
     )
 
-    @testset "Accessor" begin 
+    @testset "Accessor" begin
         @test momentum(psp, Incoming(), 1) == in_el.mom
         @test momentum(psp, Incoming(), 2) == in_ph.mom
         @test momentum(psp, Outgoing(), 1) == out_el.mom
@@ -142,17 +141,17 @@ end
     end
 
     @testset "Generation" begin
-        test_psp = generate_phase_space(process,model,phasespace_def,[in_el_mom,in_ph_mom],[out_el_mom,out_ph_mom])
+        test_psp = generate_phase_space(
+            process, model, phasespace_def, [in_el_mom, in_ph_mom], [out_el_mom, out_ph_mom]
+        )
 
         @test test_psp.proc == process
         @test test_psp.model == model
         @test test_psp.ps_def == phasespace_def
-    
-        @test test_psp[Incoming(),1] == in_el
-        @test test_psp[Incoming(),2] == in_ph
-        @test test_psp[Outgoing(),1] == out_el
-        @test test_psp[Outgoing(),2] == out_ph
 
+        @test test_psp[Incoming(), 1] == in_el
+        @test test_psp[Incoming(), 2] == in_ph
+        @test test_psp[Outgoing(), 1] == out_el
+        @test test_psp[Outgoing(), 2] == out_ph
     end
-
 end
