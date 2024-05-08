@@ -259,3 +259,34 @@ Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref
 function momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
     return psp[dir, n].mom
 end
+
+"""
+
+    generate_phase_space(
+        proc::AbstractProcessDefinition, 
+        model::AbstractModelDefinition, 
+        ps_def::AbstractPhasespaceDefinition, 
+        in_ps::AbstractVector{ElType}, 
+        out_ps::AbstractVector{ElType},
+    ) where {ElType<:QEDbase.AbstractFourMomentum}
+
+Return the respective phase space point for given momenta of incoming and outgoing particles regarding a given process.
+"""
+function generate_phase_space(
+    proc::AbstractProcessDefinition, 
+    model::AbstractModelDefinition, 
+    ps_def::AbstractPhasespaceDefinition, 
+    in_ps::AbstractVector{ElType}, 
+    out_ps::AbstractVector{ElType},
+) where {ElType<:QEDbase.AbstractFourMomentum}
+    in_particles = incoming_particles(proc)
+    in_n = number_incoming_particles(proc)
+    in_parts = SVector{in_n,ParticleStateful{SFourMomentum}}(collect(ParticleStateful(Incoming(),particle,mom) for (particle,mom) in zip(in_particles,in_ps)))
+
+    out_particles = outgoing_particles(proc)
+    out_n = number_outgoing_particles(proc)
+    out_parts = SVector{out_n,ParticleStateful{SFourMomentum}}(collect(ParticleStateful(Outgoing(),particle,mom) for (particle,mom) in zip(out_particles,out_ps)))
+
+    return PhaseSpacePoint(proc,model,ps_def,in_parts,out_parts)
+end
+
