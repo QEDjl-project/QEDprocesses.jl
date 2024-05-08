@@ -167,6 +167,13 @@ momentum(part::ParticleStateful) = part.mom
     particle.spin_or_pol
 @inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
 
+function Base.show(io::IO, ::MIME"text/plain", particle::ParticleStateful)
+    print(
+        io, "$(particle.dir) $(particle.species): $(particle.mom), $(particle.spin_or_pol)"
+    )
+    return nothing
+end
+
 """
     PhaseSpacePoint
 
@@ -306,4 +313,24 @@ function generate_phase_space(
     )
 
     return PhaseSpacePoint(proc, model, ps_def, in_parts, out_parts)
+end
+
+function Base.show(io::IO, m::MIME"text/plain", psp::PhaseSpacePoint)
+    println(
+        io,
+        "Phase Space Point of $(psp.proc) using $(psp.model) and phase space definition $(psp.ps_def)",
+    )
+    println(io, "  Incoming Particles:")
+    for p in psp.in_particles
+        print(io, " -> ")
+        show(io, m, p)
+        println(io)
+    end
+    println(io, "  Outgoing Particles")
+    for p in psp.out_particles
+        print(io, " -> ")
+        show(io, m, p)
+        println(io)
+    end
+    return nothing
 end
