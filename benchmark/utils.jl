@@ -14,7 +14,5 @@ function _find_y_lims(data::BenchmarkTools.BenchmarkGroup)
     data_max = maximum(values(t_max))
     ymax = 10^(ceil(log10(data_max)))
 
-    return (ymin,ymax)
+    return (ymin, ymax)
 end
-
-
