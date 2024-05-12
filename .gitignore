@@ -10,6 +10,6 @@ Manifest.toml
 ####
 # benchmarks
 ####
-/benchmarks/*.json
-/benchmarks/plots/*
+/benchmark/*.json
+/benchmark/plots/*
 
