@@ -15,9 +15,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
 )
     INCOMING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING)
-  @show INCOMING_PARTICLES
     OUTGOING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING)
-  @show OUTGOING_PARTICLES
 
     TESTPROC = TestImplementation.TestProcess(INCOMING_PARTICLES, OUTGOING_PARTICLES)
 
@@ -121,6 +119,15 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
             end
 
+            @testset "compute on phase space points" begin
+                PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
+                groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
+                    TESTPROC, p_in_phys, p_out_phys 
+                )
+                @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
+            end
+
             @testset "invalid input" begin
                 for (P_IN, P_OUT) in p_combs
 
@@ -145,6 +152,8 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         diffCS_on_moms = differential_cross_section(
                             TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                         )
+
+
                         COORDS_IN = TestImplementation.flat_components(P_IN)
                         COORDS_OUT = TestImplementation.flat_components(P_OUT)
                         diffCS_on_coords = differential_cross_section(
@@ -156,6 +165,15 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         @test isapprox(diffCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
                         @test isapprox(diffCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
                     end
+                end
+
+                @testset "compute on phase space points" begin
+                    PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                    diffCS_on_psp = differential_cross_section(PS_POINT)
+                    groundtruth = TestImplementation._groundtruth_safe_diffCS(
+                        TESTPROC, p_in_phys, p_out_phys 
+                    )
+                    @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
                 end
 
                 @testset "invalid input" begin
@@ -235,6 +253,15 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                     end
                 end
 
+                @testset "compute on phase space points" begin
+                    PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                    prop_on_psp = unsafe_differential_probability(PS_POINT)
+                    groundtruth = TestImplementation._groundtruth_unsafe_probability(
+                        TESTPROC, p_in_phys, p_out_phys 
+                    )
+                    @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
+                end
+
                 @testset "invalid input" begin
                     for (P_IN, P_OUT) in p_combs
 
@@ -275,6 +302,15 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         @test isapprox(prob_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
                         @test isapprox(prob_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
                     end
+                end
+
+                @testset "compute on phase space points" begin
+                    PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                    prop_on_psp = differential_probability(PS_POINT)
+                    groundtruth = TestImplementation._groundtruth_safe_probability(
+                        TESTPROC, p_in_phys, p_out_phys 
+                    )
+                    @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
                 end
 
                 @testset "invalid input" begin

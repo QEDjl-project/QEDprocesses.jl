@@ -157,6 +157,16 @@ function unsafe_differential_cross_section(
     )
 end
 
+function unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
+  return _unsafe_differential_cross_section(
+    phase_space_point.proc,
+    phase_space_point.model,
+    phase_space_point.ps_def,
+    momentum.(phase_space_point.in_particles),
+    momentum.(phase_space_point.out_particles)
+  )
+end
+
 # differential cross sections with energy momentum conservation check
 # single in phase space point/ single out phase space point
 function _differential_cross_section(
@@ -307,6 +317,16 @@ function differential_cross_section(
         in_phase_space,
         out_phase_space,
     )
+end
+
+function differential_cross_section(phase_space_point::PhaseSpacePoint)
+  return _differential_cross_section(
+    phase_space_point.proc,
+    phase_space_point.model,
+    phase_space_point.ps_def,
+    momentum.(phase_space_point.in_particles),
+    momentum.(phase_space_point.out_particles)
+  )
 end
 
 ############

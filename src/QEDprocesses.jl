@@ -31,7 +31,7 @@ export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
 export ParticleStateful, PhaseSpacePoint
-export spin, polarization, momentum, getindex
+export spin, polarization, particle_direction, particle_species, momentum, getindex
 export generate_phase_space
 
 using QEDbase

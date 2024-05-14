@@ -24,13 +24,13 @@ end
     SPINANDPOLS = [AllSpin(), SpinUp(), SpinDown(), AllPol(), PolX(), PolY()]
 
     for (species, dir, spin_or_pol) in Iterators.product(SPECIES, DIRECTIONS, SPINANDPOLS)
-        momentum = rand(RNG, SFourMomentum)
+        mom = rand(RNG, SFourMomentum)
 
         if (is_fermion(species) && (spin_or_pol isa AbstractSpin)) ||
             (is_boson(species) && (spin_or_pol isa AbstractPolarization))
-            particle_stateful = ParticleStateful(dir, species, momentum, spin_or_pol)
+            particle_stateful = ParticleStateful(dir, species, mom, spin_or_pol)
 
-            @test particle_stateful.mom == momentum
+            # particle interface
             @test is_fermion(particle_stateful) == is_fermion(species)
             @test is_boson(particle_stateful) == is_boson(species)
             @test is_particle(particle_stateful) == is_particle(species)
@@ -40,6 +40,14 @@ end
             @test mass(particle_stateful) == mass(species)
             @test charge(particle_stateful) == charge(species)
 
+            # accessors
+            
+            @test particle_stateful.dir == dir
+            @test particle_direction(particle_stateful) == particle_stateful.dir
+            @test particle_stateful.species == species
+            @test particle_species(particle_stateful) == particle_stateful.species
+            @test particle_stateful.mom == mom 
+            @test momentum(particle_stateful) == mom 
             if (is_fermion(species))
                 @test spin(particle_stateful) == spin_or_pol
                 @test_throws MethodError polarization(particle_stateful)
@@ -51,10 +59,10 @@ end
             if (VERSION >= v"1.8")
                 # julia versions before 1.8 did not have support for regex matching in @test_throws
                 @test_throws "MethodError: no method matching ParticleStateful" ParticleStateful(
-                    dir, species, momentum, spin_or_pol
+                    dir, species, mom, spin_or_pol
                 )
             end
-            @test_throws MethodError ParticleStateful(dir, species, momentum, spin_or_pol)
+            @test_throws MethodError ParticleStateful(dir, species, mom, spin_or_pol)
         end
     end
 end

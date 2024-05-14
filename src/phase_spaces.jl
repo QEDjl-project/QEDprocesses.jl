@@ -145,6 +145,7 @@ struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
     end
 end
 
+# particle interface
 @inline is_incoming(particle::ParticleStateful) = is_incoming(particle.dir)
 @inline is_outgoing(particle::ParticleStateful) = is_outgoing(particle.dir)
 @inline is_fermion(particle::ParticleStateful) = is_fermion(particle.species)
@@ -153,6 +154,11 @@ end
 @inline is_anti_particle(particle::ParticleStateful) = is_anti_particle(particle.species)
 @inline mass(particle::ParticleStateful) = mass(particle.species)
 @inline charge(particle::ParticleStateful) = charge(particle.species)
+
+# accessors
+particle_direction(part::ParticleStateful) = part.dir
+particle_species(part::ParticleStateful) = part.species
+momentum(part::ParticleStateful) = part.mom
 
 @inline _spin(::Species, particle::ParticleStateful) where {Species<:FermionLike} =
     particle.spin_or_pol
