@@ -11,3 +11,9 @@ end
     TESTMODEL_FAIL = TestImplementation.TestModel_FAIL()
     @test_throws MethodError fundamental_interaction_type(TESTMODEL_FAIL)
 end
+
+@testset "broadcast" begin
+    test_func(model) = model
+    TESTMODEL = TestImplementation.TestModel()
+    @test test_func.(TESTMODEL) == TESTMODEL
+end

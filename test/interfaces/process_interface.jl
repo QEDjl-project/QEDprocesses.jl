@@ -44,16 +44,21 @@ include("../test_implementation/TestImplementation.jl")
                 )
             end
 
-            for (IN_PS_DEF, OUT_PS_DEF) in
-                Iterators.product((TESTPSDEF, TESTPSDEF_FAIL), (TESTPSDEF, TESTPSDEF_FAIL))
-                if TestImplementation._any_fail(PROC, MODEL, IN_PS_DEF, OUT_PS_DEF)
+            for PS_DEF in (TESTPSDEF, TESTPSDEF_FAIL)
+                if TestImplementation._any_fail(PROC, MODEL, PS_DEF)
                     @test_throws MethodError QEDprocesses._phase_space_factor(
-                        PROC, MODEL, IN_PS_DEF, in_ps, OUT_PS_DEF, out_ps
+                        PROC, MODEL, PS_DEF, in_ps, out_ps
                     )
                 end
             end
         end
     end
+
+    @testset "broadcast" begin
+        test_func(proc) = proc
+        @test test_func.(TESTPROC) == TESTPROC
+    end
+
     @testset "incoming/outgoing particles" begin
         @test incoming_particles(TESTPROC) == INCOMING_PARTICLES
         @test outgoing_particles(TESTPROC) == OUTGOING_PARTICLES
@@ -85,44 +90,40 @@ include("../test_implementation/TestImplementation.jl")
     end
 
     @testset "is in phasespace" begin
-        @test QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, TESTPSDEF, OUT_PS
-        )
+        @test QEDprocesses._is_in_phasespace(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
 
         IN_PS_unphysical = deepcopy(IN_PS)
         IN_PS_unphysical[1] = SFourMomentum(zeros(4))
 
         @test !QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, TESTPSDEF, OUT_PS
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS
         )
     end
 
     @testset "is in phasespace" begin
-        @test QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, TESTPSDEF, OUT_PS
-        )
+        @test QEDprocesses._is_in_phasespace(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
 
         IN_PS_unphysical = deepcopy(IN_PS)
         IN_PS_unphysical[1] = SFourMomentum(zeros(4))
 
         @test !QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, TESTPSDEF, OUT_PS
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS
         )
 
         OUT_PS_unphysical = deepcopy(OUT_PS)
         OUT_PS_unphysical[end] = ones(SFourMomentum)
 
         @test !QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, TESTPSDEF, OUT_PS_unphysical
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS_unphysical
         )
         @test !QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, TESTPSDEF, OUT_PS_unphysical
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS_unphysical
         )
     end
 
     @testset "phase space factor" begin
         test_phase_space_factor = QEDprocesses._phase_space_factor(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, TESTPSDEF, OUT_PS
+            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS
         )
         groundtruth = TestImplementation._groundtruth_phase_space_factor(IN_PS, OUT_PS)
         @test isapprox(test_phase_space_factor, groundtruth, atol=ATOL, rtol=RTOL)
