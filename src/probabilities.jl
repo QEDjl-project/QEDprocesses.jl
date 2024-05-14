@@ -82,6 +82,11 @@ function _unsafe_differential_probability(
     return res
 end
 
+"""
+    unsafe_differential_probability(phase_space_point::PhaseSpacePoint)
+
+Return differential probability evaluated on a phase space point without checking if the given phase space(s) are physical.
+"""
 function unsafe_differential_probability(phase_space_point::PhaseSpacePoint)
     return _unsafe_differential_probability(
         phase_space_point.proc,
@@ -215,6 +220,11 @@ function _differential_probability(
     return res
 end
 
+"""
+    differential_probability(phase_space_point::PhaseSpacePoint)
+
+If the given phase spaces are physical, return differential probability evaluated on a phase space point. Zero otherwise.
+"""
 function differential_probability(phase_space_point::PhaseSpacePoint)
     return differential_probability(
         phase_space_point.proc,

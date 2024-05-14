@@ -133,6 +133,11 @@ function unsafe_differential_cross_section(
     )
 end
 
+"""
+    unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
+
+Return the differential cross section evaluated on a phase space point without checking if the given phase space is physical.
+"""
 function unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
     return _unsafe_differential_cross_section(
         phase_space_point.proc,
@@ -265,6 +270,11 @@ function differential_cross_section(
     )
 end
 
+"""
+    differential_cross_section(phase_space_point::PhaseSpacePoint)
+
+If the given phase spaces are physical, return differential cross section evaluated on a phase space point. Zero otherwise.
+"""
 function differential_cross_section(phase_space_point::PhaseSpacePoint)
     return _differential_cross_section(
         phase_space_point.proc,
