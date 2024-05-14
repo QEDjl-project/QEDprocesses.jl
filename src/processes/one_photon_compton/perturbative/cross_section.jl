@@ -164,9 +164,7 @@ end
 #######
 
 function _pert_compton_ps_fac(
-    in_ps_def::PhasespaceDefinition{inCS,ElectronRestFrame},
-    in_photon_mom,
-    out_photon_mom,
+    in_ps_def::PhasespaceDefinition{inCS,ElectronRestFrame}, in_photon_mom, out_photon_mom
 ) where {inCS}
     # TODO
     omega = getE(in_photon_mom)
