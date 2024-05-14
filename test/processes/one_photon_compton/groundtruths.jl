@@ -14,7 +14,7 @@ function _groundtruth_pert_compton_diffCS_spinsum_polsum(om, cth, mass)
 end
 
 function _groundtruth_pert_compton_diffCS_spinsum_xpol(omega, ctheta, phi, mass)
-    om_prime =QEDprocesses._pert_omega_prime(omega, ctheta)
+    om_prime = QEDprocesses._pert_omega_prime(omega, ctheta)
     om_prime_over_om = om_prime / omega
     return 0.5 * ALPHA_SQUARE / mass^2 *
            om_prime_over_om^2 *
