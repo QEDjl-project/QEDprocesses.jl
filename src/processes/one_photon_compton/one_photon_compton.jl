@@ -6,7 +6,6 @@
 ##################
 
 export Compton
-export omega_prime
 
 include("process.jl")
 include("perturbative/kinematics.jl")

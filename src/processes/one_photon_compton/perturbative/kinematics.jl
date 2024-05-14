@@ -1,4 +1,3 @@
-omega_prime(::PerturbativeQED, om, cth; mass=1.0) = _pert_omega_prime(om, cth; mass=mass)
 
 @inline function _pert_omega_prime(omega, cth; mass=1.0)
     return omega / (1 + omega / mass * (1 - cth))
