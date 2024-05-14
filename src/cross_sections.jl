@@ -45,30 +45,6 @@ function _unsafe_differential_cross_section(
 end
 
 # differential cross sections without energy momentum conservation check
-# single in phase space point/ single out phase space point
-# based on coordinates
-function _unsafe_differential_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space_def::AbstractPhasespaceDefinition,
-    out_phase_space::AbstractVector{T},
-) where {T<:Real}
-    in_momenta, out_momenta = _generate_momenta(
-        proc,
-        model,
-        in_phase_space_def,
-        in_phase_space,
-        out_phase_space_def,
-        out_phase_space,
-    )
-    return _unsafe_differential_cross_section(
-        proc, model, in_phase_space_def, in_momenta, out_phase_space_def, out_momenta
-    )
-end
-
-# differential cross sections without energy momentum conservation check
 # single in phase space point/ several out phase space points
 function _unsafe_differential_cross_section(
     proc::AbstractProcessDefinition,
@@ -336,18 +312,6 @@ function _total_cross_section(
 ) where {T<:Real}
     in_momenta = _generate_incoming_momenta(proc, model, phase_space_def, in_phase_space)
     return _total_cross_section(proc, model, phase_space_def, in_momenta)
-end
-
-# total cross section on single phase space point
-# based on coordinates
-function _total_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-) where {T<:Real}
-    in_momenta = _generate_incoming_momenta(proc, model, in_phase_space_def, in_phase_space)
-    return _total_cross_section(proc, model, in_phase_space_def, in_momenta)
 end
 
 # total cross section on several phase space points

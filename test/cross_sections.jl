@@ -144,12 +144,6 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                         @test_throws DimensionMismatch unsafe_differential_cross_section(
                             TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                         )
-
-                        COORDS_IN = TestImplementation.flat_components(P_IN)
-                        COORDS_OUT = TestImplementation.flat_components(P_OUT)
-                        @test_throws DimensionMismatch unsafe_differential_cross_section(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, TESTPSDEF, COORDS_OUT
-                        )
                     end
                 end
             end

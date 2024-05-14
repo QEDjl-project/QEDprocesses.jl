@@ -9,10 +9,9 @@ function generate_momenta(
     model::PerturbativeQED,
     in_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
     in_ps::AbstractVector{T},
-    out_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
     out_ps::AbstractVector{T},
 ) where {T<:Real}
-    return _generate_momenta(proc, model, in_ps_def, in_ps, out_ps_def, out_ps)
+    return _generate_momenta(proc, model, in_ps_def, in_ps, out_ps)
 end
 
 function _generate_momenta(
@@ -20,7 +19,6 @@ function _generate_momenta(
     model::PerturbativeQED,
     in_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
     in_ps::AbstractVector{T},
-    out_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
     out_ps::AbstractVector{T},
 ) where {T<:Real}
     omega = in_ps[1]

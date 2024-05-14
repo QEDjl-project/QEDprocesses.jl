@@ -27,7 +27,7 @@ PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
             IN_COORDS = [om]
             OUT_COORDS = [cth, phi]
             IN_PS, OUT_PS = QEDprocesses._generate_momenta(
-                PROC, MODEL, PS_DEF, IN_COORDS, PS_DEF, OUT_COORDS
+                PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
             )
             in_mom_square = getMass2.(IN_PS)
             out_mom_square = getMass2.(OUT_PS)
@@ -53,7 +53,7 @@ end
                         omega, cos_theta, 1.0
                     )
                     test_val = unsafe_differential_cross_section(
-                        PROC, MODEL, PS_DEF, IN_COORDS, PS_DEF, OUT_COORDS
+                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -70,7 +70,7 @@ end
                         omega, cos_theta, phi, 1.0
                     )
                     test_val = unsafe_differential_cross_section(
-                        PROC, MODEL, PS_DEF, IN_COORDS, PS_DEF, OUT_COORDS
+                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -87,7 +87,7 @@ end
                         omega, cos_theta, phi, 1.0
                     )
                     test_val = unsafe_differential_cross_section(
-                        PROC, MODEL, PS_DEF, IN_COORDS, PS_DEF, OUT_COORDS
+                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end

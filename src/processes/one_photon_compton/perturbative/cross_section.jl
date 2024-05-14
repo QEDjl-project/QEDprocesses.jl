@@ -45,7 +45,6 @@ function _is_in_phasespace(
     model::PerturbativeQED,
     in_ps_def::AbstractPhasespaceDefinition,
     in_ps::AbstractVector{T},
-    out_ps_def::AbstractPhasespaceDefinition,
     out_ps::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     return (!isapprox(sum(in_ps), sum(out_ps))) ? false : _all_onshell(proc, in_ps, out_ps)
@@ -56,10 +55,9 @@ end
     model::PerturbativeQED,
     in_ps_def::AbstractPhasespaceDefinition,
     in_ps::AbstractVector{T},
-    out_ps_def::AbstractPhasespaceDefinition,
     out_ps::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    return _pert_compton_ps_fac(in_ps_def, in_ps[2], out_ps_def, out_ps[2])
+    return _pert_compton_ps_fac(in_ps_def, in_ps[2], out_ps[2])
 end
 
 #######
@@ -168,7 +166,6 @@ end
 function _pert_compton_ps_fac(
     in_ps_def::PhasespaceDefinition{inCS,ElectronRestFrame},
     in_photon_mom,
-    out_ps_def::PhasespaceDefinition{SphericalCoordinateSystem},
     out_photon_mom,
 ) where {inCS}
     # TODO
