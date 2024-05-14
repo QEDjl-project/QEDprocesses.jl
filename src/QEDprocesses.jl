@@ -15,6 +15,10 @@ export number_incoming_particles, number_outgoing_particles
 export differential_probability, unsafe_differential_probability
 export total_probability
 
+# probabilities
+export differential_probability, unsafe_differential_probability
+export total_probability
+
 # differential cross section
 export differential_cross_section, unsafe_differential_cross_section
 export total_cross_section
@@ -30,6 +34,9 @@ export propagator
 export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
+export ParticleStateful, PhaseSpacePoint
+export spin, polarization, particle_direction, particle_species, momentum, getindex
+export generate_phase_space
 
 # specific compute models
 export PerturbativeQED
@@ -42,16 +49,18 @@ using StaticArrays
 
 include("constants.jl")
 include("utils.jl")
+
 include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
-include("models/models.jl")
+
 include("phase_spaces.jl")
 include("momentum_generation.jl")
 include("propagators.jl")
 include("probabilities.jl")
 include("cross_sections.jl")
 
+include("models/models.jl")
 include("processes/one_photon_compton/one_photon_compton.jl")
 
 include("patch_QEDbase.jl")

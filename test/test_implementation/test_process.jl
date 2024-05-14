@@ -1,11 +1,9 @@
 
 # dummy particles
-struct TestParticle1 <: AbstractParticle end
-struct TestParticle2 <: AbstractParticle end
-struct TestParticle3 <: AbstractParticle end
-struct TestParticle4 <: AbstractParticle end
+struct TestParticleFermion <: FermionLike end
+struct TestParticleBoson <: BosonLike end
 
-const PARTICLE_SET = [TestParticle1(), TestParticle2(), TestParticle3(), TestParticle4()]
+const PARTICLE_SET = [TestParticleFermion(), TestParticleBoson()]
 
 """
 
@@ -69,9 +67,8 @@ end
 function QEDprocesses._is_in_phasespace(
     ::TestProcess,
     ::TestModel,
-    in_ps_def::TestPhasespaceDef,
+    ps_def::TestPhasespaceDef,
     in_ps::AbstractVector{T},
-    out_ps_def::TestPhasespaceDef,
     out_ps::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_is_in_phasespace(in_ps, out_ps)
@@ -80,9 +77,8 @@ end
 function QEDprocesses._phase_space_factor(
     ::TestProcess,
     ::TestModel,
-    in_ps_def::TestPhasespaceDef,
+    ps_def::TestPhasespaceDef,
     in_ps::AbstractVector{T},
-    out_ps_def::TestPhasespaceDef,
     out_ps::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_phase_space_factor(in_ps, out_ps)
@@ -91,7 +87,7 @@ end
 function QEDprocesses._generate_incoming_momenta(
     proc::TestProcess,
     model::TestModel,
-    in_phase_space_def::TestPhasespaceDef,
+    phase_space_def::TestPhasespaceDef,
     in_phase_space::AbstractVector{T},
 ) where {T<:Real}
     return _groundtruth_generate_momenta(in_phase_space)
@@ -100,17 +96,14 @@ end
 function QEDprocesses._generate_outgoing_momenta(
     proc::TestProcess,
     model::TestModel,
-    out_phase_space_def::TestPhasespaceDef,
+    phase_space_def::TestPhasespaceDef,
     out_phase_space::AbstractVector{T},
 ) where {T<:Real}
     return _groundtruth_generate_momenta(out_phase_space)
 end
 
 function QEDprocesses._total_probability(
-    proc::TestProcess,
-    model::TestModel,
-    in_ps_def::TestPhasespaceDef,
-    in_ps::AbstractVector{T},
+    proc::TestProcess, model::TestModel, ps_def::TestPhasespaceDef, in_ps::AbstractVector{T}
 ) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_total_probability(in_ps)
 end

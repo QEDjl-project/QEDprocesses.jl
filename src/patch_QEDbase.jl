@@ -1,15 +1,14 @@
+#############
+# Patches for `QEDbase.jl`
+# remove if this went into `QEDbase.jl`
+#
+# fix will be provided here: https://github.com/QEDjl-project/QEDbase.jl/pull/62
+#############
 
-function Base.show(io::IO, ::QEDbase.AllPol)
-    return println(io, "AllPol()")
-end
-
-function Base.show(io::IO, ::QEDbase.PolX)
-    return println(io, "PolX()")
-end
-
-function Base.show(io::IO, ::QEDbase.PolY)
-    return println(io, "PolY()")
-end
+Broadcast.broadcastable(dir::Incoming) = Ref(dir)
+Broadcast.broadcastable(dir::Outgoing) = Ref(dir)
+Broadcast.broadcastable(part::AbstractParticleType) = Ref(part)
+Broadcast.broadcastable(spin_or_pol::AbstractSpinOrPolarization) = Ref(spin_or_pol)
 
 number_of_spin_pol(::AbstractDefinitePolarization) = 1
 number_of_spin_pol(::AbstractDefiniteSpin) = 1
