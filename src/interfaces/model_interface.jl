@@ -18,7 +18,6 @@ abstract type AbstractModelDefinition end
 # broadcast every model as a scalar
 Broadcast.broadcastable(model::AbstractModelDefinition) = Ref(model)
 
-
 """
 
     fundamental_interaction_type(models_def::AbstractModelDefinition)

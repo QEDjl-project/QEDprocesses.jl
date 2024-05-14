@@ -12,10 +12,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
 RNG = Random.MersenneTwister(727)
 
-
 @testset "broadcast" begin
-  test_func(ps_def) = ps_def 
-  @test test_func.(TESTPSDEF) == TESTPSDEF 
+    test_func(ps_def) = ps_def
+    @test test_func.(TESTPSDEF) == TESTPSDEF
 end
 
 @testset "Stateful Particle" begin
@@ -41,13 +40,13 @@ end
             @test charge(particle_stateful) == charge(species)
 
             # accessors
-            
+
             @test particle_stateful.dir == dir
             @test particle_direction(particle_stateful) == particle_stateful.dir
             @test particle_stateful.species == species
             @test particle_species(particle_stateful) == particle_stateful.species
-            @test particle_stateful.mom == mom 
-            @test momentum(particle_stateful) == mom 
+            @test particle_stateful.mom == mom
+            @test momentum(particle_stateful) == mom
             if (is_fermion(species))
                 @test spin(particle_stateful) == spin_or_pol
                 @test_throws MethodError polarization(particle_stateful)

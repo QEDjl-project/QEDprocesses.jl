@@ -54,10 +54,10 @@ include("../test_implementation/TestImplementation.jl")
         end
     end
 
-  @testset "broadcast" begin
-    test_func(proc) = proc
-    @test test_func.(TESTPROC) == TESTPROC
-  end
+    @testset "broadcast" begin
+        test_func(proc) = proc
+        @test test_func.(TESTPROC) == TESTPROC
+    end
 
     @testset "incoming/outgoing particles" begin
         @test incoming_particles(TESTPROC) == INCOMING_PARTICLES
@@ -90,9 +90,7 @@ include("../test_implementation/TestImplementation.jl")
     end
 
     @testset "is in phasespace" begin
-        @test QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS
-        )
+        @test QEDprocesses._is_in_phasespace(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
 
         IN_PS_unphysical = deepcopy(IN_PS)
         IN_PS_unphysical[1] = SFourMomentum(zeros(4))
@@ -103,9 +101,7 @@ include("../test_implementation/TestImplementation.jl")
     end
 
     @testset "is in phasespace" begin
-        @test QEDprocesses._is_in_phasespace(
-            TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS
-        )
+        @test QEDprocesses._is_in_phasespace(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
 
         IN_PS_unphysical = deepcopy(IN_PS)
         IN_PS_unphysical[1] = SFourMomentum(zeros(4))

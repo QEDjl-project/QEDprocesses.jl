@@ -120,10 +120,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             end
 
             @testset "compute on phase space points" begin
-                PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                PS_POINT = generate_phase_space(
+                    TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
+                )
                 diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
-                    TESTPROC, p_in_phys, p_out_phys 
+                    TESTPROC, p_in_phys, p_out_phys
                 )
                 @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
             end
@@ -153,7 +155,6 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                             TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                         )
 
-
                         COORDS_IN = TestImplementation.flat_components(P_IN)
                         COORDS_OUT = TestImplementation.flat_components(P_OUT)
                         diffCS_on_coords = differential_cross_section(
@@ -168,10 +169,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
 
                 @testset "compute on phase space points" begin
-                    PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                    PS_POINT = generate_phase_space(
+                        TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
+                    )
                     diffCS_on_psp = differential_cross_section(PS_POINT)
                     groundtruth = TestImplementation._groundtruth_safe_diffCS(
-                        TESTPROC, p_in_phys, p_out_phys 
+                        TESTPROC, p_in_phys, p_out_phys
                     )
                     @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -188,11 +191,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                             COORDS_IN = TestImplementation.flat_components(P_IN)
                             COORDS_OUT = TestImplementation.flat_components(P_OUT)
                             @test_throws DimensionMismatch differential_cross_section(
-                                TESTPROC,
-                                TESTMODEL,
-                                TESTPSDEF,
-                                COORDS_IN,
-                                COORDS_OUT,
+                                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                             )
                         end
                     end
@@ -254,10 +253,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
 
                 @testset "compute on phase space points" begin
-                    PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                    PS_POINT = generate_phase_space(
+                        TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
+                    )
                     prop_on_psp = unsafe_differential_probability(PS_POINT)
                     groundtruth = TestImplementation._groundtruth_unsafe_probability(
-                        TESTPROC, p_in_phys, p_out_phys 
+                        TESTPROC, p_in_phys, p_out_phys
                     )
                     @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -274,11 +275,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                             COORDS_IN = TestImplementation.flat_components(P_IN)
                             COORDS_OUT = TestImplementation.flat_components(P_OUT)
                             @test_throws DimensionMismatch unsafe_differential_probability(
-                                TESTPROC,
-                                TESTMODEL,
-                                TESTPSDEF,
-                                COORDS_IN,
-                                COORDS_OUT,
+                                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                             )
                         end
                     end
@@ -305,10 +302,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
 
                 @testset "compute on phase space points" begin
-                    PS_POINT = generate_phase_space(TESTPROC,TESTMODEL,TESTPSDEF,p_in_phys,p_out_phys)
+                    PS_POINT = generate_phase_space(
+                        TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
+                    )
                     prop_on_psp = differential_probability(PS_POINT)
                     groundtruth = TestImplementation._groundtruth_safe_probability(
-                        TESTPROC, p_in_phys, p_out_phys 
+                        TESTPROC, p_in_phys, p_out_phys
                     )
                     @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -325,11 +324,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                             COORDS_IN = TestImplementation.flat_components(P_IN)
                             COORDS_OUT = TestImplementation.flat_components(P_OUT)
                             @test_throws DimensionMismatch differential_probability(
-                                TESTPROC,
-                                TESTMODEL,
-                                TESTPSDEF,
-                                COORDS_IN,
-                                COORDS_OUT,
+                                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, COORDS_OUT
                             )
                         end
                     end

@@ -13,9 +13,7 @@ end
 end
 
 @testset "broadcast" begin
-
-  test_func(model) = model
-  TESTMODEL = TestImplementation.TestModel()
-  @test test_func.(TESTMODEL) == TESTMODEL 
-
+    test_func(model) = model
+    TESTMODEL = TestImplementation.TestModel()
+    @test test_func.(TESTMODEL) == TESTMODEL
 end

@@ -22,11 +22,7 @@ function _unsafe_differential_cross_section(
     I = 1 / (4 * _incident_flux(proc, model, in_phase_space))
 
     return I * _unsafe_differential_probability(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
 end
 
@@ -41,11 +37,7 @@ function _unsafe_differential_cross_section(
     out_phase_space::AbstractVector{T},
 ) where {T<:Real}
     in_momenta, out_momenta = _generate_momenta(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
     return _unsafe_differential_cross_section(
         proc, model, phase_space_def, in_momenta, out_momenta
@@ -64,11 +56,7 @@ function _unsafe_differential_cross_section(
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
         res[i] = _unsafe_differential_cross_section(
-            proc,
-            model,
-            phase_space_def,
-            in_phase_space,
-            view(out_phase_space, :, i),
+            proc, model, phase_space_def, in_phase_space, view(out_phase_space, :, i)
         )
     end
     return res
@@ -86,11 +74,7 @@ function _unsafe_differential_cross_section(
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i, :] .= _unsafe_differential_cross_section(
-            proc,
-            model,
-            phase_space_def,
-            view(in_phase_space, :, i),
-            out_phase_space,
+            proc, model, phase_space_def, view(in_phase_space, :, i), out_phase_space
         )
     end
     return res
@@ -119,11 +103,7 @@ function unsafe_differential_cross_section(
     _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _unsafe_differential_cross_section(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
 end
 
@@ -149,22 +129,18 @@ function unsafe_differential_cross_section(
     _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _unsafe_differential_cross_section(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
 end
 
 function unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
-  return _unsafe_differential_cross_section(
-    phase_space_point.proc,
-    phase_space_point.model,
-    phase_space_point.ps_def,
-    momentum.(phase_space_point.in_particles),
-    momentum.(phase_space_point.out_particles)
-  )
+    return _unsafe_differential_cross_section(
+        phase_space_point.proc,
+        phase_space_point.model,
+        phase_space_point.ps_def,
+        momentum.(phase_space_point.in_particles),
+        momentum.(phase_space_point.out_particles),
+    )
 end
 
 # differential cross sections with energy momentum conservation check
@@ -176,22 +152,12 @@ function _differential_cross_section(
     in_phase_space::AbstractVector{T},
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    if !_is_in_phasespace(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
-    )
+    if !_is_in_phasespace(proc, model, phase_space_def, in_phase_space, out_phase_space)
         return zero(eltype(T))
     end
 
     return _unsafe_differential_cross_section(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
 end
 
@@ -205,11 +171,7 @@ function _differential_cross_section(
     out_phase_space::AbstractVector{T},
 )::Float64 where {T<:Real}
     in_momenta, out_momenta = _generate_momenta(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
     return _differential_cross_section(
         proc, model, phase_space_def, in_momenta, out_momenta
@@ -226,11 +188,7 @@ function _differential_cross_section(
     res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
     for i in 1:size(out_phase_space, 2)
         res[i] = _differential_cross_section(
-            proc,
-            model,
-            phase_space_def,
-            in_phase_space,
-            view(out_phase_space, :, i),
+            proc, model, phase_space_def, in_phase_space, view(out_phase_space, :, i)
         )
     end
     return res
@@ -248,11 +206,7 @@ function _differential_cross_section(
     res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
     for i in 1:size(in_phase_space, 2)
         res[i, :] .= _differential_cross_section(
-            proc,
-            model,
-            phase_space_def,
-            view(in_phase_space, :, i),
-            out_phase_space,
+            proc, model, phase_space_def, view(in_phase_space, :, i), out_phase_space
         )
     end
     return res
@@ -281,11 +235,7 @@ function differential_cross_section(
     _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _differential_cross_section(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
 end
 
@@ -311,22 +261,18 @@ function differential_cross_section(
     _check_out_phase_space_dimension(proc, model, out_phase_space)
 
     return _differential_cross_section(
-        proc,
-        model,
-        phase_space_def,
-        in_phase_space,
-        out_phase_space,
+        proc, model, phase_space_def, in_phase_space, out_phase_space
     )
 end
 
 function differential_cross_section(phase_space_point::PhaseSpacePoint)
-  return _differential_cross_section(
-    phase_space_point.proc,
-    phase_space_point.model,
-    phase_space_point.ps_def,
-    momentum.(phase_space_point.in_particles),
-    momentum.(phase_space_point.out_particles)
-  )
+    return _differential_cross_section(
+        phase_space_point.proc,
+        phase_space_point.model,
+        phase_space_point.ps_def,
+        momentum.(phase_space_point.in_particles),
+        momentum.(phase_space_point.out_particles),
+    )
 end
 
 ############

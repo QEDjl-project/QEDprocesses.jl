@@ -75,7 +75,6 @@ abstract type AbstractProcessDefinition end
 # broadcast every model as a scalar
 Broadcast.broadcastable(proc::AbstractProcessDefinition) = Ref(proc)
 
-
 """
 
     incoming_particles(proc_def::AbstractProcessDefinition)

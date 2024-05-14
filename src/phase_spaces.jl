@@ -42,7 +42,6 @@ abstract type AbstractPhasespaceDefinition end
 
 Broadcast.broadcastable(ps_def::AbstractPhasespaceDefinition) = Ref(ps_def)
 
-
 """
 
     PhasespaceDefinition(coord_sys::AbstractCoordinateSystem, frame::AbstractFrameOfReference)
