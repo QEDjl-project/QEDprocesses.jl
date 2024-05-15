@@ -5,8 +5,6 @@
 # Compton
 ##################
 
-export Compton
-
 include("process.jl")
 include("perturbative/kinematics.jl")
 include("perturbative/cross_section.jl")

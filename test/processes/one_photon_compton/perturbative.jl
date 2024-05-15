@@ -32,7 +32,7 @@ PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
             in_mom_square = getMass2.(IN_PS)
             out_mom_square = getMass2.(OUT_PS)
             in_masses = mass.(incoming_particles(PROC)) .^ 2
-            out_masses = mass.(outgoing_particles(PROC))
+            out_masses = mass.(outgoing_particles(PROC)) .^ 2
             @test isapprox(in_mom_square, SVector(in_masses))
             @test isapprox(out_mom_square, SVector(out_masses))
         end
