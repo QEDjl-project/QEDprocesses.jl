@@ -47,7 +47,7 @@ function _is_in_phasespace(
     in_ps::AbstractVector{T},
     out_ps::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    return (!isapprox(sum(in_ps), sum(out_ps))) ? false : _all_onshell(proc, in_ps, out_ps)
+    return (isapprox(sum(in_ps), sum(out_ps))) ? _all_onshell(proc, in_ps, out_ps) : false
 end
 
 @inline function _phase_space_factor(

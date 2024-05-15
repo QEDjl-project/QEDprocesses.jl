@@ -11,7 +11,7 @@ Return the number of degrees of freedom to determine the incoming phase space fo
 
 !!! note "Convention"
 
-    The current implementation only supports the case, where two of the incoming particles collide heads-on. 
+    The current implementation only supports the case where two of the incoming particles collide head-on. 
 
 """
 function in_phase_space_dimension(proc::AbstractProcessDefinition, ::PerturbativeQED)

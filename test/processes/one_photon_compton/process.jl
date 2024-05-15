@@ -1,7 +1,6 @@
 using QEDprocesses
 using Random
 using QEDbase
-using QEDprocesses
 
 POLS = [PolX(), PolY(), AllPol()]
 SPINS = [SpinUp(), SpinDown(), AllSpin()]
