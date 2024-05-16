@@ -1,5 +1,4 @@
 
-
 function _total_probability(
     proc::Compton,
     model::PerturbativeQED,

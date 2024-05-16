@@ -39,7 +39,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
     end
 end
 
-@testset "perturbative cross section" begin
+@testset "perturbative" begin
     @testset "$omega" for omega in OMEGAS
         @testset "differential cross section" begin
             @testset "spin and pol summed" begin
