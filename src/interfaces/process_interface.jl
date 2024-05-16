@@ -18,53 +18,26 @@ outgoing_particles(proc_def::AbstractProcessDefinition)
 which return a tuple of the incoming and outgoing particles, respectively.
 
 Furthermore, to calculate scattering probabilities and differential cross sections, the following 
-interface functions need to be implemented
+interface functions need to be implemented for every combination of `CustomProcess<:AbstractProcessDefinition`, 
+`CustomModel<:AbstractModelDefinition`, and `CustomPhasespaceDefinition<:AbstractPhasespaceDefinition`.
 
 ```Julia
-    _incident_flux(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _incident_flux(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
-    _matrix_element(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_phase_space::AbstractVector{T}
-        out_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _matrix_element(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
-    _averaging_norm(
-        proc::AbstractProcessDefinition
-        )
+    _averaging_norm(proc::CustomProcess)
 
-    _is_in_phasespace(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition,
-        in_phase_space::AbstractVector{T}
-        out_phase_space::AbstractVector{T}
-    )
+    _is_in_phasespace(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
-    _phase_space_factor(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        ps_def::InPhasespaceDefinition,
-        in_phase_space::AbstractVector{T}
-        out_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _phase_space_factor(psp::PhaseSpacePoint{CustomProcess,CustomModel, CustomPhasespaceDefinition})
 ```
 
 Optional is the implementation of 
 
 ```Julia
 
-    _total_probability(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition,
-        in_phase_space::AbstractVector{T}
-    ) where {T<: QEDbase.AbstractFourMomentum}
+    _total_probability(psp::PhaseSpacePoint{CustomProcess,CustomModel, CustomPhasespaceDefinition})
 
 ```
 to enable the calculation of total probabilities and cross sections.
@@ -94,11 +67,10 @@ This function needs to be given to implement the scattering process interface.
 function outgoing_particles end
 
 """
-    _incident_flux(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _incident_flux(PhaseSpacePoint{PROC,MODEL}) where {
+        PROC <: AbstractProcessDefinition,
+        MODEL <: AbstractModelDefinition
+    }
 
 Interface function, which returns the incident flux of the given scattering process for a given incoming phase-space.
 
@@ -106,12 +78,10 @@ Interface function, which returns the incident flux of the given scattering proc
 function _incident_flux end
 
 """
-    _matrix_element(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_phase_space::AbstractVector{T}
-        out_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _matrix_elemen(PhaseSpacePoint{PROC,MODEL}) where {
+        PROC <: AbstractProcessDefinition,
+        MODEL <: AbstractModelDefinition,
+    }
 
 Interface function, which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
 """
@@ -138,13 +108,10 @@ function _averaging_norm end
 
 """
 
-    _is_in_phasespace(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition,
-        in_ps::AbstractVector{T}
-        out_ps::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _is_in_phasespace(PhaseSpacePoint{PROC,MODEL}) where {
+        PROC <: AbstractProcessDefinition,
+        MODEL <: AbstractModelDefinition,
+    }
 
 Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
 is physical, i.e. all momenta are on-shell and some sort of energy-momentum conservation holds.
@@ -152,13 +119,11 @@ is physical, i.e. all momenta are on-shell and some sort of energy-momentum cons
 function _is_in_phasespace end
 
 """
-    _phase_space_factor(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition,
-        in_phase_space::AbstractVector{T}
-        out_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _phase_space_factor(PhaseSpacePoint{PROC,MODEL,PSDEF}) where {
+        PROC <: AbstractProcessDefinition,
+        MODEL <: AbstractModelDefinition
+        PSDEF <: AbstractPhasespaceDefinition,
+    }
 
 Interface function, which returns the pre-differential factor of the invariant phase space intergral measure. 
 
