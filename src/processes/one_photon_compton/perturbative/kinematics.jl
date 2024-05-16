@@ -1,4 +1,3 @@
-
 @inline function _pert_omega_prime(omega, cth; mass=1.0)
     return omega / (1 + omega / mass * (1 - cth))
 end
@@ -11,6 +10,20 @@ function generate_momenta(
     out_ps::AbstractVector{T},
 ) where {T<:Real}
     return _generate_momenta(proc, model, in_ps_def, in_ps, out_ps)
+end
+
+function _generate_incoming_momenta(
+    proc::Compton,
+    model::PerturbativeQED,
+    in_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
+    in_ps::AbstractVector{T},
+) where {T<:Real}
+    om = in_ps[1]
+
+    P = SFourMomentum(one(om), zero(om), zero(om), zero(om))
+    K = SFourMomentum(om, zero(om), zero(om), om)
+
+    return [P, K]
 end
 
 function _generate_momenta(

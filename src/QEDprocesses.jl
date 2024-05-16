@@ -46,6 +46,7 @@ export Compton, omega_prime
 
 using QEDbase
 using StaticArrays
+using QuadGK
 
 include("constants.jl")
 include("utils.jl")

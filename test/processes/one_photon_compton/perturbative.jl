@@ -5,19 +5,19 @@ using Random
 using StaticArrays
 using QuadGK
 
-RNG = MersenneTwister(77697185)
-ATOL = eps()
-RTOL = sqrt(eps())
+const RNG = MersenneTwister(77697185)
+const ATOL = eps()
+const RTOL = sqrt(eps())
 
 include("groundtruths.jl")
 
-MODEL = PerturbativeQED()
-PS_DEF = PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame())
-OMEGAS = (1e-6 * rand(RNG), 1e-3 * rand(RNG), rand(RNG), 1e3 * rand(RNG))
+const MODEL = PerturbativeQED()
+const PS_DEF = PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame())
+const OMEGAS = (1e-6 * rand(RNG), 1e-3 * rand(RNG), rand(RNG), 1e3 * rand(RNG))
 #OMEGAS = (rand(RNG),)
 
-COS_THETAS = [-1.0, 2 * rand(RNG) - 1, 0.0, 1.0]
-PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
+const COS_THETAS = [-1.0, 2 * rand(RNG) - 1, 0.0, 1.0]
+const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
 
 @testset "perturbative kinematics" begin
     PROC = Compton()
@@ -93,26 +93,27 @@ end
                 end
             end
         end
+        @testset "total cross section" begin
+            @testset "spin and pol summed" begin
+                PROC = Compton()
+                # Klein-Nishina: total cross section
+                function klein_nishina_total_cross_section(in_ps)
+                    function func(x)
+                        return unsafe_differential_cross_section(
+                            Compton(), PerturbativeQED(), PS_DEF, in_ps, [x, 0.0]
+                        )
+                    end
+                    res, err = quadgk(func, -1, 1)
+
+                    # note: mul by 2pi instead of the phi-integration
+                    return 2 * pi * res
+                end
+
+                IN_COORDS = [omega]
+                groundtruth = klein_nishina_total_cross_section(IN_COORDS)
+                test_val = @inferred total_cross_section(PROC, MODEL, PS_DEF, IN_COORDS)
+                @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+            end
+        end
     end
-    # @testset "total cross section" begin
-    #     @testset "spin and pol summed" begin
-    #         PROC = Compton()
-    #         # Klein-Nishina: total cross section
-    #         function klein_nishina_total_cross_section(om, mass)
-    #             function func(x)
-    #                 return differential_cross_section_on_coord(
-    #                     Compton(), PerturbativeQED(), om, [x, 0.0]
-    #                 )
-    #             end
-    #             res, err = quadgk(func, -1, 1)
-    #
-    #             # note: mul by 2pi instead of the phi-integration
-    #             return 2 * pi * res
-    #         end
-    #
-    #         groundtruth = klein_nishina_total_cross_section(OMEGA, MASS)
-    #         test_val = @inferred total_cross_section_on_coord(PROC, MODEL, OMEGA)
-    #         @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
-    #     end
-    # end
 end

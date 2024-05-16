@@ -8,3 +8,4 @@
 include("process.jl")
 include("perturbative/kinematics.jl")
 include("perturbative/cross_section.jl")
+include("perturbative/total_probability.jl")
