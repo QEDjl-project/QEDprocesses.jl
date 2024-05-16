@@ -43,15 +43,44 @@ abstract type AbstractPhasespaceDefinition end
 Broadcast.broadcastable(ps_def::AbstractPhasespaceDefinition) = Ref(ps_def)
 
 """
-
     PhasespaceDefinition(coord_sys::AbstractCoordinateSystem, frame::AbstractFrameOfReference)
 
 Convenient type to dispatch on coordiante systems and frames of reference.
+
+```jldoctest
+julia> using QEDprocesses
+
+julia> PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame())
+phase space in spherical coordinates and electron rest frame
+
+julia> PhasespaceDefinition(SphericalCoordinateSystem(), CenterOfMomentumFrame())
+phase space in spherical coordinates and center-of-momentum frame
+```
 """
 struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfReference} <:
        AbstractPhasespaceDefinition
     coord_sys::CS
     frame::F
+end
+
+function Base.show(io::IO, ::MIME"text/plain", ::SphericalCoordinateSystem)
+    print(io, "spherical coordinates")
+    return nothing
+end
+function Base.show(io::IO, ::MIME"text/plain", ::CenterOfMomentumFrame)
+    print(io, "center-of-momentum frame")
+    return nothing
+end
+function Base.show(io::IO, ::MIME"text/plain", ::ElectronRestFrame)
+    print(io, "electron rest frame")
+    return nothing
+end
+function Base.show(io::IO, m::MIME"text/plain", ps_def::PhasespaceDefinition)
+    print(io, "phase space in ")
+    show(io, m, ps_def.coord_sys)
+    print(io, " and ")
+    show(io, m, ps_def.frame)
+    return nothing
 end
 
 # abstract type for generic phase spaces
@@ -122,6 +151,16 @@ Representation of a particle with a state. It has four fields:
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
 
 The legality of the combination of `species` and `spin_or_pol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
+
+```jldoctest
+julia> using QEDbase; using QEDprocesses
+
+julia> ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0))
+incoming electron: [1.0, 0.0, 0.0, 0.0], all spins
+
+julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0), PolX())
+outgoing photon: [1.0, 0.0, 0.0, 0.0], x-polarized
+```
 """
 struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
     dir::ParticleDirection
@@ -167,10 +206,12 @@ momentum(part::ParticleStateful) = part.mom
     particle.spin_or_pol
 @inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
 
-function Base.show(io::IO, ::MIME"text/plain", particle::ParticleStateful)
-    print(
-        io, "$(particle.dir) $(particle.species): $(particle.mom), $(particle.spin_or_pol)"
-    )
+function Base.show(io::IO, m::MIME"text/plain", particle::ParticleStateful)
+    show(io, m, particle.dir)
+    print(io, " ")
+    show(io, m, particle.species)
+    print(io, ": $(particle.mom), ")
+    show(io, m, particle.spin_or_pol)
     return nothing
 end
 
@@ -180,6 +221,31 @@ end
 Representation of a point in the phase space of a process. Contains the process ([`AbstractProcessDefinition`](@ref)), the model ([`AbstractModelDefinition`](@ref)), the phase space definition ([`AbstractPhasespaceDefinition`]), and stateful incoming and outgoing particles ([`ParticleStateful`](@ref)).
 
 The legality of the combination of the given process and the incoming and outgoing particles is checked on construction. If the numbers of particles mismatch, the types of particles mismatch (note that order is important), or incoming particles have an `Outgoing` direction, an error is thrown.
+
+```jldoctest
+julia> using QEDprocesses; using QEDbase
+
+julia> PhaseSpacePoint(
+            Compton(), 
+            PerturbativeQED(), 
+            PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), 
+            [
+                ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(Incoming(), Photon(), SFourMomentum(1, 0, 0, 0))
+            ], 
+            [
+                ParticleStateful(Outgoing(), Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
+            ]
+        )
+Phase space point of 1-photon Compton process (all spins, all polarizations) -> (all spins, all polarizations) using perturbative QED and phase space in spherical coordinates and electron rest frame
+  Incoming particles:
+ -> incoming electron: [1.0, 0.0, 0.0, 0.0], all spins
+ -> incoming photon: [1.0, 0.0, 0.0, 0.0], all polarizations
+  Outgoing particles
+ -> outgoing electron: [1.0, 0.0, 0.0, 0.0], all spins
+ -> outgoing photon: [1.0, 0.0, 0.0, 0.0], all polarizations
+```
 """
 struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
@@ -316,17 +382,20 @@ function generate_phase_space(
 end
 
 function Base.show(io::IO, m::MIME"text/plain", psp::PhaseSpacePoint)
-    println(
-        io,
-        "Phase Space Point of $(psp.proc) using $(psp.model) and phase space definition $(psp.ps_def)",
-    )
-    println(io, "  Incoming Particles:")
+    print(io, "Phase space point of ")
+    show(io, m, psp.proc)
+    print(io, " using ")
+    show(io, m, psp.model)
+    print(io, " and ")
+    show(io, m, psp.ps_def)
+    println(io)
+    println(io, "  Incoming particles:")
     for p in psp.in_particles
         print(io, " -> ")
         show(io, m, p)
         println(io)
     end
-    println(io, "  Outgoing Particles")
+    println(io, "  Outgoing particles")
     for p in psp.out_particles
         print(io, " -> ")
         show(io, m, p)

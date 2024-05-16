@@ -21,3 +21,8 @@ end
 function out_phase_space_dimension(proc::AbstractProcessDefinition, ::PerturbativeQED)
     return 3 * number_outgoing_particles(proc) - 4
 end
+
+function Base.show(io::IO, ::MIME"text/plain", ::PerturbativeQED)
+    print(io, "perturbative QED")
+    return nothing
+end

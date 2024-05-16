@@ -59,3 +59,16 @@ end
 function _spin_or_pol(process::Compton, ::Photon, ::Outgoing)
     return process.out_pol
 end
+
+function Base.show(io::IO, m::MIME"text/plain", proc::Compton)
+    print(io, "1-photon Compton process (")
+    show(io, m, proc.in_spin)
+    print(io, ", ")
+    show(io, m, proc.in_pol)
+    print(io, ") -> (")
+    show(io, m, proc.out_spin)
+    print(io, ", ")
+    show(io, m, proc.out_pol)
+    print(io, ")")
+    return nothing
+end
