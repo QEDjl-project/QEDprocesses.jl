@@ -40,7 +40,11 @@ end
 function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
     in_ps = momentum.(psp.in_particles)
     out_ps = momentum.(psp.out_particles)
-    return (isapprox(sum(in_ps), sum(out_ps))) ? _all_onshell(psp.proc, in_ps, out_ps) : false
+    return if (isapprox(sum(in_ps), sum(out_ps)))
+        _all_onshell(psp.proc, in_ps, out_ps)
+    else
+        false
+    end
 end
 
 @inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})

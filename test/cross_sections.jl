@@ -28,9 +28,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     p_out_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING)
     p_out_unphys = TestImplementation._rand_out_momenta_failing(RNG, N_OUTGOING)
 
-    p_in_all = (p_in_phys, p_in_unphys) 
+    p_in_all = (p_in_phys, p_in_unphys)
 
-    p_out_all = (p_out_phys, p_out_unphys) 
+    p_out_all = (p_out_phys, p_out_unphys)
 
     # all combinations
     p_combs = Iterators.product(p_in_all, p_out_all)
@@ -39,7 +39,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
     p_out_all_valid = (p_out_phys, p_out_unphys)
 
-    p_in_all_valid = (p_in_phys, p_in_unphys )
+    p_in_all_valid = (p_in_phys, p_in_unphys)
 
     # all valid combinations
     p_combs_valid = Iterators.product(p_in_all_valid, p_out_all_valid)
@@ -52,12 +52,10 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     @testset "cross section" begin
         @testset "unsafe compute" begin
             for (P_IN, P_OUT) in p_combs_phys
-                PS_POINT = generate_phase_space(
-                    TESTPROC, TESTMODEL, TESTPSDEF,P_IN, P_OUT 
-                )
+                PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
                 diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
-                    TESTPROC, P_IN, P_OUT 
+                    TESTPROC, P_IN, P_OUT
                 )
                 @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
             end
@@ -65,12 +63,10 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
         @testset "safe compute" begin
             for (P_IN, P_OUT) in p_combs_valid
-                PS_POINT = generate_phase_space(
-                    TESTPROC, TESTMODEL, TESTPSDEF,P_IN, P_OUT 
-                )
+                PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
                 diffCS_on_psp = differential_cross_section(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_safe_diffCS(
-                    TESTPROC, P_IN, P_OUT 
+                    TESTPROC, P_IN, P_OUT
                 )
                 @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
             end
@@ -79,9 +75,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         @testset "total cross section" begin
             @testset "compute" begin
                 for P_IN in (p_in_phys,)
-                    groundtruth = TestImplementation._groundtruth_total_cross_section(
-                        P_IN
-                    )
+                    groundtruth = TestImplementation._groundtruth_total_cross_section(P_IN)
                     totCS_on_moms = total_cross_section(
                         TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                     )
@@ -113,11 +107,11 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             @testset "unsafe compute" begin
                 for (P_IN, P_OUT) in p_combs_phys
                     PS_POINT = generate_phase_space(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT 
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                     )
                     prop_on_psp = unsafe_differential_probability(PS_POINT)
                     groundtruth = TestImplementation._groundtruth_unsafe_probability(
-                        TESTPROC, P_IN, P_OUT 
+                        TESTPROC, P_IN, P_OUT
                     )
                     @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
                 end
@@ -126,7 +120,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             @testset "safe compute" begin
                 for (P_IN, P_OUT) in p_combs_valid
                     PS_POINT = generate_phase_space(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT 
+                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
                     )
                     prop_on_psp = differential_probability(PS_POINT)
                     groundtruth = TestImplementation._groundtruth_safe_probability(

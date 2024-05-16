@@ -92,7 +92,6 @@ Interface function, which returns a tuple of scattering matrix elements for each
 """
 function _matrix_element end
 
-
 """
     _averaging_norm(
         proc::AbstractProcessDefinition
