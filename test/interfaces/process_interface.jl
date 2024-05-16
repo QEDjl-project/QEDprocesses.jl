@@ -72,7 +72,7 @@ include("../test_implementation/TestImplementation.jl")
     end
 
     @testset "incident flux" begin
-        test_incident_flux = QEDprocesses._incident_flux(PSP)
+        test_incident_flux = QEDprocesses._incident_flux(TESTPROC,TESTMODEL,IN_PS)
         groundtruth = TestImplementation._groundtruth_incident_flux(IN_PS)
         @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
     end

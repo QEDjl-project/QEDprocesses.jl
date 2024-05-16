@@ -22,7 +22,11 @@ interface functions need to be implemented for every combination of `CustomProce
 `CustomModel<:AbstractModelDefinition`, and `CustomPhasespaceDefinition<:AbstractPhasespaceDefinition`.
 
 ```Julia
-    _incident_flux(psp::PhaseSpacePoint{CustomProcess,CustomModel})
+    _incident_flux(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_phase_space::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
 
     _matrix_element(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
@@ -67,10 +71,11 @@ This function needs to be given to implement the scattering process interface.
 function outgoing_particles end
 
 """
-    _incident_flux(PhaseSpacePoint{PROC,MODEL}) where {
-        PROC <: AbstractProcessDefinition,
-        MODEL <: AbstractModelDefinition
-    }
+    _incident_flux(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition, 
+        in_phase_space::AbstractVector{T}
+        ) where {T<:QEDbase.AbstractFourMomentum}
 
 Interface function, which returns the incident flux of the given scattering process for a given incoming phase-space.
 
@@ -87,15 +92,6 @@ Interface function, which returns a tuple of scattering matrix elements for each
 """
 function _matrix_element end
 
-function _matrix_element_square(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    mat_el = _matrix_element(proc, model, in_phase_space, out_phase_space)
-    return abs2.(mat_el)
-end
 
 """
     _averaging_norm(

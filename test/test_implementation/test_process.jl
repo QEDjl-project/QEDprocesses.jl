@@ -71,8 +71,9 @@ struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
 
 # dummy implementation of the process interface
 
-function QEDprocesses._incident_flux(psp::PhaseSpacePoint{<:TestProcess,TestModel})
-    in_ps = momentum.(psp.in_particles)
+function QEDprocesses._incident_flux(
+    ::TestProcess, ::TestModel, in_ps::AbstractVector{T}
+) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_incident_flux(in_ps)
 end
 
@@ -118,7 +119,8 @@ function QEDprocesses._generate_outgoing_momenta(
     return _groundtruth_generate_momenta(out_phase_space)
 end
 
-function QEDprocesses._total_probability(psp::PhaseSpacePoint{<:TestProcess,TestModel})
-    in_ps = momentum.(psp.in_particles)
+function QEDprocesses._total_probability(
+    proc::TestProcess, model::TestModel, ps_def::TestPhasespaceDef, in_ps::AbstractVector{T}
+) where {T<:QEDbase.AbstractFourMomentum}
     return _groundtruth_total_probability(in_ps)
 end
