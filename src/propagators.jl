@@ -7,9 +7,7 @@
 
 """
 
-```julia
-propagator(particle::AbstractParticleType, mom::QEDbase.AbstractFourMomentum, [mass::Real])
-```
+    propagator(particle::AbstractParticleType, mom::QEDbase.AbstractFourMomentum, [mass::Real])
 
 Return the propagator of a particle for a given four-momentum. If `mass` is passed, the respective propagator for massive particles is used, if not, it is assumed the particle passed in is massless.
 
