@@ -30,48 +30,12 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     p_out_unphys = TestImplementation._rand_out_momenta_failing(RNG, N_OUTGOING)
     p_out_unphys_invalid = TestImplementation._rand_out_momenta_failing(RNG, N_OUTGOING + 1)
 
-    # sets of ps points
-    p_in_set_phys = TestImplementation._rand_momenta(RNG, N_INCOMING, 2)
-    p_in_set_unphys_mix = TestImplementation._rand_in_momenta_failing_mix(
-        RNG, N_INCOMING, 2
-    )
-    p_in_set_unphys_all = TestImplementation._rand_in_momenta_failing_all(
-        RNG, N_INCOMING, 2
-    )
-    p_in_set_phys_invalid = TestImplementation._rand_momenta(RNG, N_INCOMING + 1, 2)
-    p_in_set_unphys_mix_invalid = TestImplementation._rand_in_momenta_failing_mix(
-        RNG, N_INCOMING + 1, 2
-    )
-    p_in_set_unphys_all_invalid = TestImplementation._rand_in_momenta_failing_all(
-        RNG, N_INCOMING + 1, 2
-    )
-
-    p_out_set_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING, 2)
-    p_out_set_unphys_mix = TestImplementation._rand_out_momenta_failing_mix(
-        RNG, N_OUTGOING, 2
-    )
-    p_out_set_unphys_all = TestImplementation._rand_out_momenta_failing_all(
-        RNG, N_OUTGOING, 2
-    )
-    p_out_set_phys_invalid = TestImplementation._rand_momenta(RNG, N_OUTGOING + 1, 2)
-    p_out_set_unphys_mix_invalid = TestImplementation._rand_out_momenta_failing_mix(
-        RNG, N_OUTGOING + 1, 2
-    )
-    p_out_set_unphys_all_invalid = TestImplementation._rand_out_momenta_failing_all(
-        RNG, N_OUTGOING + 1, 2
-    )
 
     p_in_all = (
         p_in_phys,
         p_in_unphys,
         p_in_phys_invalid,
         p_in_unphys_invalid,
-        p_in_set_phys,
-        p_in_set_unphys_mix,
-        p_in_set_unphys_all,
-        p_in_set_phys_invalid,
-        p_in_set_unphys_mix_invalid,
-        p_in_set_unphys_all_invalid,
     )
 
     p_out_all = (
@@ -79,29 +43,20 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         p_out_phys_invalid,
         p_out_unphys,
         p_out_unphys_invalid,
-        p_out_set_phys,
-        p_out_set_unphys_mix,
-        p_out_set_unphys_all,
-        p_out_set_phys_invalid,
-        p_out_set_unphys_mix_invalid,
-        p_out_set_unphys_all_invalid,
     )
+
     # all combinations
     p_combs = Iterators.product(p_in_all, p_out_all)
 
-    p_in_all_valid = (
-        p_in_phys, p_in_unphys, p_in_set_phys, p_in_set_unphys_mix, p_in_set_unphys_all
-    )
+    p_in_all_valid = (p_in_phys, p_in_unphys)
 
-    p_out_all_valid = (
-        p_out_phys, p_out_unphys, p_out_set_phys, p_out_set_unphys_mix, p_out_set_unphys_all
-    )
+    p_out_all_valid = (p_out_phys, p_out_unphys)
 
     # all valid combinations
     p_combs_valid = Iterators.product(p_in_all_valid, p_out_all_valid)
 
-    p_in_all_phys = (p_in_phys, p_in_set_phys)
-    p_out_all_phys = (p_out_phys, p_out_set_phys)
+    p_in_all_phys = (p_in_phys, )
+    p_out_all_phys = (p_out_phys, )
 
     p_combs_phys = Iterators.product(p_in_all_phys, p_out_all_phys)
 
@@ -200,7 +155,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
             @testset "total cross section" begin
                 @testset "compute" begin
-                    for P_IN in (p_in_phys, p_in_set_phys)
+                    for P_IN in (p_in_phys,)
                         groundtruth = TestImplementation._groundtruth_total_cross_section(
                             P_IN
                         )
@@ -218,7 +173,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                     end
                 end
                 @testset "invalid input" begin
-                    for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
+                    for P_IN in (p_in_phys_invalid, )
                         @test_throws DimensionMismatch total_cross_section(
                             TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                         )
@@ -333,7 +288,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
             @testset "total probability" begin
                 @testset "compute" begin
-                    for P_IN in (p_in_phys, p_in_set_phys)
+                    for P_IN in (p_in_phys,)
                         groundtruth = TestImplementation._groundtruth_total_probability(
                             P_IN
                         )
@@ -351,7 +306,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                     end
                 end
                 @testset "invalid input" begin
-                    for P_IN in (p_in_phys_invalid, p_in_set_phys_invalid)
+                    for P_IN in (p_in_phys_invalid)
                         @test_throws DimensionMismatch total_probability(
                             TESTPROC, TESTMODEL, TESTPSDEF, P_IN
                         )

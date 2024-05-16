@@ -44,42 +44,6 @@ function _unsafe_differential_cross_section(
     )
 end
 
-# differential cross sections without energy momentum conservation check
-# single in phase space point/ several out phase space points
-function _unsafe_differential_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space::AbstractMatrix{T},
-) where {T<:AbstractPhasespaceElement}
-    res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
-    for i in 1:size(out_phase_space, 2)
-        res[i] = _unsafe_differential_cross_section(
-            proc, model, phase_space_def, in_phase_space, view(out_phase_space, :, i)
-        )
-    end
-    return res
-end
-
-# differential cross sections without energy momentum conservation check
-# several in phase space points/ one or several out phase space points
-function _unsafe_differential_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractMatrix{T},
-    out_phase_space::AbstractVecOrMat{T},
-) where {T<:AbstractPhasespaceElement}
-    res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
-    for i in 1:size(in_phase_space, 2)
-        res[i, :] .= _unsafe_differential_cross_section(
-            proc, model, phase_space_def, view(in_phase_space, :, i), out_phase_space
-        )
-    end
-    return res
-end
-
 """
 
     function unsafe_differential_cross_section(
@@ -181,40 +145,6 @@ function _differential_cross_section(
     return _differential_cross_section(
         proc, model, phase_space_def, in_momenta, out_momenta
     )
-end
-
-function _differential_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-    out_phase_space::AbstractMatrix{T},
-) where {T<:AbstractPhasespaceElement}
-    res = Vector{eltype(T)}(undef, size(out_phase_space, 2))
-    for i in 1:size(out_phase_space, 2)
-        res[i] = _differential_cross_section(
-            proc, model, phase_space_def, in_phase_space, view(out_phase_space, :, i)
-        )
-    end
-    return res
-end
-
-# differential cross sections with energy momentum conservation check
-# several in phase space points/ one or several out phase space points
-function _differential_cross_section(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractMatrix{T},
-    out_phase_space::AbstractVecOrMat{T},
-) where {T<:AbstractPhasespaceElement}
-    res = Matrix{eltype(T)}(undef, size(in_phase_space, 2), size(out_phase_space, 2))
-    for i in 1:size(in_phase_space, 2)
-        res[i, :] .= _differential_cross_section(
-            proc, model, phase_space_def, view(in_phase_space, :, i), out_phase_space
-        )
-    end
-    return res
 end
 
 """
