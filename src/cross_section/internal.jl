@@ -76,7 +76,7 @@ function _unsafe_differential_cross_section(
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
     psp = generate_phase_space(proc,model,phase_space_def,in_phase_space,out_phase_space)
-    return _unsafe_differential_cross_section(phase_space_point)
+    return unsafe_differential_cross_section(psp)
 end
 
 # convenience function for internal use only 

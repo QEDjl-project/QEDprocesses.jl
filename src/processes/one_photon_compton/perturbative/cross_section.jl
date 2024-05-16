@@ -9,13 +9,10 @@ function _incident_flux(
     return @inbounds in_ps[1] * in_ps[2]
 end
 
-function _matrix_element(
-    proc::Compton,
-    model::PerturbativeQED,
-    in_ps::AbstractVector{T},
-    out_ps::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    return _pert_compton_matrix_element(proc, in_ps, out_ps)
+function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+    in_ps = momentum.(psp.in_particles)
+    out_ps = momentum.(psp.out_particles)
+    return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
 end
 
 """
@@ -40,24 +37,16 @@ function _all_onshell(
            isapprox(sq_out_moms, SVector(sq_out_masses))
 end
 
-function _is_in_phasespace(
-    proc::Compton,
-    model::PerturbativeQED,
-    in_ps_def::AbstractPhasespaceDefinition,
-    in_ps::AbstractVector{T},
-    out_ps::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    return (isapprox(sum(in_ps), sum(out_ps))) ? _all_onshell(proc, in_ps, out_ps) : false
+function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+    in_ps = momentum.(psp.in_particles)
+    out_ps = momentum.(psp.out_particles)
+    return (isapprox(sum(in_ps), sum(out_ps))) ? _all_onshell(psp.proc, in_ps, out_ps) : false
 end
 
-@inline function _phase_space_factor(
-    proc::Compton,
-    model::PerturbativeQED,
-    in_ps_def::AbstractPhasespaceDefinition,
-    in_ps::AbstractVector{T},
-    out_ps::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    return _pert_compton_ps_fac(in_ps_def, in_ps[2], out_ps[2])
+@inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+    in_ps = momentum.(psp.in_particles)
+    out_ps = momentum.(psp.out_particles)
+    return _pert_compton_ps_fac(psp.ps_def, in_ps[2], out_ps[2])
 end
 
 #######
