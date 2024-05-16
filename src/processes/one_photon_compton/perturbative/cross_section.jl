@@ -6,7 +6,7 @@
 function _incident_flux(
     proc::Compton, model::PerturbativeQED, in_ps::AbstractVector{T}
 ) where {T<:QEDbase.AbstractFourMomentum}
-    return prod(in_ps)
+    return @inbounds in_ps[1] * in_ps[2]
 end
 
 function _matrix_element(

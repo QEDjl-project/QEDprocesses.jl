@@ -8,7 +8,7 @@ function _total_probability(
     omega = getE(in_phase_space[2])
 
     function func(x)
-        return unsafe_differential_probability(
+        return _unsafe_differential_probability(
             proc, model, in_phase_space_def, [omega], [x, 0.0]
         )
     end
