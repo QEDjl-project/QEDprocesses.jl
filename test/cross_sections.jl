@@ -23,7 +23,6 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     p_in_phys = TestImplementation._rand_momenta(RNG, N_INCOMING)
     p_in_phys_invalid = TestImplementation._rand_momenta(RNG, N_INCOMING + 1)
     p_in_unphys = TestImplementation._rand_in_momenta_failing(RNG, N_INCOMING)
-    p_in_unphys_invalid = TestImplementation._rand_in_momenta_failing(RNG, N_INCOMING + 1)
 
     p_out_phys = TestImplementation._rand_momenta(RNG, N_OUTGOING)
     p_out_unphys = TestImplementation._rand_out_momenta_failing(RNG, N_OUTGOING)
@@ -35,133 +34,101 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
     # all combinations
     p_combs = Iterators.product(p_in_all, p_out_all)
 
-    p_in_all_valid = (p_in_phys, p_in_unphys)
-
-    p_out_all_valid = (p_out_phys, p_out_unphys)
-
-    p_in_all_valid = (p_in_phys, p_in_unphys)
-
-    # all valid combinations
-    p_combs_valid = Iterators.product(p_in_all_valid, p_out_all_valid)
-
-    p_in_all_phys = (p_in_phys,)
-    p_out_all_phys = (p_out_phys,)
-
-    p_combs_phys = Iterators.product(p_in_all_phys, p_out_all_phys)
-
-    @testset "cross section" begin
+    @testset "differential cross section" begin
         @testset "unsafe compute" begin
-            for (P_IN, P_OUT) in p_combs_phys
-                PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
-                diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
-                groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
-                    TESTPROC, P_IN, P_OUT
-                )
-                @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
-            end
+            PS_POINT = generate_phase_space(
+                TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
+            )
+
+            diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
+            groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
+                TESTPROC, p_in_phys, p_out_phys
+            )
+
+            @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
         end
 
         @testset "safe compute" begin
-            for (P_IN, P_OUT) in p_combs_valid
+            for (P_IN, P_OUT) in p_combs
                 PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
+
                 diffCS_on_psp = differential_cross_section(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_safe_diffCS(
                     TESTPROC, P_IN, P_OUT
                 )
+
                 @test isapprox(diffCS_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
             end
         end
+    end
 
-        @testset "total cross section" begin
-            @testset "compute" begin
-                for P_IN in (p_in_phys,)
-                    groundtruth = TestImplementation._groundtruth_total_cross_section(P_IN)
-                    totCS_on_moms = total_cross_section(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN
-                    )
+    @testset "total cross section" begin
+        @testset "compute" begin
+            groundtruth = TestImplementation._groundtruth_total_cross_section(p_in_phys)
+            totCS_on_moms = total_cross_section(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys)
 
-                    COORDS_IN = TestImplementation.flat_components(P_IN)
-                    totCS_on_coords = total_cross_section(
-                        TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
-                    )
+            COORDS_IN = TestImplementation.flat_components(p_in_phys)
+            totCS_on_coords = total_cross_section(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN)
 
-                    @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
-                    @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
-                end
-            end
-            @testset "invalid input" begin
-                for P_IN in (p_in_phys_invalid,)
-                    @test_throws DimensionMismatch total_cross_section(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN
-                    )
+            @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+            @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
+        end
+        @testset "invalid input" begin
+            @test_throws DimensionMismatch total_cross_section(
+                TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys_invalid
+            )
 
-                    COORDS_IN = TestImplementation.flat_components(P_IN)
-                    @test_throws DimensionMismatch total_cross_section(
-                        TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
-                    )
-                end
-            end
+            COORDS_IN = TestImplementation.flat_components(p_in_phys_invalid)
+            @test_throws DimensionMismatch total_cross_section(
+                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
+            )
+        end
+    end
+
+    @testset "differential probability" begin
+        @testset "unsafe compute" begin
+            PS_POINT = generate_phase_space(
+                TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
+            )
+            prop_on_psp = unsafe_differential_probability(PS_POINT)
+            groundtruth = TestImplementation._groundtruth_unsafe_probability(
+                TESTPROC, p_in_phys, p_out_phys
+            )
+            @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
         end
 
-        @testset "differential probability" begin
-            @testset "unsafe compute" begin
-                for (P_IN, P_OUT) in p_combs_phys
-                    PS_POINT = generate_phase_space(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
-                    )
-                    prop_on_psp = unsafe_differential_probability(PS_POINT)
-                    groundtruth = TestImplementation._groundtruth_unsafe_probability(
-                        TESTPROC, P_IN, P_OUT
-                    )
-                    @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
-                end
+        @testset "safe compute" begin
+            for (P_IN, P_OUT) in p_combs
+                PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
+                prop_on_psp = differential_probability(PS_POINT)
+                groundtruth = TestImplementation._groundtruth_safe_probability(
+                    TESTPROC, P_IN, P_OUT
+                )
+                @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
             end
+        end
+    end
 
-            @testset "safe compute" begin
-                for (P_IN, P_OUT) in p_combs_valid
-                    PS_POINT = generate_phase_space(
-                        TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT
-                    )
-                    prop_on_psp = differential_probability(PS_POINT)
-                    groundtruth = TestImplementation._groundtruth_safe_probability(
-                        TESTPROC, P_IN, P_OUT
-                    )
-                    @test isapprox(prop_on_psp, groundtruth, atol=ATOL, rtol=RTOL)
-                end
-            end
+    @testset "total probability" begin
+        @testset "compute" begin
+            groundtruth = TestImplementation._groundtruth_total_probability(p_in_phys)
+            totCS_on_moms = total_probability(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys)
 
-            @testset "total probability" begin
-                @testset "compute" begin
-                    for P_IN in (p_in_phys,)
-                        groundtruth = TestImplementation._groundtruth_total_probability(
-                            P_IN
-                        )
-                        totCS_on_moms = total_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN
-                        )
+            COORDS_IN = TestImplementation.flat_components(p_in_phys)
+            totCS_on_coords = total_probability(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN)
 
-                        COORDS_IN = TestImplementation.flat_components(P_IN)
-                        totCS_on_coords = total_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
-                        )
+            @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
+            @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
+        end
+        @testset "invalid input" begin
+            @test_throws DimensionMismatch total_probability(
+                TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys_invalid
+            )
 
-                        @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
-                        @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
-                    end
-                end
-                @testset "invalid input" begin
-                    for P_IN in (p_in_phys_invalid,)
-                        @test_throws DimensionMismatch total_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, P_IN
-                        )
-
-                        COORDS_IN = TestImplementation.flat_components(P_IN)
-                        @test_throws DimensionMismatch total_probability(
-                            TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
-                        )
-                    end
-                end
-            end
+            COORDS_IN = TestImplementation.flat_components(p_in_phys_invalid)
+            @test_throws DimensionMismatch total_probability(
+                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
+            )
         end
     end
 end
