@@ -34,7 +34,8 @@ end
 """
 Test process with no implemented interface. Should fail every usage except construction.
 """
-struct TestProcess_FAIL_ALL{IP<:AbstractVector,OP<:AbstractVector} <: AbstractProcessDefinition
+struct TestProcess_FAIL_ALL{IP<:AbstractVector,OP<:AbstractVector} <:
+       AbstractProcessDefinition
     incoming_particles::IP
     outgoing_particles::OP
 end
@@ -49,7 +50,8 @@ end
 Test process with no implemented interface except the incoming and outgoing particles. 
 Should fail every usage except construction of itself and the respective phase space point for given four-momenta.
 """
-struct TestProcess_FAIL_DIFFCS{IP<:AbstractVector,OP<:AbstractVector} <: AbstractProcessDefinition
+struct TestProcess_FAIL_DIFFCS{IP<:AbstractVector,OP<:AbstractVector} <:
+       AbstractProcessDefinition
     incoming_particles::IP
     outgoing_particles::OP
 end
@@ -69,7 +71,7 @@ struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
 
 # dummy implementation of the process interface
 
-function QEDprocesses._incident_flux(psp::PhaseSpacePoint{<:TestProcess,TestModel}) 
+function QEDprocesses._incident_flux(psp::PhaseSpacePoint{<:TestProcess,TestModel})
     in_ps = momentum.(psp.in_particles)
     return _groundtruth_incident_flux(in_ps)
 end
@@ -90,7 +92,9 @@ function QEDprocesses._is_in_phasespace(psp::PhaseSpacePoint{<:TestProcess,TestM
     return _groundtruth_is_in_phasespace(in_ps, out_ps)
 end
 
-function QEDprocesses._phase_space_factor(psp::PhaseSpacePoint{<:TestProcess,TestModel,TestPhasespaceDef})
+function QEDprocesses._phase_space_factor(
+    psp::PhaseSpacePoint{<:TestProcess,TestModel,TestPhasespaceDef}
+)
     in_ps = momentum.(psp.in_particles)
     out_ps = momentum.(psp.out_particles)
     return _groundtruth_phase_space_factor(in_ps, out_ps)
