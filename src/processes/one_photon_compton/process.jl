@@ -1,12 +1,10 @@
 """
-    
     Compton(
         in_spin [= AllSpin()]
         in_pol [= AllPol()]
         out_spin [= AllSpin()]
         out_pol [= AllPol()]
-        )
-
+    )
 """
 struct Compton{InElectronSpin,InPhotonPol,OutElectronSpin,OutPhotonPol} <:
        AbstractProcessDefinition where {
@@ -60,15 +58,13 @@ function _spin_or_pol(process::Compton, ::Photon, ::Outgoing)
     return process.out_pol
 end
 
-function Base.show(io::IO, m::MIME"text/plain", proc::Compton)
-    print(io, "1-photon Compton process (")
-    show(io, m, proc.in_spin)
-    print(io, ", ")
-    show(io, m, proc.in_pol)
-    print(io, ") -> (")
-    show(io, m, proc.out_spin)
-    print(io, ", ")
-    show(io, m, proc.out_pol)
-    print(io, ")")
+function Base.show(io::IO, ::Compton)
+    print(io, "one-photon Compton scattering")
+    return nothing
+end
+function Base.show(io::IO, ::MIME"text/plain", proc::Compton)
+    println(io, "one-photon Compton scattering")
+    println(io, "    incoming: electron ($(proc.in_spin)), photon ($(proc.in_pol))")
+    println(io, "    outgoing: electron ($(proc.out_spin)), photon ($(proc.out_pol))")
     return nothing
 end

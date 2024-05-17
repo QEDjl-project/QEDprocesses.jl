@@ -18,6 +18,15 @@ const OMEGAS = (1e-6 * rand(RNG), 1e-3 * rand(RNG), rand(RNG), 1e3 * rand(RNG))
 const COS_THETAS = [-1.0, 2 * rand(RNG) - 1, 0.0, 1.0]
 const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
 
+@testset "pretty-printing" begin
+    buf = IOBuffer()
+    print(buf, MODEL)
+    @test String(take!(buf)) == "perturbative QED"
+
+    show(buf, MIME"text/plain"(), MODEL)
+    @test String(take!(buf)) == "perturbative QED"
+end
+
 @testset "perturbative kinematics" begin
     PROC = Compton()
     @testset "momentum generation" begin
