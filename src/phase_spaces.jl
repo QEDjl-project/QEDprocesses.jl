@@ -139,11 +139,8 @@ Representation of a particle with a state. It has four fields:
 - `dir::ParticleDirection`: The direction of the particle, `QEDbase.Incoming()` or `QEDbase.Outgoing()`.
 - `species::AbstractParticleType`: The species of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc.
 - `mom::AbstractFourMomentum`: The momentum of the particle.
-- `spin_or_pol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc. Can only use spins with fermions and polarizations with bosons. `AllSpin` or `AllPol` by default.
 
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
-
-The legality of the combination of `species` and `spin_or_pol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
 
 ```jldoctest
 julia> using QEDbase; using QEDprocesses
@@ -159,24 +156,19 @@ ParticleStateful: outgoing photon
     momentum: [1.0, 0.0, 0.0, 0.0]
 ```
 """
-struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
-    dir::ParticleDirection
-    species::AbstractParticleType
-    mom::ElType
-    spin_or_pol::AbstractSpinOrPolarization
+struct ParticleStateful{
+    DIR<:ParticleDirection,SPECIES<:AbstractParticleType,ELEMENT<:AbstractFourMomentum
+} <: AbstractParticle
+    dir::DIR
+    species::SPECIES
+    mom::ELEMENT
 
     function ParticleStateful(
-        dir::ParticleDirection, species::Species, mom::ElType, spin::Spin=AllSpin()
-    ) where {Species<:FermionLike,ElType<:AbstractFourMomentum,Spin<:AbstractSpin}
-        # constructor for fermions with spin
-        return new{ElType}(dir, species, mom, spin)
-    end
-
-    function ParticleStateful(
-        dir::ParticleDirection, species::Species, mom::ElType, pol::Pol=AllPol()
-    ) where {Species<:BosonLike,ElType<:AbstractFourMomentum,Pol<:AbstractPolarization}
-        # constructor for bosons with polarization
-        return new{ElType}(dir, species, mom, pol)
+        dir::DIR, species::SPECIES, mom::ELEMENT
+    ) where {
+        DIR<:ParticleDirection,SPECIES<:AbstractParticleType,ELEMENT<:AbstractFourMomentum
+    }
+        return new{DIR,SPECIES,ELEMENT}(dir, species, mom)
     end
 end
 
@@ -195,14 +187,6 @@ particle_direction(part::ParticleStateful) = part.dir
 particle_species(part::ParticleStateful) = part.species
 momentum(part::ParticleStateful) = part.mom
 
-@inline _spin(::Species, particle::ParticleStateful) where {Species<:FermionLike} =
-    particle.spin_or_pol
-@inline spin(particle::ParticleStateful) = _spin(particle.species, particle)
-
-@inline _polarization(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
-    particle.spin_or_pol
-@inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
-
 function Base.show(io::IO, particle::ParticleStateful)
     print(
         io, "$(particle.dir) $(particle.species) ($(particle.spin_or_pol)): $(particle.mom)"
@@ -212,10 +196,6 @@ end
 
 function Base.show(io::IO, m::MIME"text/plain", particle::ParticleStateful)
     println(io, "ParticleStateful: $(particle.dir) $(particle.species)")
-    println(
-        io,
-        "    $(particle.spin_or_pol isa AbstractSpin ? "spin" : "polarization"): $(particle.spin_or_pol)",
-    )
     println(io, "    momentum: $(particle.mom)")
     return nothing
 end
@@ -259,26 +239,24 @@ struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
     MODEL<:AbstractModelDefinition,
     PSDEF<:AbstractPhasespaceDefinition,
-    PhaseSpaceElementType<:AbstractFourMomentum,
-    N_IN_PARTICLES,
-    N_OUT_PARTICLES,
+    IN_PARTICLES<:Tuple,
+    OUT_PARTICLES<:Tuple,
 }
     proc::PROC
     model::MODEL
     ps_def::PSDEF
 
-    in_particles::SVector{N_IN_PARTICLES,ParticleStateful{PhaseSpaceElementType}}
-    out_particles::SVector{N_OUT_PARTICLES,ParticleStateful{PhaseSpaceElementType}}
+    in_particles::IN_PARTICLES
+    out_particles::OUT_PARTICLES
 
     function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_P, out_p::OUT_P
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_PARTICLES, out_p::OUT_PARTICLES
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
         PSDEF<:AbstractPhasespaceDefinition,
-        PhaseSpaceElementType<:AbstractFourMomentum,
-        IN_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
-        OUT_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
+        IN_PARTICLES<:Tuple,
+        OUT_PARTICLES<:Tuple,
     }
         length(incoming_particles(proc)) == length(in_p) || throw(
             InvalidInputError(
@@ -316,7 +294,7 @@ struct PhaseSpacePoint{
             )
         end
 
-        return new{PROC,MODEL,PSDEF,PhaseSpaceElementType,length(in_p),length(out_p)}(
+        return new{PROC,MODEL,PSDEF,IN_PARTICLES,OUT_PARTICLES}(
             proc, model, ps_def, in_p, out_p
         )
     end
@@ -354,9 +332,9 @@ end
         proc::AbstractProcessDefinition, 
         model::AbstractModelDefinition, 
         ps_def::AbstractPhasespaceDefinition, 
-        in_ps::AbstractVector{ElType}, 
-        out_ps::AbstractVector{ElType},
-    ) where {ElType<:QEDbase.AbstractFourMomentum}
+        in_ps::AbstractVector{ELEMENT}, 
+        out_ps::AbstractVector{ELEMENT},
+    ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
 
 Return the respective phase space point for given momenta of incoming and outgoing particles regarding a given process.
 """
@@ -364,28 +342,20 @@ function generate_phase_space(
     proc::AbstractProcessDefinition,
     model::AbstractModelDefinition,
     ps_def::AbstractPhasespaceDefinition,
-    in_ps::AbstractVector{ElType},
-    out_ps::AbstractVector{ElType},
-) where {ElType<:QEDbase.AbstractFourMomentum}
-    in_particles = incoming_particles(proc)
-    in_n = number_incoming_particles(proc)
-    in_parts = SVector{in_n,ParticleStateful{SFourMomentum}}(
-        collect(
-            ParticleStateful(Incoming(), particle, mom) for
-            (particle, mom) in zip(in_particles, in_ps)
-        ),
+    in_ps::AbstractVector{ELEMENT},
+    out_ps::AbstractVector{ELEMENT},
+) where {ELEMENT<:QEDbase.AbstractFourMomentum}
+    in_particles = Tuple(
+        ParticleStateful(Incoming(), particle, mom) for
+        (particle, mom) in zip(incoming_particles(proc), in_ps)
     )
 
-    out_particles = outgoing_particles(proc)
-    out_n = number_outgoing_particles(proc)
-    out_parts = SVector{out_n,ParticleStateful{SFourMomentum}}(
-        collect(
-            ParticleStateful(Outgoing(), particle, mom) for
-            (particle, mom) in zip(out_particles, out_ps)
-        ),
+    out_particles = Tuple(
+        ParticleStateful(Outgoing(), particle, mom) for
+        (particle, mom) in zip(outgoing_particles(proc), out_ps)
     )
 
-    return PhaseSpacePoint(proc, model, ps_def, in_parts, out_parts)
+    return PhaseSpacePoint(proc, model, ps_def, in_particles, out_particles)
 end
 
 function Base.show(io::IO, psp::PhaseSpacePoint)

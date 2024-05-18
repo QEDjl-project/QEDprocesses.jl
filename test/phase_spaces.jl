@@ -21,7 +21,6 @@ end
 @testset "Stateful Particle" begin
     DIRECTIONS = [Incoming(), Outgoing()]
     SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
-    SPINANDPOLS = [AllSpin(), SpinUp(), SpinDown(), AllPol(), PolX(), PolY()]
 
     for (species, dir, spin_or_pol) in Iterators.product(SPECIES, DIRECTIONS, SPINANDPOLS)
         mom = rand(RNG, SFourMomentum)
@@ -85,11 +84,11 @@ end
     out_el = ParticleStateful(Outgoing(), Electron(), out_el_mom)
     out_ph = ParticleStateful(Outgoing(), Photon(), out_ph_mom)
 
-    in_particles_valid = SVector(in_el, in_ph)
-    in_particles_invalid = SVector(in_el, out_ph)
+    in_particles_valid = (in_el, in_ph)
+    in_particles_invalid = (in_el, out_ph)
 
-    out_particles_valid = SVector(out_el, out_ph)
-    out_particles_invalid = SVector(out_el, in_ph)
+    out_particles_valid = (out_el, out_ph)
+    out_particles_invalid = (out_el, in_ph)
 
     model = TESTMODEL
     process = TestImplementation.TestProcess(
@@ -134,12 +133,12 @@ end
                 process, model, phasespace_def, in_particles_valid, out_particles_invalid
             )
 
-            @test_throws r"process given particle species \(electron\) does not match stateful particle species \(photon\)" PhaseSpacePoint(
-                process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
+            @test_throws r"process given particle species \((.*)Electron\(\)\) does not match stateful particle species \((.*)Photon\(\)\)" PhaseSpacePoint(
+                process, model, phasespace_def, (in_ph, in_el), out_particles_valid
             )
 
-            @test_throws r"process given particle species \(electron\) does not match stateful particle species \(photon\)" PhaseSpacePoint(
-                process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
+            @test_throws r"process given particle species \((.*)Electron\(\)\) does not match stateful particle species \((.*)Photon\(\)\)" PhaseSpacePoint(
+                process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
             )
         end
 
@@ -162,17 +161,21 @@ end
         )
 
         @test_throws InvalidInputError PhaseSpacePoint(
-            process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
+            process, model, phasespace_def, (in_ph, in_el), out_particles_valid
         )
 
         @test_throws InvalidInputError PhaseSpacePoint(
-            process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
+            process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
         )
     end
 
     @testset "Generation" begin
         test_psp = generate_phase_space(
-            process, model, phasespace_def, [in_el_mom, in_ph_mom], [out_el_mom, out_ph_mom]
+            process,
+            model,
+            phasespace_def,
+            SVector(in_el_mom, in_ph_mom),
+            SVector(out_el_mom, out_ph_mom),
         )
 
         @test test_psp.proc == process
