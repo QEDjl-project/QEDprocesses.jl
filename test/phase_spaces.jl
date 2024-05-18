@@ -170,7 +170,7 @@ end
     end
 
     @testset "Generation" begin
-        test_psp = generate_phase_space(
+        test_psp = PhaseSpacePoint(
             process,
             model,
             phasespace_def,

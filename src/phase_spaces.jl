@@ -298,6 +298,37 @@ struct PhaseSpacePoint{
             proc, model, ps_def, in_p, out_p
         )
     end
+
+    """
+        PhaseSpacePoint(
+            proc::AbstractProcessDefinition, 
+            model::AbstractModelDefinition, 
+            ps_def::AbstractPhasespaceDefinition, 
+            in_ps::AbstractVector{ELEMENT}, 
+            out_ps::AbstractVector{ELEMENT},
+        ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
+
+    Construct the phase space point from given momenta of incoming and outgoing particles regarding a given process.
+    """
+    function PhaseSpacePoint(
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        ps_def::AbstractPhasespaceDefinition,
+        in_ps::AbstractVector{ELEMENT},
+        out_ps::AbstractVector{ELEMENT},
+    ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
+        in_particles = Tuple(
+            ParticleStateful(Incoming(), particle, mom) for
+            (particle, mom) in zip(incoming_particles(proc), in_ps)
+        )
+
+        out_particles = Tuple(
+            ParticleStateful(Outgoing(), particle, mom) for
+            (particle, mom) in zip(outgoing_particles(proc), out_ps)
+        )
+
+        return PhaseSpacePoint(proc, model, ps_def, in_particles, out_particles)
+    end
 end
 
 """
@@ -325,37 +356,6 @@ Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref
 """
 function momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
     return psp[dir, n].mom
-end
-
-"""
-    generate_phase_space(
-        proc::AbstractProcessDefinition, 
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition, 
-        in_ps::AbstractVector{ELEMENT}, 
-        out_ps::AbstractVector{ELEMENT},
-    ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
-
-Return the respective phase space point for given momenta of incoming and outgoing particles regarding a given process.
-"""
-function generate_phase_space(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    ps_def::AbstractPhasespaceDefinition,
-    in_ps::AbstractVector{ELEMENT},
-    out_ps::AbstractVector{ELEMENT},
-) where {ELEMENT<:QEDbase.AbstractFourMomentum}
-    in_particles = Tuple(
-        ParticleStateful(Incoming(), particle, mom) for
-        (particle, mom) in zip(incoming_particles(proc), in_ps)
-    )
-
-    out_particles = Tuple(
-        ParticleStateful(Outgoing(), particle, mom) for
-        (particle, mom) in zip(outgoing_particles(proc), out_ps)
-    )
-
-    return PhaseSpacePoint(proc, model, ps_def, in_particles, out_particles)
 end
 
 function Base.show(io::IO, psp::PhaseSpacePoint)
