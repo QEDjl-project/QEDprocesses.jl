@@ -22,22 +22,20 @@ end
     DIRECTIONS = [Incoming(), Outgoing()]
     SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
 
-    for (species, dir, spin_or_pol) in Iterators.product(SPECIES, DIRECTIONS, SPINANDPOLS)
+    for (species, dir) in Iterators.product(SPECIES, DIRECTIONS)
         mom = rand(RNG, SFourMomentum)
 
-        if (is_fermion(species) && (spin_or_pol isa AbstractSpin)) ||
-            (is_boson(species) && (spin_or_pol isa AbstractPolarization))
-            particle_stateful = ParticleStateful(dir, species, mom, spin_or_pol)
+        particle_stateful = ParticleStateful(dir, species, mom)
 
-            # particle interface
-            @test is_fermion(particle_stateful) == is_fermion(species)
-            @test is_boson(particle_stateful) == is_boson(species)
-            @test is_particle(particle_stateful) == is_particle(species)
-            @test is_anti_particle(particle_stateful) == is_anti_particle(species)
-            @test is_incoming(particle_stateful) == is_incoming(dir)
-            @test is_outgoing(particle_stateful) == is_outgoing(dir)
-            @test mass(particle_stateful) == mass(species)
-            @test charge(particle_stateful) == charge(species)
+        # particle interface
+        @test is_fermion(particle_stateful) == is_fermion(species)
+        @test is_boson(particle_stateful) == is_boson(species)
+        @test is_particle(particle_stateful) == is_particle(species)
+        @test is_anti_particle(particle_stateful) == is_anti_particle(species)
+        @test is_incoming(particle_stateful) == is_incoming(dir)
+        @test is_outgoing(particle_stateful) == is_outgoing(dir)
+        @test mass(particle_stateful) == mass(species)
+        @test charge(particle_stateful) == charge(species)
 
             # accessors
             @test particle_stateful.dir == dir
@@ -46,13 +44,6 @@ end
             @test particle_species(particle_stateful) == particle_stateful.species
             @test particle_stateful.mom == mom
             @test momentum(particle_stateful) == mom
-            if (is_fermion(species))
-                @test spin(particle_stateful) == spin_or_pol
-                @test_throws MethodError polarization(particle_stateful)
-            else
-                @test polarization(particle_stateful) == spin_or_pol
-                @test_throws MethodError spin(particle_stateful)
-            end
 
             # printing
             print(BUF, particle_stateful)

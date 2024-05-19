@@ -119,7 +119,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             end
 
             @testset "compute on phase space points" begin
-                PS_POINT = generate_phase_space(
+                PS_POINT = PhaseSpacePoint(
                     TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
                 )
                 diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
@@ -168,7 +168,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
 
                 @testset "compute on phase space points" begin
-                    PS_POINT = generate_phase_space(
+                    PS_POINT = PhaseSpacePoint(
                         TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
                     )
                     diffCS_on_psp = differential_cross_section(PS_POINT)
@@ -252,7 +252,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
 
                 @testset "compute on phase space points" begin
-                    PS_POINT = generate_phase_space(
+                    PS_POINT = PhaseSpacePoint(
                         TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
                     )
                     prop_on_psp = unsafe_differential_probability(PS_POINT)
@@ -301,7 +301,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 end
 
                 @testset "compute on phase space points" begin
-                    PS_POINT = generate_phase_space(
+                    PS_POINT = PhaseSpacePoint(
                         TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
                     )
                     prop_on_psp = differential_probability(PS_POINT)
