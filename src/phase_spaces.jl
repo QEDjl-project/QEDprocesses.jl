@@ -239,8 +239,8 @@ struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
     MODEL<:AbstractModelDefinition,
     PSDEF<:AbstractPhasespaceDefinition,
-    IN_PARTICLES<:Tuple,
-    OUT_PARTICLES<:Tuple,
+    IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
+    OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
 }
     proc::PROC
     model::MODEL
@@ -255,44 +255,10 @@ struct PhaseSpacePoint{
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
         PSDEF<:AbstractPhasespaceDefinition,
-        IN_PARTICLES<:Tuple,
-        OUT_PARTICLES<:Tuple,
+        IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
+        OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
     }
-        length(incoming_particles(proc)) == length(in_p) || throw(
-            InvalidInputError(
-                "the number of incoming particles given by the process ($(incoming_particles(proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
-            ),
-        )
-        length(outgoing_particles(proc)) == length(out_p) || throw(
-            InvalidInputError(
-                "the number of outgoing particles given by the process ($(outgoing_particles(proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
-            ),
-        )
-
-        for (proc_p, p) in zip(incoming_particles(proc), in_p)
-            proc_p == p.species || throw(
-                InvalidInputError(
-                    "process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
-                ),
-            )
-            is_incoming(p) || throw(
-                InvalidInputError(
-                    "stateful particle $(p) is given as an incoming particle but is outgoing",
-                ),
-            )
-        end
-        for (proc_p, p) in zip(outgoing_particles(proc), out_p)
-            proc_p == p.species || throw(
-                InvalidInputError(
-                    "process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
-                ),
-            )
-            is_outgoing(p) || throw(
-                InvalidInputError(
-                    "stateful particle $(p) is given as an outgoing particle but is incoming",
-                ),
-            )
-        end
+        _check_psp(incoming_particles(proc), outgoing_particles(proc), in_p, out_p)
 
         return new{PROC,MODEL,PSDEF,IN_PARTICLES,OUT_PARTICLES}(
             proc, model, ps_def, in_p, out_p
@@ -311,24 +277,77 @@ struct PhaseSpacePoint{
     Construct the phase space point from given momenta of incoming and outgoing particles regarding a given process.
     """
     function PhaseSpacePoint(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition,
-        ps_def::AbstractPhasespaceDefinition,
+        proc::PROC,
+        model::MODEL,
+        ps_def::PSDEF,
         in_ps::AbstractVector{ELEMENT},
         out_ps::AbstractVector{ELEMENT},
-    ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
-        in_particles = Tuple(
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        ELEMENT<:AbstractFourMomentum,
+    }
+        in_particles = Tuple{
+            Vararg{ParticleStateful{Incoming},number_incoming_particles(proc)}
+        }(
             ParticleStateful(Incoming(), particle, mom) for
             (particle, mom) in zip(incoming_particles(proc), in_ps)
         )
 
-        out_particles = Tuple(
+        out_particles = Tuple{
+            Vararg{ParticleStateful{Outgoing},number_outgoing_particles(proc)}
+        }(
             ParticleStateful(Outgoing(), particle, mom) for
             (particle, mom) in zip(outgoing_particles(proc), out_ps)
         )
 
-        return PhaseSpacePoint(proc, model, ps_def, in_particles, out_particles)
+        # no need to check anything since it is constructed correctly above
+
+        return new{PROC,MODEL,PSDEF,typeof(in_particles),typeof(out_particles)}(
+            proc, model, ps_def, in_particles, out_particles
+        )
     end
+end
+
+@inline function _single_type_check(t::ParticleStateful, p::AbstractParticleType)
+    t.species == p || throw(
+        InvalidInputError(
+            "process given particle species ($(p)) does not match stateful particle species ($(t.species))",
+        ),
+    )
+    return nothing
+end
+
+@inline function _check_psp(
+    in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
+) where {
+    P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
+    P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
+    IN_Ts<:Tuple{Vararg{ParticleStateful{Incoming}}},
+    OUT_Ts<:Tuple{Vararg{ParticleStateful{Outgoing}}},
+}
+    length(in_proc) == length(in_p) || throw(
+        InvalidInputError(
+            "the number of incoming particles given by the process ($(length(in_proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
+        ),
+    )
+    length(out_proc) == length(out_p) || throw(
+        InvalidInputError(
+            "the number of outgoing particles given by the process ($(length(out_proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
+        ),
+    )
+
+    # in_proc/out_proc contain only species types
+    # in_p/out_p contain full ParticleStateful types
+
+    for (in_species_p, t) in zip(in_proc, in_p)
+        _single_type_check(t, in_species_p)
+    end
+    for (out_species_p, t) in zip(out_proc, out_p)
+        _single_type_check(t, out_species_p)
+    end
+    return nothing
 end
 
 """
