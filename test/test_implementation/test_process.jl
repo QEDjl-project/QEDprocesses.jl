@@ -10,7 +10,7 @@ const PARTICLE_SET = [TestParticleFermion(), TestParticleBoson()]
     TestProcess(rng,incoming_particles,outgoing_particles)
 
 """
-struct TestProcess{IP<:AbstractVector,OP<:AbstractVector} <: AbstractProcessDefinition
+struct TestProcess{IP<:Tuple,OP<:Tuple} <: AbstractProcessDefinition
     incoming_particles::IP
     outgoing_particles::OP
 end
@@ -24,14 +24,14 @@ end
 QEDprocesses.incoming_particles(proc::TestProcess) = proc.incoming_particles
 QEDprocesses.outgoing_particles(proc::TestProcess) = proc.outgoing_particles
 
-struct TestProcess_FAIL{IP<:AbstractVector,OP<:AbstractVector} <: AbstractProcessDefinition
+struct TestProcess_FAIL{IP<:Tuple,OP<:Tuple} <: AbstractProcessDefinition
     incoming_particles::IP
     outgoing_particles::OP
 end
 
 function TestProcess_FAIL(rng::AbstractRNG, N_in::Int, N_out::Int)
-    in_particles = rand(rng, PARTICLE_SET, N_in)
-    out_particles = rand(rng, PARTICLE_SET, N_out)
+    in_particles = Tuple(rand(rng, PARTICLE_SET, N_in))
+    out_particles = Tuple(rand(rng, PARTICLE_SET, N_out))
     return TestProcess_FAIL(in_particles, out_particles)
 end
 

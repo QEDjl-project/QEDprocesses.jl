@@ -310,13 +310,48 @@ struct PhaseSpacePoint{
     end
 end
 
-@inline function _single_type_check(t::ParticleStateful, p::AbstractParticleType)
-    t.species == p || throw(
+# recursion termination: success
+@inline _recursive_type_check(t::Tuple{}, p::Tuple{}, dir::ParticleDirection) = nothing
+
+# recursion termination: overload for unequal number of particles
+@inline function _recursive_type_check(
+    ::Tuple{Vararg{ParticleStateful,N}},
+    ::Tuple{Vararg{AbstractParticleType,M}},
+    dir::ParticleDirection,
+) where {N,M}
+    return throw(
         InvalidInputError(
-            "process given particle species ($(p)) does not match stateful particle species ($(t.species))",
+            "the number of $(dir) particles in the process $(M) does not match number of particles in the input $(N)",
         ),
     )
-    return nothing
+end
+
+# recursion termination: overload for invalid types
+@inline function _recursive_type_check(
+    ::Tuple{ParticleStateful{DIR_IN_T,SPECIES_IN_T},Vararg{ParticleStateful,N}},
+    ::Tuple{SPECIES_T,Vararg{AbstractParticleType,M}},
+    dir::DIR_T,
+) where {
+    N,
+    M,
+    DIR_IN_T<:ParticleDirection,
+    DIR_T<:ParticleDirection,
+    SPECIES_IN_T<:AbstractParticleType,
+    SPECIES_T<:AbstractParticleType,
+}
+    return throw(
+        InvalidInputError(
+            "expected $(dir) $(SPECIES_T()) but got $(DIR_IN_T()) $(SPECIES_IN_T())"
+        ),
+    )
+end
+
+@inline function _recursive_type_check(
+    t::Tuple{ParticleStateful{DIR_T,SPECIES_T},Vararg{ParticleStateful,N}},
+    p::Tuple{SPECIES_T,Vararg{AbstractParticleType,N}},
+    dir::DIR_T,
+) where {N,DIR_T<:ParticleDirection,SPECIES_T<:AbstractParticleType}
+    return _recursive_type_check(t[2:end], p[2:end], dir)
 end
 
 @inline function _check_psp(
@@ -324,29 +359,14 @@ end
 ) where {
     P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
     P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
-    IN_Ts<:Tuple{Vararg{ParticleStateful{Incoming}}},
-    OUT_Ts<:Tuple{Vararg{ParticleStateful{Outgoing}}},
+    IN_Ts<:Tuple{Vararg{ParticleStateful}},
+    OUT_Ts<:Tuple{Vararg{ParticleStateful}},
 }
-    length(in_proc) == length(in_p) || throw(
-        InvalidInputError(
-            "the number of incoming particles given by the process ($(length(in_proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
-        ),
-    )
-    length(out_proc) == length(out_p) || throw(
-        InvalidInputError(
-            "the number of outgoing particles given by the process ($(length(out_proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
-        ),
-    )
-
     # in_proc/out_proc contain only species types
     # in_p/out_p contain full ParticleStateful types
 
-    for (in_species_p, t) in zip(in_proc, in_p)
-        _single_type_check(t, in_species_p)
-    end
-    for (out_species_p, t) in zip(out_proc, out_p)
-        _single_type_check(t, out_species_p)
-    end
+    _recursive_type_check(in_p, in_proc, Incoming())
+    _recursive_type_check(out_p, out_proc, Outgoing())
     return nothing
 end
 
