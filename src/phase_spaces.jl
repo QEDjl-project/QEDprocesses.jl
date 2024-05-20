@@ -187,6 +187,19 @@ particle_direction(part::ParticleStateful) = part.dir
 particle_species(part::ParticleStateful) = part.species
 momentum(part::ParticleStateful) = part.mom
 
+# recursion termination: base case
+@inline _assemble_tuple_type(proc::Tuple{}, dir::ParticleDirection, ELTYPE::Type) = ()
+
+# function assembling the correct type information for the tuple of ParticleStatefuls in a phasespace point constructed from momenta
+@inline function _assemble_tuple_type(
+    proc::Tuple{SPECIES_T,Vararg{AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
+) where {SPECIES_T<:AbstractParticleType,DIR_T<:ParticleDirection}
+    return (
+        ParticleStateful{DIR_T,SPECIES_T,ELTYPE},
+        _assemble_tuple_type(proc[2:end], dir, ELTYPE)...,
+    )
+end
+
 function Base.show(io::IO, particle::ParticleStateful)
     print(
         io, "$(particle.dir) $(particle.species) ($(particle.spin_or_pol)): $(particle.mom)"
@@ -289,14 +302,14 @@ struct PhaseSpacePoint{
         ELEMENT<:AbstractFourMomentum,
     }
         in_particles = Tuple{
-            Vararg{ParticleStateful{Incoming},number_incoming_particles(proc)}
+            _assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...
         }(
             ParticleStateful(Incoming(), particle, mom) for
             (particle, mom) in zip(incoming_particles(proc), in_ps)
         )
 
         out_particles = Tuple{
-            Vararg{ParticleStateful{Outgoing},number_outgoing_particles(proc)}
+            _assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...
         }(
             ParticleStateful(Outgoing(), particle, mom) for
             (particle, mom) in zip(outgoing_particles(proc), out_ps)
