@@ -57,12 +57,17 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = [omega]
                     OUT_COORDS = [cos_theta, phi]
+                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
+                    )
+
                     groundtruth = _groundtruth_pert_compton_diffCS_spinsum_polsum(
                         omega, cos_theta, 1.0
                     )
-                    test_val = unsafe_differential_cross_section(
-                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
-                    )
+
+                    PSP = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    test_val = unsafe_differential_cross_section(PSP)
+
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
@@ -74,12 +79,17 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = [omega]
                     OUT_COORDS = [cos_theta, phi]
+                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
+                    )
+
                     groundtruth = _groundtruth_pert_compton_diffCS_spinsum_xpol(
                         omega, cos_theta, phi, 1.0
                     )
-                    test_val = unsafe_differential_cross_section(
-                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
-                    )
+
+                    PSP = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    test_val = unsafe_differential_cross_section(PSP)
+
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
@@ -91,12 +101,17 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = [omega]
                     OUT_COORDS = [cos_theta, phi]
+                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
+                    )
+
                     groundtruth = _groundtruth_pert_compton_diffCS_spinsum_ypol(
                         omega, cos_theta, phi, 1.0
                     )
-                    test_val = unsafe_differential_cross_section(
-                        PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
-                    )
+
+                    PSP = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    test_val = unsafe_differential_cross_section(PSP)
+
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end
             end
@@ -107,7 +122,7 @@ end
                 # Klein-Nishina: total cross section
                 function klein_nishina_total_cross_section(in_ps)
                     function func(x)
-                        return unsafe_differential_cross_section(
+                        return QEDprocesses._unsafe_differential_cross_section(
                             Compton(), PerturbativeQED(), PS_DEF, in_ps, [x, 0.0]
                         )
                     end
