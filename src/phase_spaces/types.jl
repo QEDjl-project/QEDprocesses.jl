@@ -156,15 +156,26 @@ struct PhaseSpacePoint{
         PSDEF<:AbstractPhasespaceDefinition,
         ELEMENT<:AbstractFourMomentum,
     }
-        in_particles = Tuple{
-            _assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...
+        length(in_ps) == number_incoming_particles(proc) || throw(
+            InvalidInputError(
+                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(length(in_ps))",
+            ),
+        )
+        length(out_ps) == number_outgoing_particles(proc) || throw(
+            InvalidInputError(
+                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(length(out_ps))",
+            ),
+        )
+
+        in_particles = Union{
+            Tuple{_assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...}
         }(
             ParticleStateful(Incoming(), particle, mom) for
             (particle, mom) in zip(incoming_particles(proc), in_ps)
         )
 
-        out_particles = Tuple{
-            _assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...
+        out_particles = Union{
+            Tuple{_assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...}
         }(
             ParticleStateful(Outgoing(), particle, mom) for
             (particle, mom) in zip(outgoing_particles(proc), out_ps)
@@ -176,4 +187,87 @@ struct PhaseSpacePoint{
             proc, model, ps_def, in_particles, out_particles
         )
     end
+
+    """
+        PhaseSpacePoint(
+            proc::AbstractProcessDefinition,
+            model::AbstractModelDefinition,
+            ps_def::AbstractPhasespaceDefinition,
+            in_ps::AbstractVector{ELEMENT},
+            out_ps::Tuple{},
+        ) where {ELEMENT<:AbstractFourMomentum}
+
+    Construct a PhaseSpacePoint with only input particles. The result will be `<: IncomingPhaseSpacePoint` but **not** `<: OutgoingPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `out_phasespace`.
+    """
+    function PhaseSpacePoint(
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::AbstractVector{ELEMENT}, ::Tuple{}
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        ELEMENT<:AbstractFourMomentum,
+    }
+        length(in_ps) == number_incoming_particles(proc) || throw(
+            InvalidInputError(
+                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(length(in_ps))",
+            ),
+        )
+        in_particles = Union{
+            Tuple{_assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...}
+        }(
+            ParticleStateful(Incoming(), particle, mom) for
+            (particle, mom) in zip(incoming_particles(proc), in_ps)
+        )
+
+        # no need to check anything since it is constructed correctly above
+
+        return new{PROC,MODEL,PSDEF,typeof(in_particles),Tuple{}}(
+            proc, model, ps_def, in_particles, ()
+        )
+    end
+
+    """
+        PhaseSpacePoint(
+            proc::AbstractProcessDefinition,
+            model::AbstractModelDefinition,
+            ps_def::AbstractPhasespaceDefinition,
+            in_ps::Tuple{},
+            out_ps::AbstractVector{ELEMENT},
+        ) where {ELEMENT<:AbstractFourMomentum}
+
+    Construct a PhaseSpacePoint with only output particles. The result will be `<: OutgoingPhaseSpacePoint` but **not** `<: IncomingPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `in_phasespace`.
+    """
+    function PhaseSpacePoint(
+        proc::PROC, model::MODEL, ps_def::PSDEF, ::Tuple{}, out_ps::AbstractVector{ELEMENT}
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        ELEMENT<:AbstractFourMomentum,
+    }
+        length(out_ps) == number_outgoing_particles(proc) || throw(
+            InvalidInputError(
+                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(length(out_ps))",
+            ),
+        )
+        out_particles = Union{
+            Tuple{_assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...}
+        }(
+            ParticleStateful(Outgoing(), particle, mom) for
+            (particle, mom) in zip(outgoing_particles(proc), out_ps)
+        )
+
+        # no need to check anything since it is constructed correctly above
+
+        return new{PROC,MODEL,PSDEF,Tuple{},typeof(out_particles)}(
+            proc, model, ps_def, (), out_particles
+        )
+    end
 end
+
+IncomingPhaseSpacePoint{P,M,D,IN,OUT} = PhaseSpacePoint{
+    P,M,D,IN,OUT
+} where {IN<:Tuple{ParticleStateful,Vararg},OUT<:Tuple{Vararg}}
+OutgoingPhaseSpacePoint{P,M,D} = PhaseSpacePoint{
+    P,M,D,IN,OUT
+} where {IN<:Tuple{Vararg},OUT<:Tuple{ParticleStateful,Vararg}}

@@ -120,6 +120,22 @@ end
             @test_throws r"expected outgoing electron but got outgoing photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
             )
+
+            @test_throws r"expected 2 outgoing particles for the process but got 1" PhaseSpacePoint(
+                process, model, phasespace_def, in_particles_valid, (out_el,)
+            )
+
+            @test_throws r"expected 2 incoming particles for the process but got 1" PhaseSpacePoint(
+                process, model, phasespace_def, (out_el,), out_particles_valid
+            )
+
+            @test_throws r"expected 2 outgoing particles for the process but got 3" PhaseSpacePoint(
+                process, model, phasespace_def, in_particles_valid, (out_el, out_el, out_ph)
+            )
+
+            @test_throws r"expected 2 incoming particles for the process but got 3" PhaseSpacePoint(
+                process, model, phasespace_def, (in_el, in_el, in_ph), out_particles_valid
+            )
         end
 
         @test_throws BoundsError momentum(psp, Incoming(), -1)
@@ -166,6 +182,75 @@ end
         @test test_psp[Incoming(), 2] == in_ph
         @test test_psp[Outgoing(), 1] == out_el
         @test test_psp[Outgoing(), 2] == out_ph
+
+        @testset "Error handling" begin
+            @test_throws InvalidInputError PhaseSpacePoint(
+                process,
+                model,
+                phasespace_def,
+                SVector(in_el_mom, in_ph_mom),
+                SVector((out_el_mom,)),
+            )
+            @test_throws InvalidInputError PhaseSpacePoint(
+                process,
+                model,
+                phasespace_def,
+                SVector((in_el_mom,)),
+                SVector(out_el_mom, out_ph_mom),
+            )
+            @test_throws InvalidInputError PhaseSpacePoint(
+                process,
+                model,
+                phasespace_def,
+                SVector(in_el_mom, in_ph_mom),
+                SVector((out_el_mom, out_el_mom, out_ph_mom)),
+            )
+            @test_throws InvalidInputError PhaseSpacePoint(
+                process,
+                model,
+                phasespace_def,
+                SVector((in_el_mom, in_el_mom, in_ph_mom)),
+                SVector(out_el_mom, out_ph_mom),
+            )
+        end
+    end
+
+    @testset "Directional PhaseSpacePoint" begin
+        @test psp isa PhaseSpacePoint
+        @test psp isa IncomingPhaseSpacePoint
+        @test psp isa OutgoingPhaseSpacePoint
+
+        in_psp = PhaseSpacePoint(process, model, phasespace_def, in_particles_valid, ())
+        out_psp = PhaseSpacePoint(process, model, phasespace_def, (), out_particles_valid)
+        in_psp_from_moms = PhaseSpacePoint(
+            process, model, phasespace_def, [in_el_mom, in_ph_mom], ()
+        )
+        out_psp_from_moms = PhaseSpacePoint(
+            process, model, phasespace_def, (), [out_el_mom, out_ph_mom]
+        )
+
+        @test in_psp isa IncomingPhaseSpacePoint
+        @test !(in_psp isa OutgoingPhaseSpacePoint)
+        @test in_psp_from_moms isa IncomingPhaseSpacePoint
+        @test !(in_psp_from_moms isa OutgoingPhaseSpacePoint)
+
+        @test out_psp isa OutgoingPhaseSpacePoint
+        @test !(out_psp isa IncomingPhaseSpacePoint)
+        @test out_psp_from_moms isa OutgoingPhaseSpacePoint
+        @test !(out_psp_from_moms isa IncomingPhaseSpacePoint)
+
+        @test_throws InvalidInputError PhaseSpacePoint(
+            process, model, phasespace_def, in_particles_invalid, ()
+        )
+        @test_throws InvalidInputError PhaseSpacePoint(
+            process, model, phasespace_def, (), out_particles_invalid
+        )
+        @test_throws InvalidInputError PhaseSpacePoint(
+            process, model, phasespace_def, [in_el_mom, in_ph_mom, in_ph_mom], ()
+        )
+        @test_throws InvalidInputError PhaseSpacePoint(
+            process, model, phasespace_def, (), [out_el_mom, out_ph_mom, out_ph_mom]
+        )
     end
 end
 
