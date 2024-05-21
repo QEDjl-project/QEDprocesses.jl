@@ -1,5 +1,4 @@
 using Random
-using Suppressor
 using QEDbase
 using QEDprocesses
 
