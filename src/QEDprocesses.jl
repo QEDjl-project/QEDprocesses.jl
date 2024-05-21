@@ -35,8 +35,8 @@ export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
 export ParticleStateful, PhaseSpacePoint
-export spin, polarization, particle_direction, particle_species, momentum, getindex
-export generate_phase_space
+export spin, polarization, particle_direction, particle_species, momentum, momenta, getindex
+export PhaseSpacePoint
 
 # specific compute models
 export PerturbativeQED
@@ -58,8 +58,12 @@ include("interfaces/setup_interface.jl")
 include("phase_spaces.jl")
 include("momentum_generation.jl")
 include("propagators.jl")
-include("probabilities.jl")
-include("cross_sections.jl")
+
+include("cross_section/diff_probability.jl")
+include("cross_section/diff_cross_section.jl")
+include("cross_section/total_probability.jl")
+include("cross_section/total_cross_section.jl")
+include("cross_section/internal.jl")
 
 include("models/models.jl")
 include("processes/one_photon_compton/one_photon_compton.jl")
