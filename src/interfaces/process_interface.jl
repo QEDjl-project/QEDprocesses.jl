@@ -34,14 +34,14 @@ interface functions need to be implemented for every combination of `CustomProce
 
     _is_in_phasespace(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
-    _phase_space_factor(psp::PhaseSpacePoint{CustomProcess,CustomModel, CustomPhasespaceDefinition})
+    _phase_space_factor(psp::PhaseSpacePoint{CustomProcess,CustomModel,CustomPhasespaceDefinition})
 ```
 
 Optional is the implementation of 
 
 ```Julia
 
-    _total_probability(psp::PhaseSpacePoint{CustomProcess,CustomModel, CustomPhasespaceDefinition})
+    _total_probability(psp::PhaseSpacePoint{CustomProcess,CustomModel,CustomPhasespaceDefinition})
 
 ```
 to enable the calculation of total probabilities and cross sections.
@@ -83,12 +83,12 @@ Interface function, which returns the incident flux of the given scattering proc
 function _incident_flux end
 
 """
-    _matrix_elemen(PhaseSpacePoint{PROC,MODEL}) where {
+    _matrix_element(PhaseSpacePoint{PROC,MODEL}) where {
         PROC <: AbstractProcessDefinition,
         MODEL <: AbstractModelDefinition,
     }
 
-Interface function, which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
+Interface function which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
 """
 function _matrix_element end
 
@@ -108,7 +108,7 @@ function _averaging_norm end
         MODEL <: AbstractModelDefinition,
     }
 
-Interface function, which returns `true`, if the combination of the given incoming and outgoing phase space
+Interface function which returns `true` if the combination of the given incoming and outgoing phase space
 is physical, i.e. all momenta are on-shell and some sort of energy-momentum conservation holds.
 """
 function _is_in_phasespace end
