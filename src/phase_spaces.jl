@@ -43,7 +43,6 @@ abstract type AbstractPhasespaceDefinition end
 Broadcast.broadcastable(ps_def::AbstractPhasespaceDefinition) = Ref(ps_def)
 
 """
-
     PhasespaceDefinition(coord_sys::AbstractCoordinateSystem, frame::AbstractFrameOfReference)
 
 Convenient type to dispatch on coordiante systems and frames of reference.
@@ -52,6 +51,29 @@ struct PhasespaceDefinition{CS<:AbstractCoordinateSystem,F<:AbstractFrameOfRefer
        AbstractPhasespaceDefinition
     coord_sys::CS
     frame::F
+end
+
+function Base.show(io::IO, ::SphericalCoordinateSystem)
+    print(io, "spherical coordinates")
+    return nothing
+end
+function Base.show(io::IO, ::CenterOfMomentumFrame)
+    print(io, "center-of-momentum frame")
+    return nothing
+end
+function Base.show(io::IO, ::ElectronRestFrame)
+    print(io, "electron rest frame")
+    return nothing
+end
+function Base.show(io::IO, m::MIME"text/plain", ps_def::PhasespaceDefinition)
+    println(io, "PhasespaceDefinition")
+    println(io, "    coordinate system: $(ps_def.coord_sys)")
+    println(io, "    frame: $(ps_def.frame)")
+    return nothing
+end
+function Base.show(io::IO, ps_def::PhasespaceDefinition)
+    print(io, "$(ps_def.coord_sys) in $(ps_def.frame)")
+    return nothing
 end
 
 # abstract type for generic phase spaces
@@ -117,11 +139,25 @@ Representation of a particle with a state. It has four fields:
 - `dir::ParticleDirection`: The direction of the particle, `QEDbase.Incoming()` or `QEDbase.Outgoing()`.
 - `species::AbstractParticleType`: The species of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc.
 - `mom::AbstractFourMomentum`: The momentum of the particle.
-- `spin_or_pol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc. Can only use spins with fermions and polarizations with bosons.
+- `spin_or_pol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc. Can only use spins with fermions and polarizations with bosons. `AllSpin` or `AllPol` by default.
 
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
 
 The legality of the combination of `species` and `spin_or_pol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
+
+```jldoctest
+julia> using QEDbase; using QEDprocesses
+
+julia> ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0))
+ParticleStateful: incoming electron
+    spin: all spins
+    momentum: [1.0, 0.0, 0.0, 0.0]
+
+julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0), PolX())
+ParticleStateful: outgoing photon
+    polarization: x-polarized
+    momentum: [1.0, 0.0, 0.0, 0.0]
+```
 """
 struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
     dir::ParticleDirection
@@ -167,12 +203,57 @@ momentum(part::ParticleStateful) = part.mom
     particle.spin_or_pol
 @inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
 
+function Base.show(io::IO, particle::ParticleStateful)
+    print(
+        io, "$(particle.dir) $(particle.species) ($(particle.spin_or_pol)): $(particle.mom)"
+    )
+    return nothing
+end
+
+function Base.show(io::IO, m::MIME"text/plain", particle::ParticleStateful)
+    println(io, "ParticleStateful: $(particle.dir) $(particle.species)")
+    println(
+        io,
+        "    $(particle.spin_or_pol isa AbstractSpin ? "spin" : "polarization"): $(particle.spin_or_pol)",
+    )
+    println(io, "    momentum: $(particle.mom)")
+    return nothing
+end
+
 """
     PhaseSpacePoint
 
 Representation of a point in the phase space of a process. Contains the process ([`AbstractProcessDefinition`](@ref)), the model ([`AbstractModelDefinition`](@ref)), the phase space definition ([`AbstractPhasespaceDefinition`]), and stateful incoming and outgoing particles ([`ParticleStateful`](@ref)).
 
 The legality of the combination of the given process and the incoming and outgoing particles is checked on construction. If the numbers of particles mismatch, the types of particles mismatch (note that order is important), or incoming particles have an `Outgoing` direction, an error is thrown.
+
+```jldoctest
+julia> using QEDprocesses; using QEDbase
+
+julia> PhaseSpacePoint(
+            Compton(), 
+            PerturbativeQED(), 
+            PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), 
+            [
+                ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(Incoming(), Photon(), SFourMomentum(1, 0, 0, 0))
+            ], 
+            [
+                ParticleStateful(Outgoing(), Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
+            ]
+        )
+PhaseSpacePoint:
+    process: one-photon Compton scattering
+    model: perturbative QED
+    phasespace definition: spherical coordinates in electron rest frame
+    incoming particles:
+     -> incoming electron (all spins): [1.0, 0.0, 0.0, 0.0]
+     -> incoming photon (all polarizations): [1.0, 0.0, 0.0, 0.0]
+    outgoing particles:
+     -> outgoing electron (all spins): [1.0, 0.0, 0.0, 0.0]
+     -> outgoing photon (all polarizations): [1.0, 0.0, 0.0, 0.0]
+```
 """
 struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
@@ -269,7 +350,6 @@ function momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
 end
 
 """
-
     generate_phase_space(
         proc::AbstractProcessDefinition, 
         model::AbstractModelDefinition, 
@@ -306,4 +386,25 @@ function generate_phase_space(
     )
 
     return PhaseSpacePoint(proc, model, ps_def, in_parts, out_parts)
+end
+
+function Base.show(io::IO, psp::PhaseSpacePoint)
+    print(io, "PhaseSpacePoint of $(psp.proc)")
+    return nothing
+end
+
+function Base.show(io::IO, ::MIME"text/plain", psp::PhaseSpacePoint)
+    println(io, "PhaseSpacePoint:")
+    println(io, "    process: $(psp.proc)")
+    println(io, "    model: $(psp.model)")
+    println(io, "    phasespace definition: $(psp.ps_def)")
+    println(io, "    incoming particles:")
+    for p in psp.in_particles
+        println(io, "     -> $(p)")
+    end
+    println(io, "    outgoing particles:")
+    for p in psp.out_particles
+        println(io, "     -> $(p)")
+    end
+    return nothing
 end

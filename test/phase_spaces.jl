@@ -11,6 +11,7 @@ TESTMODEL = TestImplementation.TestModel()
 TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
 RNG = Random.MersenneTwister(727)
+BUF = IOBuffer()
 
 @testset "broadcast" begin
     test_func(ps_def) = ps_def
@@ -40,7 +41,6 @@ end
             @test charge(particle_stateful) == charge(species)
 
             # accessors
-
             @test particle_stateful.dir == dir
             @test particle_direction(particle_stateful) == particle_stateful.dir
             @test particle_stateful.species == species
@@ -54,6 +54,14 @@ end
                 @test polarization(particle_stateful) == spin_or_pol
                 @test_throws MethodError spin(particle_stateful)
             end
+
+            # printing
+            print(BUF, particle_stateful)
+            @test String(take!(BUF)) == "$(dir) $(species) ($(spin_or_pol)): $(mom)"
+
+            show(BUF, MIME"text/plain"(), particle_stateful)
+            @test String(take!(BUF)) ==
+                "ParticleStateful: $(dir) $(species)\n    $(spin_or_pol isa AbstractSpin ? "spin" : "polarization"): $(spin_or_pol)\n    momentum: $(mom)\n"
         else
             if (VERSION >= v"1.8")
                 # julia versions before 1.8 did not have support for regex matching in @test_throws
@@ -94,6 +102,15 @@ end
         process, model, phasespace_def, in_particles_valid, out_particles_valid
     )
 
+    print(BUF, psp)
+    @test String(take!(BUF)) == "PhaseSpacePoint of $(process)"
+
+    show(BUF, MIME"text/plain"(), psp)
+    @test match(
+        r"PhaseSpacePoint:\n    process: (.*)TestProcess(.*)\n    model: (.*)TestModel(.*)\n    phasespace definition: (.*)TestPhasespaceDef(.*)\n    incoming particles:\n     -> incoming electron \(all spins\): (.*)\n     -> incoming photon \(all polarizations\): (.*)\n    outgoing particles:\n     -> outgoing electron \(all spins\): (.*)\n     -> outgoing photon \(all polarizations\): (.*)\n",
+        String(take!(BUF)),
+    ) isa RegexMatch
+
     @testset "Accessor" begin
         @test momentum(psp, Incoming(), 1) == in_el.mom
         @test momentum(psp, Incoming(), 2) == in_ph.mom
@@ -117,11 +134,11 @@ end
                 process, model, phasespace_def, in_particles_valid, out_particles_invalid
             )
 
-            @test_throws r"process given particle species \((.*)Electron\(\)\) does not match stateful particle species \((.*)Photon\(\)\)" PhaseSpacePoint(
+            @test_throws r"process given particle species \(electron\) does not match stateful particle species \(photon\)" PhaseSpacePoint(
                 process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
             )
 
-            @test_throws r"process given particle species \((.*)Electron\(\)\) does not match stateful particle species \((.*)Photon\(\)\)" PhaseSpacePoint(
+            @test_throws r"process given particle species \(electron\) does not match stateful particle species \(photon\)" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
             )
         end
@@ -166,5 +183,31 @@ end
         @test test_psp[Incoming(), 2] == in_ph
         @test test_psp[Outgoing(), 1] == out_el
         @test test_psp[Outgoing(), 2] == out_ph
+    end
+end
+
+@testset "Coordinate System" begin
+    @testset "Pretty printing" begin
+        print(BUF, SphericalCoordinateSystem())
+        @test String(take!(BUF)) == "spherical coordinates"
+    end
+end
+@testset "Reference Frame" begin
+    @testset "Pretty printing" begin
+        print(BUF, ElectronRestFrame())
+        @test String(take!(BUF)) == "electron rest frame"
+        print(BUF, CenterOfMomentumFrame())
+        @test String(take!(BUF)) == "center-of-momentum frame"
+    end
+end
+
+@testset "Phasespace Definition" for (coord_sys, frame) in Iterators.product(
+    [SphericalCoordinateSystem()], [ElectronRestFrame(), CenterOfMomentumFrame()]
+)
+    ps_def = PhasespaceDefinition(coord_sys, frame)
+
+    @testset "Pretty printing" begin
+        print(BUF, ps_def)
+        @test String(take!(BUF)) == "$coord_sys in $frame"
     end
 end
