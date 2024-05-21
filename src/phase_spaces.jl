@@ -186,15 +186,15 @@ particle_species(part::ParticleStateful) = part.species
 momentum(part::ParticleStateful) = part.mom
 
 # recursion termination: base case
-@inline _assemble_tuple_type(proc::Tuple{}, dir::ParticleDirection, ELTYPE::Type) = ()
+@inline _assemble_tuple_type(::Tuple{}, ::ParticleDirection, ::Type) = ()
 
 # function assembling the correct type information for the tuple of ParticleStatefuls in a phasespace point constructed from momenta
 @inline function _assemble_tuple_type(
-    proc::Tuple{SPECIES_T,Vararg{AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
+    particle_types::Tuple{SPECIES_T,Vararg{AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
 ) where {SPECIES_T<:AbstractParticleType,DIR_T<:ParticleDirection}
     return (
         ParticleStateful{DIR_T,SPECIES_T,ELTYPE},
-        _assemble_tuple_type(proc[2:end], dir, ELTYPE)...,
+        _assemble_tuple_type(particle_types[2:end], dir, ELTYPE)...,
     )
 end
 

@@ -36,7 +36,6 @@ export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
 export ParticleStateful, PhaseSpacePoint
 export spin, polarization, particle_direction, particle_species, momentum, momenta, getindex
-export PhaseSpacePoint
 
 # specific compute models
 export PerturbativeQED
