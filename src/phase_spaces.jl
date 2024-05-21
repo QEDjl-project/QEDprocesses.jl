@@ -321,6 +321,14 @@ struct PhaseSpacePoint{
     end
 end
 
+function momenta(psp::PhaseSpacePoint, ::Incoming)
+    return QEDbase._as_svec(momentum.(psp.in_particles))
+end
+
+function momenta(psp::PhaseSpacePoint, ::Outgoing)
+    return QEDbase._as_svec(momentum.(psp.out_particles))
+end
+
 # recursion termination: success
 @inline _recursive_type_check(t::Tuple{}, p::Tuple{}, dir::ParticleDirection) = nothing
 

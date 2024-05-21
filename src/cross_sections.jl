@@ -143,8 +143,8 @@ function unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
         phase_space_point.proc,
         phase_space_point.model,
         phase_space_point.ps_def,
-        momentum.(phase_space_point.in_particles),
-        momentum.(phase_space_point.out_particles),
+        momenta(phase_space_point, Incoming()),
+        momenta(phase_space_point, Outgoing()),
     )
 end
 
@@ -280,8 +280,8 @@ function differential_cross_section(phase_space_point::PhaseSpacePoint)
         phase_space_point.proc,
         phase_space_point.model,
         phase_space_point.ps_def,
-        momentum.(phase_space_point.in_particles),
-        momentum.(phase_space_point.out_particles),
+        momenta(phase_space_point, Incoming()),
+        momenta(phase_space_point, Outgoing()),
     )
 end
 
