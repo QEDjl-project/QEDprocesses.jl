@@ -54,7 +54,11 @@ include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
 
-include("phase_spaces.jl")
+include("phase_spaces/types.jl")
+include("phase_spaces/access.jl")
+include("phase_spaces/print.jl")
+include("phase_spaces/utility.jl")
+
 include("momentum_generation.jl")
 include("propagators.jl")
 
