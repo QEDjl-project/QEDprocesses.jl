@@ -147,12 +147,10 @@ julia> using QEDbase; using QEDprocesses
 
 julia> ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0))
 ParticleStateful: incoming electron
-    spin: all spins
     momentum: [1.0, 0.0, 0.0, 0.0]
 
-julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0), PolX())
+julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
 ParticleStateful: outgoing photon
-    polarization: x-polarized
     momentum: [1.0, 0.0, 0.0, 0.0]
 ```
 """
@@ -225,25 +223,25 @@ julia> PhaseSpacePoint(
             Compton(), 
             PerturbativeQED(), 
             PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), 
-            [
+            (
                 ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0)), 
                 ParticleStateful(Incoming(), Photon(), SFourMomentum(1, 0, 0, 0))
-            ], 
-            [
+            ), 
+            (
                 ParticleStateful(Outgoing(), Electron(), SFourMomentum(1, 0, 0, 0)), 
                 ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
-            ]
+            )
         )
 PhaseSpacePoint:
     process: one-photon Compton scattering
     model: perturbative QED
     phasespace definition: spherical coordinates in electron rest frame
     incoming particles:
-     -> incoming electron (all spins): [1.0, 0.0, 0.0, 0.0]
-     -> incoming photon (all polarizations): [1.0, 0.0, 0.0, 0.0]
+     -> incoming electron: [1.0, 0.0, 0.0, 0.0]
+     -> incoming photon: [1.0, 0.0, 0.0, 0.0]
     outgoing particles:
-     -> outgoing electron (all spins): [1.0, 0.0, 0.0, 0.0]
-     -> outgoing photon (all polarizations): [1.0, 0.0, 0.0, 0.0]
+     -> outgoing electron: [1.0, 0.0, 0.0, 0.0]
+     -> outgoing photon: [1.0, 0.0, 0.0, 0.0]
 ```
 """
 struct PhaseSpacePoint{
