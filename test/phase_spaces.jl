@@ -37,30 +37,21 @@ end
         @test mass(particle_stateful) == mass(species)
         @test charge(particle_stateful) == charge(species)
 
-            # accessors
-            @test particle_stateful.dir == dir
-            @test particle_direction(particle_stateful) == particle_stateful.dir
-            @test particle_stateful.species == species
-            @test particle_species(particle_stateful) == particle_stateful.species
-            @test particle_stateful.mom == mom
-            @test momentum(particle_stateful) == mom
+        # accessors
+        @test particle_stateful.dir == dir
+        @test particle_direction(particle_stateful) == particle_stateful.dir
+        @test particle_stateful.species == species
+        @test particle_species(particle_stateful) == particle_stateful.species
+        @test particle_stateful.mom == mom
+        @test momentum(particle_stateful) == mom
 
-            # printing
-            print(BUF, particle_stateful)
-            @test String(take!(BUF)) == "$(dir) $(species) ($(spin_or_pol)): $(mom)"
+        # printing
+        print(BUF, particle_stateful)
+        @test String(take!(BUF)) == "$(dir) $(species): $(mom)"
 
-            show(BUF, MIME"text/plain"(), particle_stateful)
-            @test String(take!(BUF)) ==
-                "ParticleStateful: $(dir) $(species)\n    $(spin_or_pol isa AbstractSpin ? "spin" : "polarization"): $(spin_or_pol)\n    momentum: $(mom)\n"
-        else
-            if (VERSION >= v"1.8")
-                # julia versions before 1.8 did not have support for regex matching in @test_throws
-                @test_throws "MethodError: no method matching ParticleStateful" ParticleStateful(
-                    dir, species, mom, spin_or_pol
-                )
-            end
-            @test_throws MethodError ParticleStateful(dir, species, mom, spin_or_pol)
-        end
+        show(BUF, MIME"text/plain"(), particle_stateful)
+        @test String(take!(BUF)) ==
+            "ParticleStateful: $(dir) $(species)\n    momentum: $(mom)\n"
     end
 end
 
@@ -89,12 +80,13 @@ end
         process, model, phasespace_def, in_particles_valid, out_particles_valid
     )
 
+    take!(BUF)
     print(BUF, psp)
     @test String(take!(BUF)) == "PhaseSpacePoint of $(process)"
 
     show(BUF, MIME"text/plain"(), psp)
     @test match(
-        r"PhaseSpacePoint:\n    process: (.*)TestProcess(.*)\n    model: (.*)TestModel(.*)\n    phasespace definition: (.*)TestPhasespaceDef(.*)\n    incoming particles:\n     -> incoming electron \(all spins\): (.*)\n     -> incoming photon \(all polarizations\): (.*)\n    outgoing particles:\n     -> outgoing electron \(all spins\): (.*)\n     -> outgoing photon \(all polarizations\): (.*)\n",
+        r"PhaseSpacePoint:\n    process: (.*)TestProcess(.*)\n    model: (.*)TestModel(.*)\n    phasespace definition: (.*)TestPhasespaceDef(.*)\n    incoming particles:\n     -> incoming electron: (.*)\n     -> incoming photon: (.*)\n    outgoing particles:\n     -> outgoing electron: (.*)\n     -> outgoing photon: (.*)\n",
         String(take!(BUF)),
     ) isa RegexMatch
 

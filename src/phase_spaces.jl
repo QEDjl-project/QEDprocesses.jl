@@ -201,9 +201,7 @@ momentum(part::ParticleStateful) = part.mom
 end
 
 function Base.show(io::IO, particle::ParticleStateful)
-    print(
-        io, "$(particle.dir) $(particle.species) ($(particle.spin_or_pol)): $(particle.mom)"
-    )
+    print(io, "$(particle.dir) $(particle.species): $(particle.mom)")
     return nothing
 end
 
