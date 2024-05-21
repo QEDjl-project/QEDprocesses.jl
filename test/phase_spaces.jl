@@ -105,19 +105,19 @@ end
     @testset "Error handling" begin
         if (VERSION >= v"1.8")
             # julia versions before 1.8 did not have support for regex matching in @test_throws
-            @test_throws r"expected (.*)[Ii]ncoming(.*) (.*)[Pp]hoton(.*) but got (.*)[Oo]utgoing(.*) (.*)[Pp]hoton(.*)" PhaseSpacePoint(
+            @test_throws r"expected incoming photon but got outgoing photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_invalid, out_particles_valid
             )
 
-            @test_throws r"expected (.*)[Oo]utgoing(.*) (.*)[Pp]hoton(.*) but got (.*)[Ii]ncoming(.*) (.*)[Pp]hoton(.*)" PhaseSpacePoint(
+            @test_throws r"expected outgoing photon but got incoming photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_valid, out_particles_invalid
             )
 
-            @test_throws r"expected (.*)[Ii]ncoming(.*) (.*)[Ee]lectron(.*) but got (.*)[Ii]ncoming(.*) (.*)[Pp]hoton(.*)" PhaseSpacePoint(
+            @test_throws r"expected incoming electron but got incoming photon" PhaseSpacePoint(
                 process, model, phasespace_def, (in_ph, in_el), out_particles_valid
             )
 
-            @test_throws r"expected (.*)[Oo]utgoing(.*) (.*)[Ee]lectron(.*) but got (.*)[Oo]utgoing(.*) (.*)[Pp]hoton(.*)" PhaseSpacePoint(
+            @test_throws r"expected outgoing electron but got outgoing photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
             )
         end
