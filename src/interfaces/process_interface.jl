@@ -197,13 +197,6 @@ Return the number of outgoing particles of a given process.
     return length(outgoing_particles(proc_def))
 end
 
-@inline function incoming_particle_types(proc_def::AbstractProcessDefinition)::Type
-    return typeof(incoming_particles(proc_def))
-end
-@inline function outgoing_particle_types(proc_def::AbstractProcessDefinition)::Type
-    return typeof(outgoing_particles(proc_def))
-end
-
 """
     in_phase_space_dimension(
         proc::AbstractProcessDefinition,
