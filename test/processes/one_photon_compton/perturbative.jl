@@ -139,7 +139,7 @@ end
                 IN_COORDS = (omega,)
                 groundtruth = klein_nishina_total_cross_section(IN_COORDS)
                 test_val = @inferred total_cross_section(
-                    PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, ())
+                    InPhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS)
                 )
                 @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
             end

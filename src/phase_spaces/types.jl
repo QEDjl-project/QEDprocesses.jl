@@ -118,6 +118,17 @@ struct PhaseSpacePoint{
     in_particles::IN_PARTICLES
     out_particles::OUT_PARTICLES
 
+    """
+        PhaseSpacePoint(
+            proc::AbstractProcessDefinition, 
+            model::AbstractModelDefinition, 
+            ps_def::AbstractPhasespaceDefinition, 
+            in_ps::Tuple{ParticleStateful},
+            out_ps::Tuple{ParticleStateful},
+        )
+
+    Construct a [`PhaseSpacePoint`](@ref) which has `<: InPhaseSpacePoint` and `<: OutPhaseSpacePoint` from a process, model, phasespace definition and a tuple of [`ParticleStateful`](@ref)s.
+    """
     function PhaseSpacePoint(
         proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_PARTICLES, out_p::OUT_PARTICLES
     ) where {
@@ -134,127 +145,6 @@ struct PhaseSpacePoint{
         return new{PROC,MODEL,PSDEF,IN_PARTICLES,OUT_PARTICLES,ELEMENT}(
             proc, model, ps_def, in_p, out_p
         )
-    end
-
-    """
-        PhaseSpacePoint(
-            proc::AbstractProcessDefinition, 
-            model::AbstractModelDefinition, 
-            ps_def::AbstractPhasespaceDefinition, 
-            in_ps::AbstractVector{ELEMENT}, 
-            out_ps::AbstractVector{ELEMENT},
-        ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
-
-    Construct the phase space point from given momenta of incoming and outgoing particles regarding a given process.
-    """
-    function PhaseSpacePoint(
-        proc::PROC,
-        model::MODEL,
-        ps_def::PSDEF,
-        in_ps::NTuple{N,ELEMENT},
-        out_ps::NTuple{M,ELEMENT},
-    ) where {
-        PROC<:AbstractProcessDefinition,
-        MODEL<:AbstractModelDefinition,
-        PSDEF<:AbstractPhasespaceDefinition,
-        N,
-        M,
-        ELEMENT<:AbstractFourMomentum,
-    }
-        in_particles = _build_particle_statefuls(proc, in_ps, Incoming())
-        out_particles = _build_particle_statefuls(proc, out_ps, Outgoing())
-
-        # no need to check anything since it is constructed correctly above
-        
-        return new{PROC,MODEL,PSDEF,typeof(in_particles),typeof(out_particles),ELEMENT}(
-            proc, model, ps_def, in_particles, out_particles
-        )
-    end
-
-    """
-        PhaseSpacePoint(
-            proc::AbstractProcessDefinition,
-            model::AbstractModelDefinition,
-            ps_def::AbstractPhasespaceDefinition,
-            in_ps::AbstractVector{ELEMENT},
-            out_ps::Tuple{},
-        ) where {ELEMENT<:AbstractFourMomentum}
-
-    Construct a PhaseSpacePoint with only input particles. The result will be `<: InPhaseSpacePoint` but **not** `<: OutPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `out_phasespace`.
-    """
-    function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,ELEMENT}, ::Tuple{}
-    ) where {
-        PROC<:AbstractProcessDefinition,
-        MODEL<:AbstractModelDefinition,
-        PSDEF<:AbstractPhasespaceDefinition,
-        N,
-        ELEMENT<:AbstractFourMomentum,
-    }
-        in_particles = _build_particle_statefuls(proc, in_ps, Incoming())
-
-        # no need to check anything since it is constructed correctly above
-
-        return new{PROC,MODEL,PSDEF,typeof(in_particles),Tuple{},ELEMENT}(
-            proc, model, ps_def, in_particles, ()
-        )
-    end
-
-    """
-        PhaseSpacePoint(
-            proc::AbstractProcessDefinition,
-            model::AbstractModelDefinition,
-            ps_def::AbstractPhasespaceDefinition,
-            in_ps::Tuple{},
-            out_ps::AbstractVector{ELEMENT},
-        ) where {ELEMENT<:AbstractFourMomentum}
-
-    Construct a PhaseSpacePoint with only output particles. The result will be `<: OutPhaseSpacePoint` but **not** `<: InPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `in_phasespace`.
-    """
-    function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, ::Tuple{}, out_ps::NTuple{N,ELEMENT}
-    ) where {
-        PROC<:AbstractProcessDefinition,
-        MODEL<:AbstractModelDefinition,
-        PSDEF<:AbstractPhasespaceDefinition,
-        N,
-        ELEMENT<:AbstractFourMomentum,
-    }
-        out_particles = _build_particle_statefuls(proc, out_ps, Outgoing())
-        # no need to check anything since it is constructed correctly above
-
-        return new{PROC,MODEL,PSDEF,Tuple{},typeof(out_particles),ELEMENT}(
-            proc, model, ps_def, (), out_particles
-        )
-    end
-
-    function PhaseSpacePoint(
-        proc::PROC,
-        model::MODEL,
-        ps_def::PSDEF,
-        in_ps::NTuple{N,Real},
-        out_ps::NTuple{M,Real},
-    ) where {
-        PROC<:AbstractProcessDefinition,
-        MODEL<:AbstractModelDefinition,
-        PSDEF<:AbstractPhasespaceDefinition,
-        N,
-        M,
-    }
-        in_ps, out_ps = _generate_momenta(proc, model, ps_def, in_ps, out_ps)
-        return PhaseSpacePoint(proc, model, ps_def, in_ps, out_ps)
-    end
-
-    function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,Real}, ::Tuple{}
-    ) where {
-        PROC<:AbstractProcessDefinition,
-        MODEL<:AbstractModelDefinition,
-        PSDEF<:AbstractPhasespaceDefinition,
-        N,
-    }
-        in_ps = _generate_incoming_momenta(proc, model, ps_def, in_ps)
-        return PhaseSpacePoint(proc, model, ps_def, in_ps, ())
     end
 end
 

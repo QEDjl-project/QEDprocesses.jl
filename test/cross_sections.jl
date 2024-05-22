@@ -65,9 +65,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         @testset "compute" begin
             COORDS_IN = TestImplementation.flat_components(p_in_phys)
 
-            IN_PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, ())
-            IN_PS_POINT_COORDS = PhaseSpacePoint(
-                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ()
+            IN_PS_POINT = InPhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys)
+            IN_PS_POINT_COORDS = InPhaseSpacePoint(
+                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
             )
 
             groundtruth = TestImplementation._groundtruth_total_cross_section(p_in_phys)
@@ -107,9 +107,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         @testset "compute" begin
             COORDS_IN = TestImplementation.flat_components(p_in_phys)
 
-            IN_PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, ())
-            IN_PS_POINT_COORDS = PhaseSpacePoint(
-                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ()
+            IN_PS_POINT = InPhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys)
+            IN_PS_POINT_COORDS = InPhaseSpacePoint(
+                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
             )
 
             groundtruth = TestImplementation._groundtruth_total_probability(p_in_phys)
