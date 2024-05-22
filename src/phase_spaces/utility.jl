@@ -107,7 +107,7 @@ julia> using QEDprocesses; using QEDbase;
 
 julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
 
-julia> _eltype_from_psp_type(typeof(psp))
+julia> QEDprocesses._eltype_from_psp_type(typeof(psp))
 SFourMomentum
 ```
 """
@@ -127,7 +127,7 @@ julia> using QEDprocesses; using QEDbase;
 
 julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
 
-julia> _eltype_from_psp(psp)
+julia> QEDprocesses._eltype_from_psp(psp)
 SFourMomentum
 ```
 """
