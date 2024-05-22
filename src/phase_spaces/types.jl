@@ -301,9 +301,24 @@ struct PhaseSpacePoint{
     end
 end
 
+"""
+    IncomingPhaseSpacePoint
+
+A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the in channel of the phase space to exist, for example implementations of [`_incident_flux`](@ref).
+
+See also: [`OutgoingPhaseSpacePoint`](@ref)
+"""
 IncomingPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
     P,M,D,IN,OUT,E
 } where {IN<:Tuple{ParticleStateful,Vararg},OUT<:Tuple{Vararg}}
+
+"""
+    OutgoingPhaseSpacePoint
+
+A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the out channel of the phase space to exist.
+
+See also: [`IncomingPhaseSpacePoint`](@ref)
+"""
 OutgoingPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
     P,M,D,IN,OUT,E
 } where {IN<:Tuple{Vararg},OUT<:Tuple{ParticleStateful,Vararg}}
