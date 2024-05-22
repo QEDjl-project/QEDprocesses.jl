@@ -22,11 +22,7 @@ interface functions need to be implemented for every combination of `CustomProce
 `CustomModel<:AbstractModelDefinition`, and `CustomPhasespaceDefinition<:AbstractPhasespaceDefinition`.
 
 ```Julia
-    _incident_flux(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _incident_flux(psp::IncomingPhaseSpacePoint{CustomProcess,CustomModel})
 
     _matrix_element(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
@@ -71,13 +67,12 @@ This function needs to be given to implement the scattering process interface.
 function outgoing_particles end
 
 """
-    _incident_flux(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        in_phase_space::AbstractVector{T}
-        ) where {T<:QEDbase.AbstractFourMomentum}
+    _incident_flux(in_psp::IncomingPhaseSpacePoint{PROC,MODEL}) where {
+        PROC <: AbstractProcessDefinition,
+        MODEL <: AbstractModelDefinition,
+    }
 
-Interface function, which returns the incident flux of the given scattering process for a given incoming phase-space.
+Interface function which returns the incident flux of the given scattering process for a given [`IncomingPhaseSpacePoint`](@ref).
 
 """
 function _incident_flux end
@@ -88,14 +83,12 @@ function _incident_flux end
         MODEL <: AbstractModelDefinition,
     }
 
-Interface function which returns a tuple of scattering matrix elements for each spin and polarisation combination of `proc`. 
+Interface function which returns a tuple of scattering matrix elements for each spin and polarization combination of `proc`. 
 """
 function _matrix_element end
 
 """
-    _averaging_norm(
-        proc::AbstractProcessDefinition
-        )
+    _averaging_norm(proc::AbstractProcessDefinition)
 
 Interface function, which returns a normalization for the averaging of the squared matrix elements over spins and polarizations. 
 """
@@ -161,7 +154,7 @@ end
     in_phase_space_dimension(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        )
+    )
 TBW
 """
 function in_phase_space_dimension end
@@ -170,48 +163,23 @@ function in_phase_space_dimension end
     out_phase_space_dimension(
         proc::AbstractProcessDefinition,
         model::AbstractModelDefinition,
-        )
+    )
 TBW
 """
 function out_phase_space_dimension end
 
 """
-    _total_probability(
-        proc::AbstractProcessDefinition,
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition,
-        in_phase_space::AbstractVector{T}
-    ) where {T<: QEDbase.AbstractFourMomentum}
+    _total_probability(in_psp::IncomingPhaseSpacePoint{PROC,MODEL}) where {
+        PROC <: AbstractProcessDefinition,
+        MODEL <: AbstractModelDefinition,
+    }
 
 Interface function for the combination of a scattering process and a physical model. Return the total of a 
-given process and model for a passed initial phase space definition and point. The elements of `in_phase_space`,
-which represent the initial phase space, are the momenta of the respective particles.
-The implementation of this function for a concrete process and model must not check if the length of 
-the passed initial phase spaces match the number of incoming particles. 
-
-!!! note "probability interface"
-
-    Given an implementation of this method, the following generic implementation without input check is provided:
-
-    ```julia
-
-    _total_probability(proc_def,model_def,in_phasespace::AbstractMatrix{T})
-
-    ```
-
-    where `T<:QEDbase.AbstractFourMomentum`, i.e. `_total_probability` is also implemented for a vector of initial phase space points.
-    Furthermore, a safe version of `_total_probability` is also implemented: [`total_probability`](@ref).
+given process and model for a passed [`IncomingPhaseSpacePoint`](@ref).
 
 !!! note "total cross section"
     
-    Given an implementaion of this method and [`_incident_flux`](@ref), the respective functions for the total cross section are available,
-    i.e. `_total_cross_section` (unsafe and not exported), and [`total_cross_section`](@ref), respectively.
-
-!!! note 
-    
-    Each instance of this function does not check the validity of the input. 
-    This function is not exported and should be used with caution. To add a method in order to implement the cross section interface, 
-    it is recommented to directly use `QEDprocesses._total_cross_section` instead of globally `using QEDprocesses: _total_cross_section`.
+    Given an implementation of this method and [`_incident_flux`](@ref), the respective function for the total cross section [`total_cross_section`](@ref) is also available.
 
 """
 function _total_probability end
