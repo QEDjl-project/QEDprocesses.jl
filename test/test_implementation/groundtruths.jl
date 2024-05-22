@@ -238,20 +238,28 @@ end
 
 Test implementation of the total cross section. Return the Minkowski square of the sum the momenta of all incoming particles.
 """
-function _groundtruth_total_probability(in_ps::NTuple{N,T}) where {N,T<:AbstractFourMomentum}
+function _groundtruth_total_probability(
+    in_ps::NTuple{N,T}
+) where {N,T<:AbstractFourMomentum}
     Ptot = sum(in_ps)
     return Ptot * Ptot
 end
 
-function _groundtruth_total_probability(in_pss::Vector{NTuple{N,T}}) where {N,T<:AbstractFourMomentum}
+function _groundtruth_total_probability(
+    in_pss::Vector{NTuple{N,T}}
+) where {N,T<:AbstractFourMomentum}
     return _groundtruth_total_probability.(in_pss)
 end
 
-function _groundtruth_total_cross_section(in_ps::NTuple{N,T}) where {N,T<:AbstractFourMomentum}
+function _groundtruth_total_cross_section(
+    in_ps::NTuple{N,T}
+) where {N,T<:AbstractFourMomentum}
     init_flux = _groundtruth_incident_flux(in_ps)
     return _groundtruth_total_probability(in_ps) / (4 * init_flux)
 end
 
-function _groundtruth_total_cross_section(in_pss::Vector{NTuple{N,T}}) where {N,T<:AbstractFourMomentum}
+function _groundtruth_total_cross_section(
+    in_pss::Vector{NTuple{N,T}}
+) where {N,T<:AbstractFourMomentum}
     return _groundtruth_total_cross_section.(in_psps)
 end

@@ -127,7 +127,7 @@ function QEDprocesses._generate_outgoing_momenta(
 end
 
 function QEDprocesses._total_probability(
-    in_psp::IncomingPhaseSpacePoint{<:TestProcess, <:TestModel, <:TestPhasespaceDef}
+    in_psp::IncomingPhaseSpacePoint{<:TestProcess,<:TestModel,<:TestPhasespaceDef}
 )
     return _groundtruth_total_probability(momenta(in_psp, Incoming()))
 end

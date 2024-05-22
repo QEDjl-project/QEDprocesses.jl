@@ -289,11 +289,7 @@ struct PhaseSpacePoint{
     end
 
     function PhaseSpacePoint(
-        proc::PROC,
-        model::MODEL,
-        ps_def::PSDEF,
-        in_ps::NTuple{N,Real},
-        out_ps::Tuple{}
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,Real}, out_ps::Tuple{}
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,

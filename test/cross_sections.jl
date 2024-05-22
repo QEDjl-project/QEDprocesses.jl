@@ -66,7 +66,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             COORDS_IN = TestImplementation.flat_components(p_in_phys)
 
             IN_PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, ())
-            IN_PS_POINT_COORDS = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ())
+            IN_PS_POINT_COORDS = PhaseSpacePoint(
+                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ()
+            )
 
             groundtruth = TestImplementation._groundtruth_total_cross_section(p_in_phys)
             totCS_on_moms = total_cross_section(IN_PS_POINT)
@@ -106,7 +108,9 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             COORDS_IN = TestImplementation.flat_components(p_in_phys)
 
             IN_PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, ())
-            IN_PS_POINT_COORDS = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ())
+            IN_PS_POINT_COORDS = PhaseSpacePoint(
+                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ()
+            )
 
             groundtruth = TestImplementation._groundtruth_total_probability(p_in_phys)
             totCS_on_moms = total_probability(IN_PS_POINT)

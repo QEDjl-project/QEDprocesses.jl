@@ -23,7 +23,7 @@ Return a random phase space point that is failing the incoming phase space const
 i.e. the first entry of the phase space is the null momentum.
 """
 function _rand_in_momenta_failing(rng::AbstractRNG, n)
-    return (zero(SFourMomentum), _rand_momenta(rng, n-1)...)
+    return (zero(SFourMomentum), _rand_momenta(rng, n - 1)...)
 end
 
 """
@@ -31,7 +31,7 @@ Return a random phase space point that is failing the outgoing phase space const
 i.e. the last entry of the phase space is the unit momentum.
 """
 function _rand_out_momenta_failing(rng::AbstractRNG, n)
-    return (_rand_momenta(rng, n-1)..., ones(SFourMomentum))
+    return (_rand_momenta(rng, n - 1)..., ones(SFourMomentum))
 end
 
 """

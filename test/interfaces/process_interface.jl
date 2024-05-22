@@ -71,7 +71,9 @@ include("../test_implementation/TestImplementation.jl")
     end
 
     @testset "incident flux" begin
-        test_incident_flux = QEDprocesses._incident_flux(PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, ()))
+        test_incident_flux = QEDprocesses._incident_flux(
+            PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, ())
+        )
         groundtruth = TestImplementation._groundtruth_incident_flux(IN_PS)
         @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
     end
@@ -95,7 +97,7 @@ include("../test_implementation/TestImplementation.jl")
         @test QEDprocesses._is_in_phasespace(PSP)
 
         IN_PS_unphysical = (zero(SFourMomentum), IN_PS[2:end]...)
-        OUT_PS_unphysical = (OUT_PS[1:end-1]..., ones(SFourMomentum))
+        OUT_PS_unphysical = (OUT_PS[1:(end - 1)]..., ones(SFourMomentum))
         PSP_unphysical_in_ps = PhaseSpacePoint(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS
         )

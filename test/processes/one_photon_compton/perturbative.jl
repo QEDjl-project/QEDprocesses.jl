@@ -43,8 +43,8 @@ end
             out_masses = mass.(outgoing_particles(PROC)) .^ 2
 
             # we need a larger ATOL than eps() here because the error is accumulated over several additions
-            @test all(isapprox.(in_mom_square, in_masses, atol=4*ATOL,rtol=RTOL))
-            @test all(isapprox.(out_mom_square, out_masses, atol=4*ATOL,rtol=RTOL))
+            @test all(isapprox.(in_mom_square, in_masses, atol=4 * ATOL, rtol=RTOL))
+            @test all(isapprox.(out_mom_square, out_masses, atol=4 * ATOL, rtol=RTOL))
         end
     end
 end
@@ -58,7 +58,7 @@ end
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
-                    OUT_COORDS = (cos_theta, phi,)
+                    OUT_COORDS = (cos_theta, phi)
                     IN_PS, OUT_PS = QEDprocesses._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
@@ -125,7 +125,9 @@ end
                 function klein_nishina_total_cross_section(in_ps)
                     function func(x)
                         return unsafe_differential_cross_section(
-                            PhaseSpacePoint(Compton(), PerturbativeQED(), PS_DEF, in_ps, (x, 0.0))
+                            PhaseSpacePoint(
+                                Compton(), PerturbativeQED(), PS_DEF, in_ps, (x, 0.0)
+                            ),
                         )
                     end
                     res, err = quadgk(func, -1, 1)
@@ -136,7 +138,9 @@ end
 
                 IN_COORDS = (omega,)
                 groundtruth = klein_nishina_total_cross_section(IN_COORDS)
-                test_val = @inferred total_cross_section(PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, ()))
+                test_val = @inferred total_cross_section(
+                    PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, ())
+                )
                 @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
             end
         end

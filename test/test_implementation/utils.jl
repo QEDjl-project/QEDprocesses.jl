@@ -39,4 +39,6 @@ function _furl_moms(ps_coords::AbstractMatrix{T}) where {T<:Real}
     return res
 end
 
-_furl_moms(moms::NTuple{N,Float64}) where {N} = Tuple(_furl_moms(Vector{Float64}([moms...])))
+function _furl_moms(moms::NTuple{N,Float64}) where {N}
+    return Tuple(_furl_moms(Vector{Float64}([moms...])))
+end
