@@ -3,9 +3,7 @@
 
 # function assembling the correct type information for the tuple of ParticleStatefuls in a phasespace point constructed from momenta
 @inline function _assemble_tuple_type(
-    particle_types::Tuple{SPECIES_T,Vararg{AbstractParticleType}},
-    dir::DIR_T,
-    ELTYPE::Type,
+    particle_types::Tuple{SPECIES_T,Vararg{AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
 ) where {SPECIES_T<:AbstractParticleType,DIR_T<:ParticleDirection}
     return (
         ParticleStateful{DIR_T,SPECIES_T,ELTYPE},
@@ -40,7 +38,7 @@ end
 }
     throw(
         InvalidInputError(
-            "expected $(dir) $(SPECIES_T()) but got $(DIR_IN_T()) $(SPECIES_IN_T())",
+            "expected $(dir) $(SPECIES_T()) but got $(DIR_IN_T()) $(SPECIES_IN_T())"
         ),
     )
     return nothing
@@ -55,10 +53,7 @@ end
 end
 
 @inline function _check_psp(
-    in_proc::P_IN_Ts,
-    out_proc::P_OUT_Ts,
-    in_p::IN_Ts,
-    out_p::OUT_Ts,
+    in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
 ) where {
     P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
     P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
@@ -72,10 +67,7 @@ end
 end
 
 @inline function _check_psp(
-    in_proc::P_IN_Ts,
-    out_proc::P_OUT_Ts,
-    in_p::IN_Ts,
-    out_p::OUT_Ts,
+    in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
 ) where {
     P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
     P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
@@ -89,10 +81,7 @@ end
 end
 
 @inline function _check_psp(
-    in_proc::P_IN_Ts,
-    out_proc::P_OUT_Ts,
-    in_p::IN_Ts,
-    out_p::OUT_Ts,
+    in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
 ) where {
     P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
     P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
@@ -123,7 +112,7 @@ SFourMomentum
 ```
 """
 @inline function _eltype_from_psp_type(
-    type::Type{T},
+    type::Type{T}
 ) where {P,M,D,I,O,E,T<:PhaseSpacePoint{P,M,D,I,O,E}}
     return E
 end
@@ -146,18 +135,14 @@ SFourMomentum
 
 # convenience function building a type stable tuple of ParticleStatefuls from the given process, momenta, and direction
 function _build_particle_statefuls(
-    proc::AbstractProcessDefinition,
-    moms::NTuple{N,ELEMENT},
-    dir::ParticleDirection,
+    proc::AbstractProcessDefinition, moms::NTuple{N,ELEMENT}, dir::ParticleDirection
 ) where {N,ELEMENT<:AbstractFourMomentum}
     N == number_particles(proc, dir) || throw(
         InvalidInputError(
             "expected $(number_particles(proc, dir)) $(dir) particles for the process but got $(N)",
         ),
     )
-    res = Union{
-        Tuple{_assemble_tuple_type(particles(proc, dir), dir, ELEMENT)...}
-    }(
+    res = Union{Tuple{_assemble_tuple_type(particles(proc, dir), dir, ELEMENT)...}}(
         ParticleStateful(dir, particle, mom) for
         (particle, mom) in zip(particles(proc, dir), moms)
     )

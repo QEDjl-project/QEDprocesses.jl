@@ -78,9 +78,7 @@ struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
 
 # dummy implementation of the process interface
 
-function QEDprocesses._incident_flux(
-    in_psp::InPhaseSpacePoint{<:TestProcess,<:TestModel}
-)
+function QEDprocesses._incident_flux(in_psp::InPhaseSpacePoint{<:TestProcess,<:TestModel})
     return _groundtruth_incident_flux(momenta(in_psp, Incoming()))
 end
 
