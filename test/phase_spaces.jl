@@ -21,56 +21,37 @@ end
 @testset "Stateful Particle" begin
     DIRECTIONS = [Incoming(), Outgoing()]
     SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
-    SPINANDPOLS = [AllSpin(), SpinUp(), SpinDown(), AllPol(), PolX(), PolY()]
 
-    for (species, dir, spin_or_pol) in Iterators.product(SPECIES, DIRECTIONS, SPINANDPOLS)
+    for (species, dir) in Iterators.product(SPECIES, DIRECTIONS)
         mom = rand(RNG, SFourMomentum)
 
-        if (is_fermion(species) && (spin_or_pol isa AbstractSpin)) ||
-            (is_boson(species) && (spin_or_pol isa AbstractPolarization))
-            particle_stateful = ParticleStateful(dir, species, mom, spin_or_pol)
+        particle_stateful = ParticleStateful(dir, species, mom)
 
-            # particle interface
-            @test is_fermion(particle_stateful) == is_fermion(species)
-            @test is_boson(particle_stateful) == is_boson(species)
-            @test is_particle(particle_stateful) == is_particle(species)
-            @test is_anti_particle(particle_stateful) == is_anti_particle(species)
-            @test is_incoming(particle_stateful) == is_incoming(dir)
-            @test is_outgoing(particle_stateful) == is_outgoing(dir)
-            @test mass(particle_stateful) == mass(species)
-            @test charge(particle_stateful) == charge(species)
+        # particle interface
+        @test is_fermion(particle_stateful) == is_fermion(species)
+        @test is_boson(particle_stateful) == is_boson(species)
+        @test is_particle(particle_stateful) == is_particle(species)
+        @test is_anti_particle(particle_stateful) == is_anti_particle(species)
+        @test is_incoming(particle_stateful) == is_incoming(dir)
+        @test is_outgoing(particle_stateful) == is_outgoing(dir)
+        @test mass(particle_stateful) == mass(species)
+        @test charge(particle_stateful) == charge(species)
 
-            # accessors
-            @test particle_stateful.dir == dir
-            @test particle_direction(particle_stateful) == particle_stateful.dir
-            @test particle_stateful.species == species
-            @test particle_species(particle_stateful) == particle_stateful.species
-            @test particle_stateful.mom == mom
-            @test momentum(particle_stateful) == mom
-            if (is_fermion(species))
-                @test spin(particle_stateful) == spin_or_pol
-                @test_throws MethodError polarization(particle_stateful)
-            else
-                @test polarization(particle_stateful) == spin_or_pol
-                @test_throws MethodError spin(particle_stateful)
-            end
+        # accessors
+        @test particle_stateful.dir == dir
+        @test particle_direction(particle_stateful) == particle_stateful.dir
+        @test particle_stateful.species == species
+        @test particle_species(particle_stateful) == particle_stateful.species
+        @test particle_stateful.mom == mom
+        @test momentum(particle_stateful) == mom
 
-            # printing
-            print(BUF, particle_stateful)
-            @test String(take!(BUF)) == "$(dir) $(species) ($(spin_or_pol)): $(mom)"
+        # printing
+        print(BUF, particle_stateful)
+        @test String(take!(BUF)) == "$(dir) $(species): $(mom)"
 
-            show(BUF, MIME"text/plain"(), particle_stateful)
-            @test String(take!(BUF)) ==
-                "ParticleStateful: $(dir) $(species)\n    $(spin_or_pol isa AbstractSpin ? "spin" : "polarization"): $(spin_or_pol)\n    momentum: $(mom)\n"
-        else
-            if (VERSION >= v"1.8")
-                # julia versions before 1.8 did not have support for regex matching in @test_throws
-                @test_throws "MethodError: no method matching ParticleStateful" ParticleStateful(
-                    dir, species, mom, spin_or_pol
-                )
-            end
-            @test_throws MethodError ParticleStateful(dir, species, mom, spin_or_pol)
-        end
+        show(BUF, MIME"text/plain"(), particle_stateful)
+        @test String(take!(BUF)) ==
+            "ParticleStateful: $(dir) $(species)\n    momentum: $(mom)\n"
     end
 end
 
@@ -85,29 +66,27 @@ end
     out_el = ParticleStateful(Outgoing(), Electron(), out_el_mom)
     out_ph = ParticleStateful(Outgoing(), Photon(), out_ph_mom)
 
-    in_particles_valid = SVector(in_el, in_ph)
-    in_particles_invalid = SVector(in_el, out_ph)
+    in_particles_valid = (in_el, in_ph)
+    in_particles_invalid = (in_el, out_ph)
 
-    out_particles_valid = SVector(out_el, out_ph)
-    out_particles_invalid = SVector(out_el, in_ph)
+    out_particles_valid = (out_el, out_ph)
+    out_particles_invalid = (out_el, in_ph)
 
     model = TESTMODEL
-    process = TestImplementation.TestProcess(
-        SVector{2,AbstractParticle}(Electron(), Photon()),
-        SVector{2,AbstractParticle}(Electron(), Photon()),
-    )
+    process = TestImplementation.TestProcess((Electron(), Photon()), (Electron(), Photon()))
     phasespace_def = TESTPSDEF
 
     psp = PhaseSpacePoint(
         process, model, phasespace_def, in_particles_valid, out_particles_valid
     )
 
+    take!(BUF)
     print(BUF, psp)
     @test String(take!(BUF)) == "PhaseSpacePoint of $(process)"
 
     show(BUF, MIME"text/plain"(), psp)
     @test match(
-        r"PhaseSpacePoint:\n    process: (.*)TestProcess(.*)\n    model: (.*)TestModel(.*)\n    phasespace definition: (.*)TestPhasespaceDef(.*)\n    incoming particles:\n     -> incoming electron \(all spins\): (.*)\n     -> incoming photon \(all polarizations\): (.*)\n    outgoing particles:\n     -> outgoing electron \(all spins\): (.*)\n     -> outgoing photon \(all polarizations\): (.*)\n",
+        r"PhaseSpacePoint:\n    process: (.*)TestProcess(.*)\n    model: (.*)TestModel(.*)\n    phasespace definition: (.*)TestPhasespaceDef(.*)\n    incoming particles:\n     -> incoming electron: (.*)\n     -> incoming photon: (.*)\n    outgoing particles:\n     -> outgoing electron: (.*)\n     -> outgoing photon: (.*)\n",
         String(take!(BUF)),
     ) isa RegexMatch
 
@@ -126,20 +105,20 @@ end
     @testset "Error handling" begin
         if (VERSION >= v"1.8")
             # julia versions before 1.8 did not have support for regex matching in @test_throws
-            @test_throws r"stateful particle (.*) is given as an incoming particle but is outgoing" PhaseSpacePoint(
+            @test_throws r"expected incoming photon but got outgoing photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_invalid, out_particles_valid
             )
 
-            @test_throws r"stateful particle (.*) is given as an outgoing particle but is incoming" PhaseSpacePoint(
+            @test_throws r"expected outgoing photon but got incoming photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_valid, out_particles_invalid
             )
 
-            @test_throws r"process given particle species \(electron\) does not match stateful particle species \(photon\)" PhaseSpacePoint(
-                process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
+            @test_throws r"expected incoming electron but got incoming photon" PhaseSpacePoint(
+                process, model, phasespace_def, (in_ph, in_el), out_particles_valid
             )
 
-            @test_throws r"process given particle species \(electron\) does not match stateful particle species \(photon\)" PhaseSpacePoint(
-                process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
+            @test_throws r"expected outgoing electron but got outgoing photon" PhaseSpacePoint(
+                process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
             )
         end
 
@@ -162,17 +141,21 @@ end
         )
 
         @test_throws InvalidInputError PhaseSpacePoint(
-            process, model, phasespace_def, SVector(in_ph, in_el), out_particles_valid
+            process, model, phasespace_def, (in_ph, in_el), out_particles_valid
         )
 
         @test_throws InvalidInputError PhaseSpacePoint(
-            process, model, phasespace_def, in_particles_valid, SVector(out_ph, out_el)
+            process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
         )
     end
 
     @testset "Generation" begin
-        test_psp = generate_phase_space(
-            process, model, phasespace_def, [in_el_mom, in_ph_mom], [out_el_mom, out_ph_mom]
+        test_psp = PhaseSpacePoint(
+            process,
+            model,
+            phasespace_def,
+            SVector(in_el_mom, in_ph_mom),
+            SVector(out_el_mom, out_ph_mom),
         )
 
         @test test_psp.proc == process

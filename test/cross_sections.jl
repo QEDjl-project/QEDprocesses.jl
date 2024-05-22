@@ -13,8 +13,8 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 @testset "($N_INCOMING,$N_OUTGOING)" for (N_INCOMING, N_OUTGOING) in Iterators.product(
     (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
 )
-    INCOMING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING)
-    OUTGOING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING)
+    INCOMING_PARTICLES = Tuple(rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING))
+    OUTGOING_PARTICLES = Tuple(rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING))
 
     TESTPROC = TestImplementation.TestProcess(INCOMING_PARTICLES, OUTGOING_PARTICLES)
 
@@ -35,7 +35,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
     @testset "differential cross section" begin
         @testset "unsafe compute" begin
-            PS_POINT = generate_phase_space(
+            PS_POINT = PhaseSpacePoint(
                 TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
             )
 
@@ -49,7 +49,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
         @testset "safe compute" begin
             for (P_IN, P_OUT) in p_combs
-                PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
+                PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
 
                 diffCS_on_psp = differential_cross_section(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_safe_diffCS(
@@ -86,7 +86,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
     @testset "differential probability" begin
         @testset "unsafe compute" begin
-            PS_POINT = generate_phase_space(
+            PS_POINT = PhaseSpacePoint(
                 TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
             )
             prop_on_psp = unsafe_differential_probability(PS_POINT)
@@ -98,7 +98,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
         @testset "safe compute" begin
             for (P_IN, P_OUT) in p_combs
-                PS_POINT = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
+                PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
                 prop_on_psp = differential_probability(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_safe_probability(
                     TESTPROC, P_IN, P_OUT

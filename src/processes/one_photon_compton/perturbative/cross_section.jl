@@ -10,8 +10,8 @@ function _incident_flux(
 end
 
 function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momentum.(psp.in_particles)
-    out_ps = momentum.(psp.out_particles)
+    in_ps = momenta(psp, Incoming())
+    out_ps = momenta(psp, Outgoing())
     return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
 end
 
@@ -38,8 +38,8 @@ function _all_onshell(
 end
 
 function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momentum.(psp.in_particles)
-    out_ps = momentum.(psp.out_particles)
+    in_ps = momenta(psp, Incoming())
+    out_ps = momenta(psp, Outgoing())
     if (!isapprox(sum(in_ps), sum(out_ps)))
         return false
     end
@@ -47,8 +47,8 @@ function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
 end
 
 @inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momentum.(psp.in_particles)
-    out_ps = momentum.(psp.out_particles)
+    in_ps = momenta(psp, Incoming())
+    out_ps = momenta(psp, Outgoing())
     return _pert_compton_ps_fac(psp.ps_def, in_ps[2], out_ps[2])
 end
 

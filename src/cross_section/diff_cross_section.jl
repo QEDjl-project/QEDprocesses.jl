@@ -6,7 +6,7 @@
 ########################
 
 function _incident_flux(psp::PhaseSpacePoint)
-    return _incident_flux(psp.proc, psp.model, momentum.(psp.in_particles))
+    return _incident_flux(psp.proc, psp.model, momenta(psp, Incoming()))
 end
 
 """

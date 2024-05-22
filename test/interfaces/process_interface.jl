@@ -11,15 +11,15 @@ include("../test_implementation/TestImplementation.jl")
 @testset "($N_INCOMING,$N_OUTGOING)" for (N_INCOMING, N_OUTGOING) in Iterators.product(
     (1, rand(RNG, 2:8)), (1, rand(RNG, 2:8))
 )
-    INCOMING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING)
-    OUTGOING_PARTICLES = rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING)
+    INCOMING_PARTICLES = Tuple(rand(RNG, TestImplementation.PARTICLE_SET, N_INCOMING))
+    OUTGOING_PARTICLES = Tuple(rand(RNG, TestImplementation.PARTICLE_SET, N_OUTGOING))
 
     TESTPROC = TestImplementation.TestProcess(INCOMING_PARTICLES, OUTGOING_PARTICLES)
     TESTMODEL = TestImplementation.TestModel()
     TESTPSDEF = TestImplementation.TestPhasespaceDef()
     IN_PS = TestImplementation._rand_momenta(RNG, N_INCOMING)
     OUT_PS = TestImplementation._rand_momenta(RNG, N_OUTGOING)
-    PSP = generate_phase_space(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
+    PSP = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
 
     @testset "failed interface" begin
         TESTPROC_FAIL_ALL = TestImplementation.TestProcess_FAIL_ALL(
@@ -40,7 +40,7 @@ include("../test_implementation/TestImplementation.jl")
             (TESTPROC, TESTPROC_FAIL_DIFFCS), (TESTMODEL, TESTMODEL_FAIL)
         )
             if TestImplementation._any_fail(PROC, MODEL)
-                psp = generate_phase_space(PROC, MODEL, TESTPSDEF, IN_PS, OUT_PS)
+                psp = PhaseSpacePoint(PROC, MODEL, TESTPSDEF, IN_PS, OUT_PS)
                 @test_throws MethodError QEDprocesses._incident_flux(psp)
                 @test_throws MethodError QEDprocesses._averaging_norm(psp)
                 @test_throws MethodError QEDprocesses._matrix_element(psp)
@@ -48,7 +48,7 @@ include("../test_implementation/TestImplementation.jl")
 
             for PS_DEF in (TESTPSDEF, TESTPSDEF_FAIL)
                 if TestImplementation._any_fail(PROC, MODEL, PS_DEF)
-                    psp = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    psp = PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
                     @test_throws MethodError QEDprocesses._phase_space_factor(psp)
                 end
             end
@@ -98,13 +98,13 @@ include("../test_implementation/TestImplementation.jl")
         IN_PS_unphysical[1] = SFourMomentum(zeros(4))
         OUT_PS_unphysical = deepcopy(OUT_PS)
         OUT_PS_unphysical[end] = ones(SFourMomentum)
-        PSP_unphysical_in_ps = generate_phase_space(
+        PSP_unphysical_in_ps = PhaseSpacePoint(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS
         )
-        PSP_unphysical_out_ps = generate_phase_space(
+        PSP_unphysical_out_ps = PhaseSpacePoint(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS_unphysical
         )
-        PSP_unphysical = generate_phase_space(
+        PSP_unphysical = PhaseSpacePoint(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS_unphysical
         )
 

@@ -139,44 +139,34 @@ Representation of a particle with a state. It has four fields:
 - `dir::ParticleDirection`: The direction of the particle, `QEDbase.Incoming()` or `QEDbase.Outgoing()`.
 - `species::AbstractParticleType`: The species of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc.
 - `mom::AbstractFourMomentum`: The momentum of the particle.
-- `spin_or_pol::AbstractSpinOrPolarization`: The spin or polarization of the particle, `QEDbase.SpinUp()`, `QEDbase.PolX() etc. Can only use spins with fermions and polarizations with bosons. `AllSpin` or `AllPol` by default.
 
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
-
-The legality of the combination of `species` and `spin_or_pol` is checked on construction. If, for example, the construction of an `Electron()` with a polarization is attempted, an [`InvalidInputError`](@ref) is thrown.
 
 ```jldoctest
 julia> using QEDbase; using QEDprocesses
 
 julia> ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0))
 ParticleStateful: incoming electron
-    spin: all spins
     momentum: [1.0, 0.0, 0.0, 0.0]
 
-julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0), PolX())
+julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
 ParticleStateful: outgoing photon
-    polarization: x-polarized
     momentum: [1.0, 0.0, 0.0, 0.0]
 ```
 """
-struct ParticleStateful{ElType<:AbstractFourMomentum} <: AbstractParticle
-    dir::ParticleDirection
-    species::AbstractParticleType
-    mom::ElType
-    spin_or_pol::AbstractSpinOrPolarization
+struct ParticleStateful{
+    DIR<:ParticleDirection,SPECIES<:AbstractParticleType,ELEMENT<:AbstractFourMomentum
+} <: AbstractParticle
+    dir::DIR
+    species::SPECIES
+    mom::ELEMENT
 
     function ParticleStateful(
-        dir::ParticleDirection, species::Species, mom::ElType, spin::Spin=AllSpin()
-    ) where {Species<:FermionLike,ElType<:AbstractFourMomentum,Spin<:AbstractSpin}
-        # constructor for fermions with spin
-        return new{ElType}(dir, species, mom, spin)
-    end
-
-    function ParticleStateful(
-        dir::ParticleDirection, species::Species, mom::ElType, pol::Pol=AllPol()
-    ) where {Species<:BosonLike,ElType<:AbstractFourMomentum,Pol<:AbstractPolarization}
-        # constructor for bosons with polarization
-        return new{ElType}(dir, species, mom, pol)
+        dir::DIR, species::SPECIES, mom::ELEMENT
+    ) where {
+        DIR<:ParticleDirection,SPECIES<:AbstractParticleType,ELEMENT<:AbstractFourMomentum
+    }
+        return new{DIR,SPECIES,ELEMENT}(dir, species, mom)
     end
 end
 
@@ -195,27 +185,26 @@ particle_direction(part::ParticleStateful) = part.dir
 particle_species(part::ParticleStateful) = part.species
 momentum(part::ParticleStateful) = part.mom
 
-@inline _spin(::Species, particle::ParticleStateful) where {Species<:FermionLike} =
-    particle.spin_or_pol
-@inline spin(particle::ParticleStateful) = _spin(particle.species, particle)
+# recursion termination: base case
+@inline _assemble_tuple_type(::Tuple{}, ::ParticleDirection, ::Type) = ()
 
-@inline _polarization(::Species, particle::ParticleStateful) where {Species<:BosonLike} =
-    particle.spin_or_pol
-@inline polarization(particle::ParticleStateful) = _polarization(particle.species, particle)
+# function assembling the correct type information for the tuple of ParticleStatefuls in a phasespace point constructed from momenta
+@inline function _assemble_tuple_type(
+    particle_types::Tuple{SPECIES_T,Vararg{AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
+) where {SPECIES_T<:AbstractParticleType,DIR_T<:ParticleDirection}
+    return (
+        ParticleStateful{DIR_T,SPECIES_T,ELTYPE},
+        _assemble_tuple_type(particle_types[2:end], dir, ELTYPE)...,
+    )
+end
 
 function Base.show(io::IO, particle::ParticleStateful)
-    print(
-        io, "$(particle.dir) $(particle.species) ($(particle.spin_or_pol)): $(particle.mom)"
-    )
+    print(io, "$(particle.dir) $(particle.species): $(particle.mom)")
     return nothing
 end
 
 function Base.show(io::IO, m::MIME"text/plain", particle::ParticleStateful)
     println(io, "ParticleStateful: $(particle.dir) $(particle.species)")
-    println(
-        io,
-        "    $(particle.spin_or_pol isa AbstractSpin ? "spin" : "polarization"): $(particle.spin_or_pol)",
-    )
     println(io, "    momentum: $(particle.mom)")
     return nothing
 end
@@ -234,92 +223,168 @@ julia> PhaseSpacePoint(
             Compton(), 
             PerturbativeQED(), 
             PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), 
-            [
+            (
                 ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0)), 
                 ParticleStateful(Incoming(), Photon(), SFourMomentum(1, 0, 0, 0))
-            ], 
-            [
+            ), 
+            (
                 ParticleStateful(Outgoing(), Electron(), SFourMomentum(1, 0, 0, 0)), 
                 ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
-            ]
+            )
         )
 PhaseSpacePoint:
     process: one-photon Compton scattering
     model: perturbative QED
     phasespace definition: spherical coordinates in electron rest frame
     incoming particles:
-     -> incoming electron (all spins): [1.0, 0.0, 0.0, 0.0]
-     -> incoming photon (all polarizations): [1.0, 0.0, 0.0, 0.0]
+     -> incoming electron: [1.0, 0.0, 0.0, 0.0]
+     -> incoming photon: [1.0, 0.0, 0.0, 0.0]
     outgoing particles:
-     -> outgoing electron (all spins): [1.0, 0.0, 0.0, 0.0]
-     -> outgoing photon (all polarizations): [1.0, 0.0, 0.0, 0.0]
+     -> outgoing electron: [1.0, 0.0, 0.0, 0.0]
+     -> outgoing photon: [1.0, 0.0, 0.0, 0.0]
 ```
 """
 struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
     MODEL<:AbstractModelDefinition,
     PSDEF<:AbstractPhasespaceDefinition,
-    PhaseSpaceElementType<:AbstractFourMomentum,
-    N_IN_PARTICLES,
-    N_OUT_PARTICLES,
+    IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
+    OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
 }
     proc::PROC
     model::MODEL
     ps_def::PSDEF
 
-    in_particles::SVector{N_IN_PARTICLES,ParticleStateful{PhaseSpaceElementType}}
-    out_particles::SVector{N_OUT_PARTICLES,ParticleStateful{PhaseSpaceElementType}}
+    in_particles::IN_PARTICLES
+    out_particles::OUT_PARTICLES
 
     function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_P, out_p::OUT_P
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_PARTICLES, out_p::OUT_PARTICLES
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
         PSDEF<:AbstractPhasespaceDefinition,
-        PhaseSpaceElementType<:AbstractFourMomentum,
-        IN_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
-        OUT_P<:AbstractVector{ParticleStateful{PhaseSpaceElementType}},
+        IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
+        OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
     }
-        length(incoming_particles(proc)) == length(in_p) || throw(
-            InvalidInputError(
-                "the number of incoming particles given by the process ($(incoming_particles(proc))) mismatches the number of given stateful incoming particles ($(length(in_p)))",
-            ),
-        )
-        length(outgoing_particles(proc)) == length(out_p) || throw(
-            InvalidInputError(
-                "the number of outgoing particles given by the process ($(outgoing_particles(proc))) mismatches the number of given stateful outgoing particles ($(length(out_p)))",
-            ),
-        )
+        _check_psp(incoming_particles(proc), outgoing_particles(proc), in_p, out_p)
 
-        for (proc_p, p) in zip(incoming_particles(proc), in_p)
-            proc_p == p.species || throw(
-                InvalidInputError(
-                    "process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
-                ),
-            )
-            is_incoming(p) || throw(
-                InvalidInputError(
-                    "stateful particle $(p) is given as an incoming particle but is outgoing",
-                ),
-            )
-        end
-        for (proc_p, p) in zip(outgoing_particles(proc), out_p)
-            proc_p == p.species || throw(
-                InvalidInputError(
-                    "process given particle species ($(proc_p)) does not match stateful particle species ($(p.species))",
-                ),
-            )
-            is_outgoing(p) || throw(
-                InvalidInputError(
-                    "stateful particle $(p) is given as an outgoing particle but is incoming",
-                ),
-            )
-        end
-
-        return new{PROC,MODEL,PSDEF,PhaseSpaceElementType,length(in_p),length(out_p)}(
+        return new{PROC,MODEL,PSDEF,IN_PARTICLES,OUT_PARTICLES}(
             proc, model, ps_def, in_p, out_p
         )
     end
+
+    """
+        PhaseSpacePoint(
+            proc::AbstractProcessDefinition, 
+            model::AbstractModelDefinition, 
+            ps_def::AbstractPhasespaceDefinition, 
+            in_ps::AbstractVector{ELEMENT}, 
+            out_ps::AbstractVector{ELEMENT},
+        ) where {ELEMENT<:QEDbase.AbstractFourMomentum}
+
+    Construct the phase space point from given momenta of incoming and outgoing particles regarding a given process.
+    """
+    function PhaseSpacePoint(
+        proc::PROC,
+        model::MODEL,
+        ps_def::PSDEF,
+        in_ps::AbstractVector{ELEMENT},
+        out_ps::AbstractVector{ELEMENT},
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        ELEMENT<:AbstractFourMomentum,
+    }
+        in_particles = Tuple{
+            _assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...
+        }(
+            ParticleStateful(Incoming(), particle, mom) for
+            (particle, mom) in zip(incoming_particles(proc), in_ps)
+        )
+
+        out_particles = Tuple{
+            _assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...
+        }(
+            ParticleStateful(Outgoing(), particle, mom) for
+            (particle, mom) in zip(outgoing_particles(proc), out_ps)
+        )
+
+        # no need to check anything since it is constructed correctly above
+
+        return new{PROC,MODEL,PSDEF,typeof(in_particles),typeof(out_particles)}(
+            proc, model, ps_def, in_particles, out_particles
+        )
+    end
+end
+
+function momenta(psp::PhaseSpacePoint, ::Incoming)
+    return QEDbase._as_svec(momentum.(psp.in_particles))
+end
+
+function momenta(psp::PhaseSpacePoint, ::Outgoing)
+    return QEDbase._as_svec(momentum.(psp.out_particles))
+end
+
+# recursion termination: success
+@inline _recursive_type_check(t::Tuple{}, p::Tuple{}, dir::ParticleDirection) = nothing
+
+# recursion termination: overload for unequal number of particles
+@inline function _recursive_type_check(
+    ::Tuple{Vararg{ParticleStateful,N}},
+    ::Tuple{Vararg{AbstractParticleType,M}},
+    dir::ParticleDirection,
+) where {N,M}
+    return throw(
+        InvalidInputError(
+            "the number of $(dir) particles in the process $(M) does not match number of particles in the input $(N)",
+        ),
+    )
+end
+
+# recursion termination: overload for invalid types
+@inline function _recursive_type_check(
+    ::Tuple{ParticleStateful{DIR_IN_T,SPECIES_IN_T},Vararg{ParticleStateful,N}},
+    ::Tuple{SPECIES_T,Vararg{AbstractParticleType,M}},
+    dir::DIR_T,
+) where {
+    N,
+    M,
+    DIR_IN_T<:ParticleDirection,
+    DIR_T<:ParticleDirection,
+    SPECIES_IN_T<:AbstractParticleType,
+    SPECIES_T<:AbstractParticleType,
+}
+    return throw(
+        InvalidInputError(
+            "expected $(dir) $(SPECIES_T()) but got $(DIR_IN_T()) $(SPECIES_IN_T())"
+        ),
+    )
+end
+
+@inline function _recursive_type_check(
+    t::Tuple{ParticleStateful{DIR_T,SPECIES_T},Vararg{ParticleStateful,N}},
+    p::Tuple{SPECIES_T,Vararg{AbstractParticleType,N}},
+    dir::DIR_T,
+) where {N,DIR_T<:ParticleDirection,SPECIES_T<:AbstractParticleType}
+    return _recursive_type_check(t[2:end], p[2:end], dir)
+end
+
+@inline function _check_psp(
+    in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
+) where {
+    P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
+    P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
+    IN_Ts<:Tuple{Vararg{ParticleStateful}},
+    OUT_Ts<:Tuple{Vararg{ParticleStateful}},
+}
+    # in_proc/out_proc contain only species types
+    # in_p/out_p contain full ParticleStateful types
+
+    _recursive_type_check(in_p, in_proc, Incoming())
+    _recursive_type_check(out_p, out_proc, Outgoing())
+    return nothing
 end
 
 """
@@ -347,45 +412,6 @@ Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref
 """
 function momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
     return psp[dir, n].mom
-end
-
-"""
-    generate_phase_space(
-        proc::AbstractProcessDefinition, 
-        model::AbstractModelDefinition, 
-        ps_def::AbstractPhasespaceDefinition, 
-        in_ps::AbstractVector{ElType}, 
-        out_ps::AbstractVector{ElType},
-    ) where {ElType<:QEDbase.AbstractFourMomentum}
-
-Return the respective phase space point for given momenta of incoming and outgoing particles regarding a given process.
-"""
-function generate_phase_space(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    ps_def::AbstractPhasespaceDefinition,
-    in_ps::AbstractVector{ElType},
-    out_ps::AbstractVector{ElType},
-) where {ElType<:QEDbase.AbstractFourMomentum}
-    in_particles = incoming_particles(proc)
-    in_n = number_incoming_particles(proc)
-    in_parts = SVector{in_n,ParticleStateful{SFourMomentum}}(
-        collect(
-            ParticleStateful(Incoming(), particle, mom) for
-            (particle, mom) in zip(in_particles, in_ps)
-        ),
-    )
-
-    out_particles = outgoing_particles(proc)
-    out_n = number_outgoing_particles(proc)
-    out_parts = SVector{out_n,ParticleStateful{SFourMomentum}}(
-        collect(
-            ParticleStateful(Outgoing(), particle, mom) for
-            (particle, mom) in zip(out_particles, out_ps)
-        ),
-    )
-
-    return PhaseSpacePoint(proc, model, ps_def, in_parts, out_parts)
 end
 
 function Base.show(io::IO, psp::PhaseSpacePoint)

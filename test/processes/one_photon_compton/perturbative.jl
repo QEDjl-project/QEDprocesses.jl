@@ -65,7 +65,7 @@ end
                         omega, cos_theta, 1.0
                     )
 
-                    PSP = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    PSP = PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
                     test_val = unsafe_differential_cross_section(PSP)
 
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
@@ -87,7 +87,7 @@ end
                         omega, cos_theta, phi, 1.0
                     )
 
-                    PSP = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    PSP = PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
                     test_val = unsafe_differential_cross_section(PSP)
 
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
@@ -109,7 +109,7 @@ end
                         omega, cos_theta, phi, 1.0
                     )
 
-                    PSP = generate_phase_space(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
+                    PSP = PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_PS, OUT_PS)
                     test_val = unsafe_differential_cross_section(PSP)
 
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)

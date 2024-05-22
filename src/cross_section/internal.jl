@@ -10,9 +10,7 @@ function _unsafe_differential_probability(
     in_phase_space::AbstractVector{T},
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    psp = generate_phase_space(
-        proc, model, phase_space_def, in_phase_space, out_phase_space
-    )
+    psp = PhaseSpacePoint(proc, model, phase_space_def, in_phase_space, out_phase_space)
     return unsafe_differential_probability(psp)
 end
 
@@ -45,9 +43,7 @@ function _differential_probability(
     in_phase_space::AbstractVector{T},
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    psp = generate_phase_space(
-        proc, model, phase_space_def, in_phase_space, out_phase_space
-    )
+    psp = PhaseSpacePoint(proc, model, phase_space_def, in_phase_space, out_phase_space)
     return differential_probability(psp)
 end
 
@@ -79,9 +75,7 @@ function _unsafe_differential_cross_section(
     in_phase_space::AbstractVector{T},
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    psp = generate_phase_space(
-        proc, model, phase_space_def, in_phase_space, out_phase_space
-    )
+    psp = PhaseSpacePoint(proc, model, phase_space_def, in_phase_space, out_phase_space)
     return unsafe_differential_cross_section(psp)
 end
 
@@ -114,9 +108,7 @@ function _differential_cross_section(
     in_phase_space::AbstractVector{T},
     out_phase_space::AbstractVector{T},
 ) where {T<:QEDbase.AbstractFourMomentum}
-    psp = generate_phase_space(
-        proc, model, phase_space_def, in_phase_space, out_phase_space
-    )
+    psp = PhaseSpacePoint(proc, model, phase_space_def, in_phase_space, out_phase_space)
     return differential_cross_section(psp)
 end
 
