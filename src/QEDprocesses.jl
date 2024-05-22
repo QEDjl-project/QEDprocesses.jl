@@ -10,6 +10,7 @@ export AbstractModelDefinition, fundamental_interaction_type
 # Abstract process interface
 export AbstractProcessDefinition, incoming_particles, outgoing_particles
 export number_incoming_particles, number_outgoing_particles
+export particles, number_particles
 
 # probabilities
 export differential_probability, unsafe_differential_probability

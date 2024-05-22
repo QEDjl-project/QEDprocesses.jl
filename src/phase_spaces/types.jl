@@ -161,33 +161,11 @@ struct PhaseSpacePoint{
         M,
         ELEMENT<:AbstractFourMomentum,
     }
-        N == number_incoming_particles(proc) || throw(
-            InvalidInputError(
-                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(N)",
-            ),
-        )
-        M == number_outgoing_particles(proc) || throw(
-            InvalidInputError(
-                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(M)",
-            ),
-        )
-
-        in_particles = Union{
-            Tuple{_assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...}
-        }(
-            ParticleStateful(Incoming(), particle, mom) for
-            (particle, mom) in zip(incoming_particles(proc), in_ps)
-        )
-
-        out_particles = Union{
-            Tuple{_assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...}
-        }(
-            ParticleStateful(Outgoing(), particle, mom) for
-            (particle, mom) in zip(outgoing_particles(proc), out_ps)
-        )
+        in_particles = _build_particle_statefuls(proc, in_ps, Incoming())
+        out_particles = _build_particle_statefuls(proc, out_ps, Outgoing())
 
         # no need to check anything since it is constructed correctly above
-
+        
         return new{PROC,MODEL,PSDEF,typeof(in_particles),typeof(out_particles),ELEMENT}(
             proc, model, ps_def, in_particles, out_particles
         )
@@ -213,17 +191,7 @@ struct PhaseSpacePoint{
         N,
         ELEMENT<:AbstractFourMomentum,
     }
-        N == number_incoming_particles(proc) || throw(
-            InvalidInputError(
-                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(N)",
-            ),
-        )
-        in_particles = Union{
-            Tuple{_assemble_tuple_type(incoming_particles(proc), Incoming(), ELEMENT)...}
-        }(
-            ParticleStateful(Incoming(), particle, mom) for
-            (particle, mom) in zip(incoming_particles(proc), in_ps)
-        )
+        in_particles = _build_particle_statefuls(proc, in_ps, Incoming())
 
         # no need to check anything since it is constructed correctly above
 
@@ -252,18 +220,7 @@ struct PhaseSpacePoint{
         N,
         ELEMENT<:AbstractFourMomentum,
     }
-        N == number_outgoing_particles(proc) || throw(
-            InvalidInputError(
-                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(N)",
-            ),
-        )
-        out_particles = Union{
-            Tuple{_assemble_tuple_type(outgoing_particles(proc), Outgoing(), ELEMENT)...}
-        }(
-            ParticleStateful(Outgoing(), particle, mom) for
-            (particle, mom) in zip(outgoing_particles(proc), out_ps)
-        )
-
+        out_particles = _build_particle_statefuls(proc, out_ps, Outgoing())
         # no need to check anything since it is constructed correctly above
 
         return new{PROC,MODEL,PSDEF,Tuple{},typeof(out_particles),ELEMENT}(
@@ -289,7 +246,7 @@ struct PhaseSpacePoint{
     end
 
     function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,Real}, out_ps::Tuple{}
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,Real}, ::Tuple{}
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
