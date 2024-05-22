@@ -79,7 +79,7 @@ struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
 # dummy implementation of the process interface
 
 function QEDprocesses._incident_flux(
-    in_psp::IncomingPhaseSpacePoint{<:TestProcess,<:TestModel}
+    in_psp::InPhaseSpacePoint{<:TestProcess,<:TestModel}
 )
     return _groundtruth_incident_flux(momenta(in_psp, Incoming()))
 end
@@ -127,7 +127,7 @@ function QEDprocesses._generate_outgoing_momenta(
 end
 
 function QEDprocesses._total_probability(
-    in_psp::IncomingPhaseSpacePoint{<:TestProcess,<:TestModel,<:TestPhasespaceDef}
+    in_psp::InPhaseSpacePoint{<:TestProcess,<:TestModel,<:TestPhasespaceDef}
 )
     return _groundtruth_total_probability(momenta(in_psp, Incoming()))
 end

@@ -3,7 +3,7 @@
 # Implementation of the cross section interface
 #####
 
-function _incident_flux(in_psp::IncomingPhaseSpacePoint{<:Compton,<:PerturbativeQED})
+function _incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
     return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 

@@ -60,7 +60,7 @@ end
     IN_Ts<:Tuple{Vararg{ParticleStateful}},
     OUT_Ts<:Tuple{},
 }
-    # specific overload for IncomingPhaseSpacePoint
+    # specific overload for InPhaseSpacePoint
     _recursive_type_check(in_p, in_proc, Incoming())
 
     return typeof(in_p[1].mom)
@@ -74,7 +74,7 @@ end
     IN_Ts<:Tuple{},
     OUT_Ts<:Tuple{Vararg{ParticleStateful}},
 }
-    # specific overload for OutgoingPhaseSpacePoint
+    # specific overload for OutPhaseSpacePoint
     _recursive_type_check(out_p, out_proc, Outgoing())
 
     return typeof(out_p[1].mom)

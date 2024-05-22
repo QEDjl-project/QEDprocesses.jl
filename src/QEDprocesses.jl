@@ -34,7 +34,7 @@ export propagator
 export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
-export ParticleStateful, PhaseSpacePoint, IncomingPhaseSpacePoint, OutgoingPhaseSpacePoint
+export ParticleStateful, PhaseSpacePoint, InPhaseSpacePoint, OutPhaseSpacePoint
 export spin, polarization, particle_direction, particle_species, momentum, momenta, getindex
 
 # specific compute models

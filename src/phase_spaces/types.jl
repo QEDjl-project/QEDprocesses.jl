@@ -202,7 +202,7 @@ struct PhaseSpacePoint{
             out_ps::Tuple{},
         ) where {ELEMENT<:AbstractFourMomentum}
 
-    Construct a PhaseSpacePoint with only input particles. The result will be `<: IncomingPhaseSpacePoint` but **not** `<: OutgoingPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `out_phasespace`.
+    Construct a PhaseSpacePoint with only input particles. The result will be `<: InPhaseSpacePoint` but **not** `<: OutPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `out_phasespace`.
     """
     function PhaseSpacePoint(
         proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,ELEMENT}, ::Tuple{}
@@ -241,7 +241,7 @@ struct PhaseSpacePoint{
             out_ps::AbstractVector{ELEMENT},
         ) where {ELEMENT<:AbstractFourMomentum}
 
-    Construct a PhaseSpacePoint with only output particles. The result will be `<: OutgoingPhaseSpacePoint` but **not** `<: IncomingPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `in_phasespace`.
+    Construct a PhaseSpacePoint with only output particles. The result will be `<: OutPhaseSpacePoint` but **not** `<: InPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `in_phasespace`.
     """
     function PhaseSpacePoint(
         proc::PROC, model::MODEL, ps_def::PSDEF, ::Tuple{}, out_ps::NTuple{N,ELEMENT}
@@ -302,23 +302,23 @@ struct PhaseSpacePoint{
 end
 
 """
-    IncomingPhaseSpacePoint
+    InPhaseSpacePoint
 
 A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the in channel of the phase space to exist, for example implementations of [`_incident_flux`](@ref).
 
-See also: [`OutgoingPhaseSpacePoint`](@ref)
+See also: [`OutPhaseSpacePoint`](@ref)
 """
-IncomingPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
+InPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
     P,M,D,IN,OUT,E
 } where {IN<:Tuple{ParticleStateful,Vararg},OUT<:Tuple{Vararg}}
 
 """
-    OutgoingPhaseSpacePoint
+    OutPhaseSpacePoint
 
 A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the out channel of the phase space to exist.
 
-See also: [`IncomingPhaseSpacePoint`](@ref)
+See also: [`InPhaseSpacePoint`](@ref)
 """
-OutgoingPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
+OutPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
     P,M,D,IN,OUT,E
 } where {IN<:Tuple{Vararg},OUT<:Tuple{ParticleStateful,Vararg}}

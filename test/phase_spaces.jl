@@ -205,8 +205,8 @@ end
 
     @testset "Directional PhaseSpacePoint" begin
         @test psp isa PhaseSpacePoint
-        @test psp isa IncomingPhaseSpacePoint
-        @test psp isa OutgoingPhaseSpacePoint
+        @test psp isa InPhaseSpacePoint
+        @test psp isa OutPhaseSpacePoint
 
         in_psp = PhaseSpacePoint(process, model, phasespace_def, in_particles_valid, ())
         out_psp = PhaseSpacePoint(process, model, phasespace_def, (), out_particles_valid)
@@ -217,15 +217,15 @@ end
             process, model, phasespace_def, (), (out_el_mom, out_ph_mom)
         )
 
-        @test in_psp isa IncomingPhaseSpacePoint
-        @test !(in_psp isa OutgoingPhaseSpacePoint)
-        @test in_psp_from_moms isa IncomingPhaseSpacePoint
-        @test !(in_psp_from_moms isa OutgoingPhaseSpacePoint)
+        @test in_psp isa InPhaseSpacePoint
+        @test !(in_psp isa OutPhaseSpacePoint)
+        @test in_psp_from_moms isa InPhaseSpacePoint
+        @test !(in_psp_from_moms isa OutPhaseSpacePoint)
 
-        @test out_psp isa OutgoingPhaseSpacePoint
-        @test !(out_psp isa IncomingPhaseSpacePoint)
-        @test out_psp_from_moms isa OutgoingPhaseSpacePoint
-        @test !(out_psp_from_moms isa IncomingPhaseSpacePoint)
+        @test out_psp isa OutPhaseSpacePoint
+        @test !(out_psp isa InPhaseSpacePoint)
+        @test out_psp_from_moms isa OutPhaseSpacePoint
+        @test !(out_psp_from_moms isa InPhaseSpacePoint)
 
         @test_throws InvalidInputError PhaseSpacePoint(
             process, model, phasespace_def, in_particles_invalid, ()

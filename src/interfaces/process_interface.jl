@@ -22,7 +22,7 @@ interface functions need to be implemented for every combination of `CustomProce
 `CustomModel<:AbstractModelDefinition`, and `CustomPhasespaceDefinition<:AbstractPhasespaceDefinition`.
 
 ```Julia
-    _incident_flux(psp::IncomingPhaseSpacePoint{CustomProcess,CustomModel})
+    _incident_flux(psp::InPhaseSpacePoint{CustomProcess,CustomModel})
 
     _matrix_element(psp::PhaseSpacePoint{CustomProcess,CustomModel})
 
@@ -67,12 +67,12 @@ This function needs to be given to implement the scattering process interface.
 function outgoing_particles end
 
 """
-    _incident_flux(in_psp::IncomingPhaseSpacePoint{PROC,MODEL}) where {
+    _incident_flux(in_psp::InPhaseSpacePoint{PROC,MODEL}) where {
         PROC <: AbstractProcessDefinition,
         MODEL <: AbstractModelDefinition,
     }
 
-Interface function which returns the incident flux of the given scattering process for a given [`IncomingPhaseSpacePoint`](@ref).
+Interface function which returns the incident flux of the given scattering process for a given [`InPhaseSpacePoint`](@ref).
 
 """
 function _incident_flux end
@@ -169,13 +169,13 @@ TBW
 function out_phase_space_dimension end
 
 """
-    _total_probability(in_psp::IncomingPhaseSpacePoint{PROC,MODEL}) where {
+    _total_probability(in_psp::InPhaseSpacePoint{PROC,MODEL}) where {
         PROC <: AbstractProcessDefinition,
         MODEL <: AbstractModelDefinition,
     }
 
 Interface function for the combination of a scattering process and a physical model. Return the total of a 
-given process and model for a passed [`IncomingPhaseSpacePoint`](@ref).
+given process and model for a passed [`InPhaseSpacePoint`](@ref).
 
 !!! note "total cross section"
     
