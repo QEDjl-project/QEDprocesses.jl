@@ -24,11 +24,11 @@ particle_species(part::ParticleStateful) = part.species
 momentum(part::ParticleStateful) = part.mom
 
 function momenta(psp::PhaseSpacePoint, ::Incoming)
-    return QEDbase._as_svec(momentum.(psp.in_particles))
+    return momentum.(psp.in_particles)
 end
 
 function momenta(psp::PhaseSpacePoint, ::Outgoing)
-    return QEDbase._as_svec(momentum.(psp.out_particles))
+    return momentum.(psp.out_particles)
 end
 
 """

@@ -1,51 +1,3 @@
-@inline function _check_in_phase_space_dimension(
-    proc::AbstractProcessDefinition,
-    ::AbstractModelDefinition,
-    in_phase_space::AbstractVecOrMat{T},
-) where {T<:AbstractFourMomentum}
-    return size(in_phase_space, 1) == number_incoming_particles(proc) || throw(
-        DimensionMismatch(
-            "the number of incoming particles <$(number_incoming_particles(proc))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
-end
-
-@inline function _check_out_phase_space_dimension(
-    proc::AbstractProcessDefinition,
-    ::AbstractModelDefinition,
-    out_phase_space::AbstractVecOrMat{T},
-) where {T<:AbstractFourMomentum}
-    return size(out_phase_space, 1) == number_outgoing_particles(proc) || throw(
-        DimensionMismatch(
-            "the number of outgoing particles <$(number_outgoing_particles(proc))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
-    )
-end
-
-@inline function _check_in_phase_space_dimension(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    in_phase_space::AbstractVecOrMat{T},
-) where {T<:Real}
-    return size(in_phase_space, 1) == in_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "the dimension of the in-phase-space <$(in_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(in_phase_space,1))>",
-        ),
-    )
-end
-
-@inline function _check_out_phase_space_dimension(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    out_phase_space::AbstractVecOrMat{T},
-) where {T<:Real}
-    return size(out_phase_space, 1) == out_phase_space_dimension(proc, model) || throw(
-        DimensionMismatch(
-            "the dimension of the out-phase-space <$(out_phase_space_dimension(proc,model))> is inconsistent with input size <$(size(out_phase_space,1))>",
-        ),
-    )
-end
-
 # recursion termination: base case
 @inline _assemble_tuple_type(::Tuple{}, ::ParticleDirection, ::Type) = ()
 
@@ -68,9 +20,8 @@ end
     ::Tuple{Vararg{AbstractParticleType,M}},
     dir::ParticleDirection,
 ) where {N,M}
-    return throw(
-        InvalidInputError("expected $(M) $(dir) particles for the process but got $(N)")
-    )
+    throw(InvalidInputError("expected $(M) $(dir) particles for the process but got $(N)"))
+    return nothing
 end
 
 # recursion termination: overload for invalid types
@@ -85,11 +36,12 @@ end
     SPECIES_IN_T<:AbstractParticleType,
     SPECIES_T<:AbstractParticleType,
 }
-    return throw(
+    throw(
         InvalidInputError(
             "expected $(dir) $(SPECIES_T()) but got $(DIR_IN_T()) $(SPECIES_IN_T())"
         ),
     )
+    return nothing
 end
 
 @inline function _recursive_type_check(
@@ -110,7 +62,8 @@ end
 }
     # specific overload for IncomingPhaseSpacePoint
     _recursive_type_check(in_p, in_proc, Incoming())
-    return nothing
+
+    return typeof(in_p[1].mom)
 end
 
 @inline function _check_psp(
@@ -123,7 +76,8 @@ end
 }
     # specific overload for OutgoingPhaseSpacePoint
     _recursive_type_check(out_p, out_proc, Outgoing())
-    return nothing
+
+    return typeof(out_p[1].mom)
 end
 
 @inline function _check_psp(
@@ -139,5 +93,42 @@ end
 
     _recursive_type_check(in_p, in_proc, Incoming())
     _recursive_type_check(out_p, out_proc, Outgoing())
-    return nothing
+
+    return typeof(out_p[1].mom)
 end
+
+"""
+    _eltype_from_psp_type(type::Type{PhaseSpacePoint})
+
+Returns the element type of the [`PhaseSpacePoint`](@ref) type, e.g. `SFourMomentum`.
+
+```jldoctest
+julia> using QEDprocesses; using QEDbase;
+
+julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
+
+julia> _eltype_from_psp_type(typeof(psp))
+SFourMomentum
+```
+"""
+@inline function _eltype_from_psp_type(
+    type::Type{T}
+) where {P,M,D,I,O,E,T<:PhaseSpacePoint{P,M,D,I,O,E}}
+    return E
+end
+
+"""
+    _eltype_from_psp(psp::PhaseSpacePoint)
+
+Returns the element type of the [`PhaseSpacePoint`](@ref), e.g. `SFourMomentum`.
+
+```jldoctest
+julia> using QEDprocesses; using QEDbase;
+
+julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
+
+julia> _eltype_from_psp(psp)
+SFourMomentum
+```
+"""
+@inline _eltype_from_psp(psp::T) where {T<:PhaseSpacePoint} = _eltype_from_psp_type(T)

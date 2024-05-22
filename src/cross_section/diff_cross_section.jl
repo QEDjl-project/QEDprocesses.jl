@@ -5,10 +5,6 @@
 # cross sections based on the scattering process interface
 ########################
 
-function _incident_flux(psp::PhaseSpacePoint)
-    return _incident_flux(psp.proc, psp.model, momenta(psp, Incoming()))
-end
-
 """
     unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
 

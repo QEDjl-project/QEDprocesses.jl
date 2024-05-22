@@ -66,7 +66,6 @@ include("cross_section/diff_probability.jl")
 include("cross_section/diff_cross_section.jl")
 include("cross_section/total_probability.jl")
 include("cross_section/total_cross_section.jl")
-include("cross_section/internal.jl")
 
 include("models/models.jl")
 include("processes/one_photon_compton/one_photon_compton.jl")

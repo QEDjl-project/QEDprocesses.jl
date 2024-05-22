@@ -167,11 +167,7 @@ end
 
     @testset "Generation" begin
         test_psp = PhaseSpacePoint(
-            process,
-            model,
-            phasespace_def,
-            SVector(in_el_mom, in_ph_mom),
-            SVector(out_el_mom, out_ph_mom),
+            process, model, phasespace_def, (in_el_mom, in_ph_mom), (out_el_mom, out_ph_mom)
         )
 
         @test test_psp.proc == process
@@ -185,32 +181,24 @@ end
 
         @testset "Error handling" begin
             @test_throws InvalidInputError PhaseSpacePoint(
-                process,
-                model,
-                phasespace_def,
-                SVector(in_el_mom, in_ph_mom),
-                SVector((out_el_mom,)),
+                process, model, phasespace_def, (in_el_mom, in_ph_mom), (out_el_mom,)
+            )
+            @test_throws InvalidInputError PhaseSpacePoint(
+                process, model, phasespace_def, (in_el_mom,), (out_el_mom, out_ph_mom)
             )
             @test_throws InvalidInputError PhaseSpacePoint(
                 process,
                 model,
                 phasespace_def,
-                SVector((in_el_mom,)),
-                SVector(out_el_mom, out_ph_mom),
+                (in_el_mom, in_ph_mom),
+                (out_el_mom, out_el_mom, out_ph_mom),
             )
             @test_throws InvalidInputError PhaseSpacePoint(
                 process,
                 model,
                 phasespace_def,
-                SVector(in_el_mom, in_ph_mom),
-                SVector((out_el_mom, out_el_mom, out_ph_mom)),
-            )
-            @test_throws InvalidInputError PhaseSpacePoint(
-                process,
-                model,
-                phasespace_def,
-                SVector((in_el_mom, in_el_mom, in_ph_mom)),
-                SVector(out_el_mom, out_ph_mom),
+                (in_el_mom, in_el_mom, in_ph_mom),
+                (out_el_mom, out_ph_mom),
             )
         end
     end
@@ -223,10 +211,10 @@ end
         in_psp = PhaseSpacePoint(process, model, phasespace_def, in_particles_valid, ())
         out_psp = PhaseSpacePoint(process, model, phasespace_def, (), out_particles_valid)
         in_psp_from_moms = PhaseSpacePoint(
-            process, model, phasespace_def, [in_el_mom, in_ph_mom], ()
+            process, model, phasespace_def, (in_el_mom, in_ph_mom), ()
         )
         out_psp_from_moms = PhaseSpacePoint(
-            process, model, phasespace_def, (), [out_el_mom, out_ph_mom]
+            process, model, phasespace_def, (), (out_el_mom, out_ph_mom)
         )
 
         @test in_psp isa IncomingPhaseSpacePoint
@@ -246,10 +234,10 @@ end
             process, model, phasespace_def, (), out_particles_invalid
         )
         @test_throws InvalidInputError PhaseSpacePoint(
-            process, model, phasespace_def, [in_el_mom, in_ph_mom, in_ph_mom], ()
+            process, model, phasespace_def, (in_el_mom, in_ph_mom, in_ph_mom), ()
         )
         @test_throws InvalidInputError PhaseSpacePoint(
-            process, model, phasespace_def, (), [out_el_mom, out_ph_mom, out_ph_mom]
+            process, model, phasespace_def, (), (out_el_mom, out_ph_mom, out_ph_mom)
         )
     end
 end

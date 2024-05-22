@@ -109,6 +109,7 @@ struct PhaseSpacePoint{
     PSDEF<:AbstractPhasespaceDefinition,
     IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
     OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
+    ELEMENT<:AbstractFourMomentum,
 }
     proc::PROC
     model::MODEL
@@ -126,9 +127,11 @@ struct PhaseSpacePoint{
         IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
         OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
     }
-        _check_psp(incoming_particles(proc), outgoing_particles(proc), in_p, out_p)
+        ELEMENT = _check_psp(
+            incoming_particles(proc), outgoing_particles(proc), in_p, out_p
+        )
 
-        return new{PROC,MODEL,PSDEF,IN_PARTICLES,OUT_PARTICLES}(
+        return new{PROC,MODEL,PSDEF,IN_PARTICLES,OUT_PARTICLES,ELEMENT}(
             proc, model, ps_def, in_p, out_p
         )
     end
@@ -148,22 +151,24 @@ struct PhaseSpacePoint{
         proc::PROC,
         model::MODEL,
         ps_def::PSDEF,
-        in_ps::AbstractVector{ELEMENT},
-        out_ps::AbstractVector{ELEMENT},
+        in_ps::NTuple{N,ELEMENT},
+        out_ps::NTuple{M,ELEMENT},
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
         PSDEF<:AbstractPhasespaceDefinition,
+        N,
+        M,
         ELEMENT<:AbstractFourMomentum,
     }
-        length(in_ps) == number_incoming_particles(proc) || throw(
+        N == number_incoming_particles(proc) || throw(
             InvalidInputError(
-                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(length(in_ps))",
+                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(N)",
             ),
         )
-        length(out_ps) == number_outgoing_particles(proc) || throw(
+        M == number_outgoing_particles(proc) || throw(
             InvalidInputError(
-                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(length(out_ps))",
+                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(M)",
             ),
         )
 
@@ -183,7 +188,7 @@ struct PhaseSpacePoint{
 
         # no need to check anything since it is constructed correctly above
 
-        return new{PROC,MODEL,PSDEF,typeof(in_particles),typeof(out_particles)}(
+        return new{PROC,MODEL,PSDEF,typeof(in_particles),typeof(out_particles),ELEMENT}(
             proc, model, ps_def, in_particles, out_particles
         )
     end
@@ -200,16 +205,17 @@ struct PhaseSpacePoint{
     Construct a PhaseSpacePoint with only input particles. The result will be `<: IncomingPhaseSpacePoint` but **not** `<: OutgoingPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `out_phasespace`.
     """
     function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::AbstractVector{ELEMENT}, ::Tuple{}
+        proc::PROC, model::MODEL, ps_def::PSDEF, in_ps::NTuple{N,ELEMENT}, ::Tuple{}
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
         PSDEF<:AbstractPhasespaceDefinition,
+        N,
         ELEMENT<:AbstractFourMomentum,
     }
-        length(in_ps) == number_incoming_particles(proc) || throw(
+        N == number_incoming_particles(proc) || throw(
             InvalidInputError(
-                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(length(in_ps))",
+                "expected $(number_incoming_particles(proc)) incoming particles for the process but got $(N)",
             ),
         )
         in_particles = Union{
@@ -221,7 +227,7 @@ struct PhaseSpacePoint{
 
         # no need to check anything since it is constructed correctly above
 
-        return new{PROC,MODEL,PSDEF,typeof(in_particles),Tuple{}}(
+        return new{PROC,MODEL,PSDEF,typeof(in_particles),Tuple{},ELEMENT}(
             proc, model, ps_def, in_particles, ()
         )
     end
@@ -238,16 +244,17 @@ struct PhaseSpacePoint{
     Construct a PhaseSpacePoint with only output particles. The result will be `<: OutgoingPhaseSpacePoint` but **not** `<: IncomingPhaseSpacePoint`. Call this by simply passing an empty `Tuple` as the `in_phasespace`.
     """
     function PhaseSpacePoint(
-        proc::PROC, model::MODEL, ps_def::PSDEF, ::Tuple{}, out_ps::AbstractVector{ELEMENT}
+        proc::PROC, model::MODEL, ps_def::PSDEF, ::Tuple{}, out_ps::NTuple{N,ELEMENT}
     ) where {
         PROC<:AbstractProcessDefinition,
         MODEL<:AbstractModelDefinition,
         PSDEF<:AbstractPhasespaceDefinition,
+        N,
         ELEMENT<:AbstractFourMomentum,
     }
-        length(out_ps) == number_outgoing_particles(proc) || throw(
+        N == number_outgoing_particles(proc) || throw(
             InvalidInputError(
-                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(length(out_ps))",
+                "expected $(number_outgoing_particles(proc)) outgoing particles for the process but got $(N)",
             ),
         )
         out_particles = Union{
@@ -259,15 +266,48 @@ struct PhaseSpacePoint{
 
         # no need to check anything since it is constructed correctly above
 
-        return new{PROC,MODEL,PSDEF,Tuple{},typeof(out_particles)}(
+        return new{PROC,MODEL,PSDEF,Tuple{},typeof(out_particles),ELEMENT}(
             proc, model, ps_def, (), out_particles
         )
     end
+
+    function PhaseSpacePoint(
+        proc::PROC,
+        model::MODEL,
+        ps_def::PSDEF,
+        in_ps::NTuple{N,Real},
+        out_ps::NTuple{M,Real},
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        N,
+        M,
+    }
+        in_ps, out_ps = _generate_momenta(proc, model, ps_def, in_ps, out_ps)
+        return PhaseSpacePoint(proc, model, ps_def, in_ps, out_ps)
+    end
+
+    function PhaseSpacePoint(
+        proc::PROC,
+        model::MODEL,
+        ps_def::PSDEF,
+        in_ps::NTuple{N,Real},
+        out_ps::Tuple{}
+    ) where {
+        PROC<:AbstractProcessDefinition,
+        MODEL<:AbstractModelDefinition,
+        PSDEF<:AbstractPhasespaceDefinition,
+        N,
+    }
+        in_ps = _generate_incoming_momenta(proc, model, ps_def, in_ps)
+        return PhaseSpacePoint(proc, model, ps_def, in_ps, ())
+    end
 end
 
-IncomingPhaseSpacePoint{P,M,D,IN,OUT} = PhaseSpacePoint{
-    P,M,D,IN,OUT
+IncomingPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
+    P,M,D,IN,OUT,E
 } where {IN<:Tuple{ParticleStateful,Vararg},OUT<:Tuple{Vararg}}
-OutgoingPhaseSpacePoint{P,M,D} = PhaseSpacePoint{
-    P,M,D,IN,OUT
+OutgoingPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
+    P,M,D,IN,OUT,E
 } where {IN<:Tuple{Vararg},OUT<:Tuple{ParticleStateful,Vararg}}

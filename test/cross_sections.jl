@@ -63,24 +63,17 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
     @testset "total cross section" begin
         @testset "compute" begin
-            groundtruth = TestImplementation._groundtruth_total_cross_section(p_in_phys)
-            totCS_on_moms = total_cross_section(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys)
-
             COORDS_IN = TestImplementation.flat_components(p_in_phys)
-            totCS_on_coords = total_cross_section(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN)
+
+            IN_PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, ())
+            IN_PS_POINT_COORDS = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ())
+
+            groundtruth = TestImplementation._groundtruth_total_cross_section(p_in_phys)
+            totCS_on_moms = total_cross_section(IN_PS_POINT)
+            totCS_on_coords = total_cross_section(IN_PS_POINT_COORDS)
 
             @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
             @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
-        end
-        @testset "invalid input" begin
-            @test_throws DimensionMismatch total_cross_section(
-                TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys_invalid
-            )
-
-            COORDS_IN = TestImplementation.flat_components(p_in_phys_invalid)
-            @test_throws DimensionMismatch total_cross_section(
-                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
-            )
         end
     end
 
@@ -110,24 +103,17 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
 
     @testset "total probability" begin
         @testset "compute" begin
-            groundtruth = TestImplementation._groundtruth_total_probability(p_in_phys)
-            totCS_on_moms = total_probability(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys)
-
             COORDS_IN = TestImplementation.flat_components(p_in_phys)
-            totCS_on_coords = total_probability(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN)
+
+            IN_PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, ())
+            IN_PS_POINT_COORDS = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN, ())
+
+            groundtruth = TestImplementation._groundtruth_total_probability(p_in_phys)
+            totCS_on_moms = total_probability(IN_PS_POINT)
+            totCS_on_coords = total_probability(IN_PS_POINT_COORDS)
 
             @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
             @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
-        end
-        @testset "invalid input" begin
-            @test_throws DimensionMismatch total_probability(
-                TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys_invalid
-            )
-
-            COORDS_IN = TestImplementation.flat_components(p_in_phys_invalid)
-            @test_throws DimensionMismatch total_probability(
-                TESTPROC, TESTMODEL, TESTPSDEF, COORDS_IN
-            )
         end
     end
 end

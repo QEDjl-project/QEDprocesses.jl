@@ -4,9 +4,9 @@
 #####
 
 function _incident_flux(
-    proc::Compton, model::PerturbativeQED, in_ps::AbstractVector{T}
-) where {T<:QEDbase.AbstractFourMomentum}
-    return @inbounds in_ps[1] * in_ps[2]
+    in_psp::IncomingPhaseSpacePoint{<:Compton, <:PerturbativeQED}
+)
+    return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
 function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
@@ -57,8 +57,8 @@ end
 #######
 
 @inline function _pert_compton_matrix_element(
-    proc::Compton, in_ps::AbstractVector{T}, out_ps::AbstractVector{T}
-) where {T<:QEDbase.AbstractFourMomentum}
+    proc::Compton, in_ps::NTuple{N,T}, out_ps::NTuple{M,T}
+) where {N,M,T<:QEDbase.AbstractFourMomentum}
     in_electron_mom = in_ps[1]
     in_photon_mom = in_ps[2]
     out_electron_mom = out_ps[1]

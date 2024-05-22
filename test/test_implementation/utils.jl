@@ -17,7 +17,8 @@ function _unroll_moms(ps_moms::AbstractMatrix{T}) where {T<:QEDbase.AbstractFour
     return res
 end
 
-flat_components(moms) = _unroll_moms(moms)
+flat_components(moms::AbstractVecOrMat) = _unroll_moms(moms)
+flat_components(moms::Tuple) = Tuple(_unroll_moms([moms...]))
 
 # collect components of four-momenta from a vector of coordinates
 function __furl_moms(ps_coords::AbstractVector{T}) where {T<:Real}
@@ -37,3 +38,5 @@ function _furl_moms(ps_coords::AbstractMatrix{T}) where {T<:Real}
     end
     return res
 end
+
+_furl_moms(moms::NTuple{N,Float64}) where {N} = Tuple(_furl_moms(Vector{Float64}([moms...])))
