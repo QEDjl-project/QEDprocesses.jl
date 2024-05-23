@@ -142,7 +142,7 @@ function _build_particle_statefuls(
             "expected $(number_particles(proc, dir)) $(dir) particles for the process but got $(N)",
         ),
     )
-    res = Union{Tuple{_assemble_tuple_type(particles(proc, dir), dir, ELEMENT)...}}(
+    res = Tuple{_assemble_tuple_type(particles(proc, dir), dir, ELEMENT)...}(
         ParticleStateful(dir, particle, mom) for
         (particle, mom) in zip(particles(proc, dir), moms)
     )
