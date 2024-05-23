@@ -165,7 +165,7 @@ end
         )
     end
 
-    @testset "Generation" begin
+    @testset "Generation from momenta" begin
         test_psp = PhaseSpacePoint(
             process, model, phasespace_def, (in_el_mom, in_ph_mom), (out_el_mom, out_ph_mom)
         )
@@ -178,29 +178,17 @@ end
         @test test_psp[Incoming(), 2] == in_ph
         @test test_psp[Outgoing(), 1] == out_el
         @test test_psp[Outgoing(), 2] == out_ph
+    end
 
-        @testset "Error handling" begin
-            @test_throws InvalidInputError PhaseSpacePoint(
-                process, model, phasespace_def, (in_el_mom, in_ph_mom), (out_el_mom,)
-            )
-            @test_throws InvalidInputError PhaseSpacePoint(
-                process, model, phasespace_def, (in_el_mom,), (out_el_mom, out_ph_mom)
-            )
-            @test_throws InvalidInputError PhaseSpacePoint(
-                process,
-                model,
-                phasespace_def,
-                (in_el_mom, in_ph_mom),
-                (out_el_mom, out_el_mom, out_ph_mom),
-            )
-            @test_throws InvalidInputError PhaseSpacePoint(
-                process,
-                model,
-                phasespace_def,
-                (in_el_mom, in_el_mom, in_ph_mom),
-                (out_el_mom, out_ph_mom),
-            )
-        end
+    @testset "Error handling from momenta" for (i, o) in
+                                               Iterators.product([1, 3, 4, 5], [1, 3, 4, 5])
+        @test_throws InvalidInputError PhaseSpacePoint(
+            process,
+            model,
+            phasespace_def,
+            TestImplementation._rand_momenta(RNG, i),
+            TestImplementation._rand_momenta(RNG, o),
+        )
     end
 
     @testset "Directional PhaseSpacePoint" begin
@@ -233,12 +221,15 @@ end
         @test_throws InvalidInputError OutPhaseSpacePoint(
             process, model, phasespace_def, out_particles_invalid
         )
-        @test_throws InvalidInputError InPhaseSpacePoint(
-            process, model, phasespace_def, (in_el_mom, in_ph_mom, in_ph_mom)
-        )
-        @test_throws InvalidInputError OutPhaseSpacePoint(
-            process, model, phasespace_def, (out_el_mom, out_ph_mom, out_ph_mom)
-        )
+
+        @testset "Error handling from momenta" for i in [1, 3, 4, 5]
+            @test_throws InvalidInputError InPhaseSpacePoint(
+                process, model, phasespace_def, TestImplementation._rand_momenta(RNG, i)
+            )
+            @test_throws InvalidInputError OutPhaseSpacePoint(
+                process, model, phasespace_def, TestImplementation._rand_momenta(RNG, i)
+            )
+        end
     end
 end
 
