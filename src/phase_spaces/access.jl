@@ -23,13 +23,13 @@ particle_direction(part::ParticleStateful) = part.dir
 particle_species(part::ParticleStateful) = part.species
 momentum(part::ParticleStateful) = part.mom
 
-function momenta(psp::PhaseSpacePoint, ::Incoming)
-    return momentum.(psp.in_particles)
-end
+"""
+    momenta(psp::PhaseSpacePoint, ::ParticleDirection)
 
-function momenta(psp::PhaseSpacePoint, ::Outgoing)
-    return momentum.(psp.out_particles)
-end
+Return a `Tuple` of all the particles' momenta for the given `ParticleDirection`.
+"""
+momenta(psp::PhaseSpacePoint, ::Incoming) = momentum.(psp.in_particles)
+momenta(psp::PhaseSpacePoint, ::Outgoing) = momentum.(psp.out_particles)
 
 """
     Base.getindex(psp::PhaseSpacePoint, dir::Incoming, n::Int)

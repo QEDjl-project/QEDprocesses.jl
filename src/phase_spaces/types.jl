@@ -138,6 +138,7 @@ struct PhaseSpacePoint{
         IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
         OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
     }
+        # this entire check is compiled away every time, so there's no need to disable it for performance ever
         ELEMENT = _check_psp(
             incoming_particles(proc), outgoing_particles(proc), in_p, out_p
         )

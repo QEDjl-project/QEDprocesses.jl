@@ -14,6 +14,7 @@ function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
 end
 
 """
+    _averaging_norm(proc::Compton)
 
 !!! note "Convention"
 
@@ -24,24 +25,31 @@ function _averaging_norm(proc::Compton)
     return inv(prod(normalizations))
 end
 
-function _all_onshell(
-    proc::Compton, in_ps::AbstractVector{T}, out_ps::AbstractVector{T}
-) where {T<:QEDbase.AbstractFourMomentum}
-    sq_in_moms = getMass2.(in_ps)
-    sq_out_moms = getMass2.(out_ps)
-    sq_in_masses = mass.(incoming_particles(proc)) .^ 2
-    sq_out_masses = mass.(outgoing_particles(proc)) .^ 2
-    return isapprox(sq_in_moms, SVector(sq_in_masses)) &&
-           isapprox(sq_out_moms, SVector(sq_out_masses))
+@inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
+    return @inbounds isapprox(
+            getMass2(momentum(psp, Incoming(), 1)), mass(incoming_particles(psp.proc)[1])^2
+        ) &&
+        isapprox(
+            getMass2(momentum(psp, Incoming(), 2)), mass(incoming_particles(psp.proc)[2])^2
+        ) &&
+        isapprox(
+            getMass2(momentum(psp, Outgoing(), 1)), mass(outgoing_particles(psp.proc)[1])^2
+        ) &&
+        isapprox(
+            getMass2(momentum(psp, Outgoing(), 2)), mass(outgoing_particles(psp.proc)[2])^2
+        )
 end
 
-function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momenta(psp, Incoming())
-    out_ps = momenta(psp, Outgoing())
-    if (!isapprox(sum(in_ps), sum(out_ps)))
+@inline function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,<:PerturbativeQED})
+    @inbounds if (
+        !isapprox(
+            momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
+            momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
+        )
+    )
         return false
     end
-    return _all_onshell(psp.proc, in_ps, out_ps)
+    return _all_onshell(psp)
 end
 
 @inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})

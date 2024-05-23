@@ -65,8 +65,6 @@ function PhaseSpacePoint(
     in_particles = _build_particle_statefuls(proc, in_ps, Incoming())
     out_particles = _build_particle_statefuls(proc, out_ps, Outgoing())
 
-    # no need to check anything since it is constructed correctly above
-
     return PhaseSpacePoint(proc, model, ps_def, in_particles, out_particles)
 end
 
@@ -88,8 +86,6 @@ function InPhaseSpacePoint(
 ) where {N,ELEMENT<:AbstractFourMomentum}
     in_particles = _build_particle_statefuls(proc, in_ps, Incoming())
 
-    # no need to check anything since it is constructed correctly above
-
     return PhaseSpacePoint(proc, model, ps_def, in_particles, ())
 end
 
@@ -110,7 +106,6 @@ function OutPhaseSpacePoint(
     out_ps::NTuple{N,ELEMENT},
 ) where {N,ELEMENT<:AbstractFourMomentum}
     out_particles = _build_particle_statefuls(proc, out_ps, Outgoing())
-    # no need to check anything since it is constructed correctly above
 
     return PhaseSpacePoint(proc, model, ps_def, (), out_particles)
 end

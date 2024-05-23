@@ -112,7 +112,7 @@ SFourMomentum
 ```
 """
 @inline function _eltype_from_psp_type(
-    type::Type{T}
+    ::Type{T}
 ) where {P,M,D,I,O,E,T<:PhaseSpacePoint{P,M,D,I,O,E}}
     return E
 end
@@ -131,7 +131,7 @@ julia> QEDprocesses._eltype_from_psp(psp)
 SFourMomentum
 ```
 """
-@inline _eltype_from_psp(psp::T) where {T<:PhaseSpacePoint} = _eltype_from_psp_type(T)
+@inline _eltype_from_psp(::T) where {T<:PhaseSpacePoint} = _eltype_from_psp_type(T)
 
 # convenience function building a type stable tuple of ParticleStatefuls from the given process, momenta, and direction
 function _build_particle_statefuls(
