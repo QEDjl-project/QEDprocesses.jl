@@ -98,45 +98,35 @@ end
 end
 
 """
-    _eltype_from_psp_type(type::Type{PhaseSpacePoint})
+    _momentum_type(psp::PhaseSpacePoint)
+    _momentum_type(type::Type{PhaseSpacePoint})
 
-Returns the element type of the [`PhaseSpacePoint`](@ref) type, e.g. `SFourMomentum`.
+Returns the element type of the [`PhaseSpacePoint`](@ref) object or type, e.g. `SFourMomentum`.
 
 ```jldoctest
 julia> using QEDprocesses; using QEDbase;
 
 julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
 
-julia> QEDprocesses._eltype_from_psp_type(typeof(psp))
+julia> QEDprocesses._momentum_type(psp)
+SFourMomentum
+
+julia> QEDprocesses._momentum_type(typeof(psp))
 SFourMomentum
 ```
 """
-@inline function _eltype_from_psp_type(
+@inline function _momentum_type(
     ::Type{T}
 ) where {P,M,D,I,O,E,T<:PhaseSpacePoint{P,M,D,I,O,E}}
     return E
 end
 
-"""
-    _eltype_from_psp(psp::PhaseSpacePoint)
-
-Returns the element type of the [`PhaseSpacePoint`](@ref), e.g. `SFourMomentum`.
-
-```jldoctest
-julia> using QEDprocesses; using QEDbase;
-
-julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
-
-julia> QEDprocesses._eltype_from_psp(psp)
-SFourMomentum
-```
-"""
-@inline _eltype_from_psp(::T) where {T<:PhaseSpacePoint} = _eltype_from_psp_type(T)
+@inline _momentum_type(::T) where {T<:PhaseSpacePoint} = _momentum_type(T)
 
 # convenience function building a type stable tuple of ParticleStatefuls from the given process, momenta, and direction
 function _build_particle_statefuls(
     proc::AbstractProcessDefinition, moms::NTuple{N,ELEMENT}, dir::ParticleDirection
-) where {N,ELEMENT<:AbstractFourMomentum}
+) where {N,ELEMENT<:QEDbase.AbstractFourMomentum}
     N == number_particles(proc, dir) || throw(
         InvalidInputError(
             "expected $(number_particles(proc, dir)) $(dir) particles for the process but got $(N)",

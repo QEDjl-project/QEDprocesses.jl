@@ -23,7 +23,7 @@ If the given phase spaces are physical, return differential cross section evalua
 """
 function differential_cross_section(phase_space_point::PhaseSpacePoint)
     if !_is_in_phasespace(phase_space_point)
-        return zero(eltype(_eltype_from_psp(phase_space_point)))
+        return zero(eltype(_momentum_type(phase_space_point)))
     end
 
     return unsafe_differential_cross_section(phase_space_point)

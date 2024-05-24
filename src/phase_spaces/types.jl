@@ -1,7 +1,3 @@
-using QEDbase
-
-import QEDbase: AbstractFourMomentum
-
 abstract type AbstractCoordinateSystem end
 struct SphericalCoordinateSystem <: AbstractCoordinateSystem end
 
@@ -28,7 +24,7 @@ Broadcast.broadcastable(ps_def::AbstractPhasespaceDefinition) = Ref(ps_def)
 #
 # Currently, elements can be either four-momenta, or real numbers,
 # i.e. coordinates.
-AbstractPhasespaceElement = Union{AbstractFourMomentum,Real}
+AbstractPhasespaceElement = Union{QEDbase.AbstractFourMomentum,Real}
 
 """
     ParticleStateful <: AbstractParticle
@@ -36,7 +32,7 @@ AbstractPhasespaceElement = Union{AbstractFourMomentum,Real}
 Representation of a particle with a state. It has four fields:
 - `dir::ParticleDirection`: The direction of the particle, `QEDbase.Incoming()` or `QEDbase.Outgoing()`.
 - `species::AbstractParticleType`: The species of the particle, `QEDbase.Electron()`, `QEDbase.Positron()` etc.
-- `mom::AbstractFourMomentum`: The momentum of the particle.
+- `mom::QEDbase.AbstractFourMomentum`: The momentum of the particle.
 
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
 
@@ -53,7 +49,9 @@ ParticleStateful: outgoing photon
 ```
 """
 struct ParticleStateful{
-    DIR<:ParticleDirection,SPECIES<:AbstractParticleType,ELEMENT<:AbstractFourMomentum
+    DIR<:ParticleDirection,
+    SPECIES<:AbstractParticleType,
+    ELEMENT<:QEDbase.AbstractFourMomentum,
 } <: AbstractParticle
     dir::DIR
     species::SPECIES
@@ -62,7 +60,9 @@ struct ParticleStateful{
     function ParticleStateful(
         dir::DIR, species::SPECIES, mom::ELEMENT
     ) where {
-        DIR<:ParticleDirection,SPECIES<:AbstractParticleType,ELEMENT<:AbstractFourMomentum
+        DIR<:ParticleDirection,
+        SPECIES<:AbstractParticleType,
+        ELEMENT<:QEDbase.AbstractFourMomentum,
     }
         return new{DIR,SPECIES,ELEMENT}(dir, species, mom)
     end
@@ -109,7 +109,7 @@ struct PhaseSpacePoint{
     PSDEF<:AbstractPhasespaceDefinition,
     IN_PARTICLES<:Tuple{Vararg{ParticleStateful}},
     OUT_PARTICLES<:Tuple{Vararg{ParticleStateful}},
-    ELEMENT<:AbstractFourMomentum,
+    ELEMENT<:QEDbase.AbstractFourMomentum,
 }
     proc::PROC
     model::MODEL
