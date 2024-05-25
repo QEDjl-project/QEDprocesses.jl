@@ -102,6 +102,11 @@ PhaseSpacePoint:
      -> outgoing electron: [1.0, 0.0, 0.0, 0.0]
      -> outgoing photon: [1.0, 0.0, 0.0, 0.0]
 ```
+
+!!! note
+    `PhaseSpacePoint`s can be constructed with only one of their in- or out-channel set. For this, see the special constructors [`InPhaseSpacePoint`](@ref) and [`OutPhaseSpacePoint`](@ref).
+    The [`InPhaseSpacePoint`](@ref) and [`OutPhaseSpacePoint`](@ref) type definitions can be used to dispatch on such `PhaseSpacePoint`s. Note that a full `PhaseSpacePoint` containing both its in- and out-channel matches both, .i.e. `psp isa InPhaseSpacePoint` and `psp isa OutPhaseSpacePoint` both evaluate to true if psp contains both channels.
+    A completely empty `PhaseSpacePoint` is not allowed.
 """
 struct PhaseSpacePoint{
     PROC<:AbstractProcessDefinition,
@@ -127,7 +132,7 @@ struct PhaseSpacePoint{
             out_ps::Tuple{ParticleStateful},
         )
 
-    Construct a [`PhaseSpacePoint`](@ref) which has `<: InPhaseSpacePoint` and `<: OutPhaseSpacePoint` from a process, model, phasespace definition and a tuple of [`ParticleStateful`](@ref)s.
+    Construct a [`PhaseSpacePoint`](@ref) from a process, model, phasespace definition and a tuple of [`ParticleStateful`](@ref)s.
     """
     function PhaseSpacePoint(
         proc::PROC, model::MODEL, ps_def::PSDEF, in_p::IN_PARTICLES, out_p::OUT_PARTICLES
@@ -152,7 +157,7 @@ end
 """
     InPhaseSpacePoint
 
-A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the in channel of the phase space to exist, for example implementations of [`_incident_flux`](@ref).
+A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the in channel of the phase space to exist, for example implementations of [`_incident_flux`](@ref). No restrictions are imposed on the out-channel, which may or may not exist.
 
 See also: [`OutPhaseSpacePoint`](@ref)
 """
@@ -163,7 +168,7 @@ InPhaseSpacePoint{P,M,D,IN,OUT,E} = PhaseSpacePoint{
 """
     OutPhaseSpacePoint
 
-A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the out channel of the phase space to exist.
+A partial type specialization on [`PhaseSpacePoint`](@ref) which can be used for dispatch in functions requiring only the out channel of the phase space to exist. No restrictions are imposed on the in-channel, which may or may not exist.
 
 See also: [`InPhaseSpacePoint`](@ref)
 """
