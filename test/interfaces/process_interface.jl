@@ -71,9 +71,20 @@ include("../test_implementation/TestImplementation.jl")
     end
 
     @testset "incident flux" begin
-        test_incident_flux = QEDprocesses._incident_flux(TESTPROC, TESTMODEL, IN_PS)
+        test_incident_flux = QEDprocesses._incident_flux(
+            InPhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS)
+        )
         groundtruth = TestImplementation._groundtruth_incident_flux(IN_PS)
         @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
+
+        test_incident_flux = QEDprocesses._incident_flux(
+            PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
+        )
+        @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
+
+        @test_throws MethodError QEDprocesses._incident_flux(
+            OutPhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, OUT_PS)
+        )
     end
 
     @testset "averaging norm" begin
@@ -94,10 +105,8 @@ include("../test_implementation/TestImplementation.jl")
     @testset "is in phasespace" begin
         @test QEDprocesses._is_in_phasespace(PSP)
 
-        IN_PS_unphysical = deepcopy(IN_PS)
-        IN_PS_unphysical[1] = SFourMomentum(zeros(4))
-        OUT_PS_unphysical = deepcopy(OUT_PS)
-        OUT_PS_unphysical[end] = ones(SFourMomentum)
+        IN_PS_unphysical = (zero(SFourMomentum), IN_PS[2:end]...)
+        OUT_PS_unphysical = (OUT_PS[1:(end - 1)]..., ones(SFourMomentum))
         PSP_unphysical_in_ps = PhaseSpacePoint(
             TESTPROC, TESTMODEL, TESTPSDEF, IN_PS_unphysical, OUT_PS
         )

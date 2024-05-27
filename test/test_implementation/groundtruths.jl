@@ -1,3 +1,4 @@
+import QEDbase.AbstractFourMomentum
 
 """
     _groundtruth_incident_flux(in_ps)
@@ -237,28 +238,28 @@ end
 
 Test implementation of the total cross section. Return the Minkowski square of the sum the momenta of all incoming particles.
 """
-function _groundtruth_total_probability(in_ps::AbstractVector)
+function _groundtruth_total_probability(
+    in_ps::NTuple{N,T}
+) where {N,T<:AbstractFourMomentum}
     Ptot = sum(in_ps)
     return Ptot * Ptot
 end
 
-function _groundtruth_total_probability(in_ps::AbstractMatrix)
-    res = Vector{Float64}(undef, size(in_ps, 2))
-    for i in 1:size(in_ps, 2)
-        res[i] = _groundtruth_total_probability(view(in_ps, :, i))
-    end
-    return res
+function _groundtruth_total_probability(
+    in_pss::Vector{NTuple{N,T}}
+) where {N,T<:AbstractFourMomentum}
+    return _groundtruth_total_probability.(in_pss)
 end
 
-function _groundtruth_total_cross_section(in_ps)
+function _groundtruth_total_cross_section(
+    in_ps::NTuple{N,T}
+) where {N,T<:AbstractFourMomentum}
     init_flux = _groundtruth_incident_flux(in_ps)
     return _groundtruth_total_probability(in_ps) / (4 * init_flux)
 end
 
-function _groundtruth_total_cross_section(in_ps::AbstractMatrix)
-    res = Vector{Float64}(undef, size(in_ps, 2))
-    for i in 1:size(in_ps, 2)
-        res[i] = _groundtruth_total_cross_section(view(in_ps, :, i))
-    end
-    return res
+function _groundtruth_total_cross_section(
+    in_pss::Vector{NTuple{N,T}}
+) where {N,T<:AbstractFourMomentum}
+    return _groundtruth_total_cross_section.(in_psps)
 end

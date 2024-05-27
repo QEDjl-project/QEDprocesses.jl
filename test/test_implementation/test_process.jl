@@ -5,7 +5,6 @@ struct TestParticleBoson <: BosonLike end
 const PARTICLE_SET = [TestParticleFermion(), TestParticleBoson()]
 
 """
-
     TestProcess(rng,incoming_particles,outgoing_particles)
 
 """
@@ -79,10 +78,8 @@ struct TestPhasespaceDef_FAIL <: AbstractPhasespaceDefinition end
 
 # dummy implementation of the process interface
 
-function QEDprocesses._incident_flux(
-    ::TestProcess, ::TestModel, in_ps::AbstractVector{T}
-) where {T<:QEDbase.AbstractFourMomentum}
-    return _groundtruth_incident_flux(in_ps)
+function QEDprocesses._incident_flux(in_psp::InPhaseSpacePoint{<:TestProcess,<:TestModel})
+    return _groundtruth_incident_flux(momenta(in_psp, Incoming()))
 end
 
 function QEDprocesses._averaging_norm(proc::TestProcess)
@@ -113,8 +110,8 @@ function QEDprocesses._generate_incoming_momenta(
     proc::TestProcess,
     model::TestModel,
     phase_space_def::TestPhasespaceDef,
-    in_phase_space::AbstractVector{T},
-) where {T<:Real}
+    in_phase_space::NTuple{N,T},
+) where {N,T<:Real}
     return _groundtruth_generate_momenta(in_phase_space)
 end
 
@@ -122,13 +119,13 @@ function QEDprocesses._generate_outgoing_momenta(
     proc::TestProcess,
     model::TestModel,
     phase_space_def::TestPhasespaceDef,
-    out_phase_space::AbstractVector{T},
-) where {T<:Real}
+    out_phase_space::NTuple{N,T},
+) where {N,T<:Real}
     return _groundtruth_generate_momenta(out_phase_space)
 end
 
 function QEDprocesses._total_probability(
-    proc::TestProcess, model::TestModel, ps_def::TestPhasespaceDef, in_ps::AbstractVector{T}
-) where {T<:QEDbase.AbstractFourMomentum}
-    return _groundtruth_total_probability(in_ps)
+    in_psp::InPhaseSpacePoint{<:TestProcess,<:TestModel,<:TestPhasespaceDef}
+)
+    return _groundtruth_total_probability(momenta(in_psp, Incoming()))
 end

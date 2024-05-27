@@ -120,6 +120,22 @@ end
             @test_throws r"expected outgoing electron but got outgoing photon" PhaseSpacePoint(
                 process, model, phasespace_def, in_particles_valid, (out_ph, out_el)
             )
+
+            @test_throws r"expected 2 outgoing particles for the process but got 1" PhaseSpacePoint(
+                process, model, phasespace_def, in_particles_valid, (out_el,)
+            )
+
+            @test_throws r"expected 2 incoming particles for the process but got 1" PhaseSpacePoint(
+                process, model, phasespace_def, (out_el,), out_particles_valid
+            )
+
+            @test_throws r"expected 2 outgoing particles for the process but got 3" PhaseSpacePoint(
+                process, model, phasespace_def, in_particles_valid, (out_el, out_el, out_ph)
+            )
+
+            @test_throws r"expected 2 incoming particles for the process but got 3" PhaseSpacePoint(
+                process, model, phasespace_def, (in_el, in_el, in_ph), out_particles_valid
+            )
         end
 
         @test_throws BoundsError momentum(psp, Incoming(), -1)
@@ -149,13 +165,9 @@ end
         )
     end
 
-    @testset "Generation" begin
+    @testset "Generation from momenta" begin
         test_psp = PhaseSpacePoint(
-            process,
-            model,
-            phasespace_def,
-            SVector(in_el_mom, in_ph_mom),
-            SVector(out_el_mom, out_ph_mom),
+            process, model, phasespace_def, (in_el_mom, in_ph_mom), (out_el_mom, out_ph_mom)
         )
 
         @test test_psp.proc == process
@@ -166,6 +178,58 @@ end
         @test test_psp[Incoming(), 2] == in_ph
         @test test_psp[Outgoing(), 1] == out_el
         @test test_psp[Outgoing(), 2] == out_ph
+    end
+
+    @testset "Error handling from momenta" for (i, o) in
+                                               Iterators.product([1, 3, 4, 5], [1, 3, 4, 5])
+        @test_throws InvalidInputError PhaseSpacePoint(
+            process,
+            model,
+            phasespace_def,
+            TestImplementation._rand_momenta(RNG, i),
+            TestImplementation._rand_momenta(RNG, o),
+        )
+    end
+
+    @testset "Directional PhaseSpacePoint" begin
+        @test psp isa PhaseSpacePoint
+        @test psp isa InPhaseSpacePoint
+        @test psp isa OutPhaseSpacePoint
+
+        in_psp = InPhaseSpacePoint(process, model, phasespace_def, in_particles_valid)
+        out_psp = OutPhaseSpacePoint(process, model, phasespace_def, out_particles_valid)
+        in_psp_from_moms = InPhaseSpacePoint(
+            process, model, phasespace_def, (in_el_mom, in_ph_mom)
+        )
+        out_psp_from_moms = OutPhaseSpacePoint(
+            process, model, phasespace_def, (out_el_mom, out_ph_mom)
+        )
+
+        @test in_psp isa InPhaseSpacePoint
+        @test !(in_psp isa OutPhaseSpacePoint)
+        @test in_psp_from_moms isa InPhaseSpacePoint
+        @test !(in_psp_from_moms isa OutPhaseSpacePoint)
+
+        @test out_psp isa OutPhaseSpacePoint
+        @test !(out_psp isa InPhaseSpacePoint)
+        @test out_psp_from_moms isa OutPhaseSpacePoint
+        @test !(out_psp_from_moms isa InPhaseSpacePoint)
+
+        @test_throws InvalidInputError InPhaseSpacePoint(
+            process, model, phasespace_def, in_particles_invalid
+        )
+        @test_throws InvalidInputError OutPhaseSpacePoint(
+            process, model, phasespace_def, out_particles_invalid
+        )
+
+        @testset "Error handling from momenta" for i in [1, 3, 4, 5]
+            @test_throws InvalidInputError InPhaseSpacePoint(
+                process, model, phasespace_def, TestImplementation._rand_momenta(RNG, i)
+            )
+            @test_throws InvalidInputError OutPhaseSpacePoint(
+                process, model, phasespace_def, TestImplementation._rand_momenta(RNG, i)
+            )
+        end
     end
 end
 

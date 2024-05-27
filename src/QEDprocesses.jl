@@ -10,6 +10,7 @@ export AbstractModelDefinition, fundamental_interaction_type
 # Abstract process interface
 export AbstractProcessDefinition, incoming_particles, outgoing_particles
 export number_incoming_particles, number_outgoing_particles
+export particles, number_particles
 
 # probabilities
 export differential_probability, unsafe_differential_probability
@@ -34,7 +35,7 @@ export propagator
 export AbstractCoordinateSystem, SphericalCoordinateSystem
 export AbstractFrameOfReference, CenterOfMomentumFrame, ElectronRestFrame
 export AbstractPhasespaceDefinition, PhasespaceDefinition
-export ParticleStateful, PhaseSpacePoint
+export ParticleStateful, PhaseSpacePoint, InPhaseSpacePoint, OutPhaseSpacePoint
 export spin, polarization, particle_direction, particle_species, momentum, momenta, getindex
 
 # specific compute models
@@ -54,7 +55,12 @@ include("interfaces/model_interface.jl")
 include("interfaces/process_interface.jl")
 include("interfaces/setup_interface.jl")
 
-include("phase_spaces.jl")
+include("phase_spaces/types.jl")
+include("phase_spaces/access.jl")
+include("phase_spaces/create.jl")
+include("phase_spaces/print.jl")
+include("phase_spaces/utility.jl")
+
 include("momentum_generation.jl")
 include("propagators.jl")
 
@@ -62,7 +68,6 @@ include("cross_section/diff_probability.jl")
 include("cross_section/diff_cross_section.jl")
 include("cross_section/total_probability.jl")
 include("cross_section/total_cross_section.jl")
-include("cross_section/internal.jl")
 
 include("models/models.jl")
 include("processes/one_photon_compton/one_photon_compton.jl")

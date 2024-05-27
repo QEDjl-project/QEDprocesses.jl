@@ -1,15 +1,10 @@
 
-function _total_probability(
-    proc::Compton,
-    model::PerturbativeQED,
-    in_phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::AbstractVector{T},
-) where {T<:QEDbase.AbstractFourMomentum}
-    omega = getE(in_phase_space[2])
+function _total_probability(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
+    omega = getE(momentum(in_psp[Incoming(), 2]))
 
     function func(x)
-        return _unsafe_differential_probability(
-            proc, model, in_phase_space_def, [omega], [x, 0.0]
+        return unsafe_differential_probability(
+            PhaseSpacePoint(in_psp.proc, in_psp.model, in_psp.ps_def, (omega,), (x, 0.0))
         )
     end
 
