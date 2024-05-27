@@ -76,6 +76,15 @@ include("../test_implementation/TestImplementation.jl")
         )
         groundtruth = TestImplementation._groundtruth_incident_flux(IN_PS)
         @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
+
+        test_incident_flux = QEDprocesses._incident_flux(
+            PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, IN_PS, OUT_PS)
+        )
+        @test isapprox(test_incident_flux, groundtruth, atol=ATOL, rtol=RTOL)
+
+        @test_throws MethodError QEDprocesses._incident_flux(
+            OutPhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, OUT_PS)
+        )
     end
 
     @testset "averaging norm" begin

@@ -142,6 +142,24 @@ end
                     InPhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS)
                 )
                 @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+
+                @testset "$cos_theta $phi" for (cos_theta, phi) in
+                                               Iterators.product(COS_THETAS, PHIS)
+                    OUT_COORDS = (cos_theta, phi)
+
+                    test_val = @inferred total_cross_section(
+                        PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS)
+                    )
+                    @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+
+                    out_moms = momenta(
+                        PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS),
+                        Outgoing(),
+                    )
+                    @test_throws MethodError total_cross_section(
+                        OutPhaseSpacePoint(PROC, MODEL, PS_DEF, out_moms)
+                    )
+                end
             end
         end
     end
