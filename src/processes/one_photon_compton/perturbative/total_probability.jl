@@ -1,6 +1,6 @@
 
 function _total_probability(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
-    omega = getE(momentum(in_psp[Incoming(), 2]))
+    omega = getE(momentum(in_psp, Incoming(), 2))
 
     function func(x)
         return unsafe_differential_probability(
@@ -9,7 +9,6 @@ function _total_probability(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQE
     end
 
     tot_prob, _ = quadgk(func, -1, 1; rtol=sqrt(eps(omega)))
-
     tot_prob *= 2 * pi # phi integration is trivial
     return tot_prob
 end

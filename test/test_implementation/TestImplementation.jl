@@ -34,6 +34,7 @@ include("groundtruths.jl")
 include("test_model.jl")
 include("test_process.jl")
 include("random_momenta.jl")
+include("random_coordinates.jl")
 include("utils.jl")
 
 end

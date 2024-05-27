@@ -28,8 +28,16 @@ momentum(part::ParticleStateful) = part.mom
 
 Return a `Tuple` of all the particles' momenta for the given `ParticleDirection`.
 """
-momenta(psp::PhaseSpacePoint, ::Incoming) = momentum.(psp.in_particles)
-momenta(psp::PhaseSpacePoint, ::Outgoing) = momentum.(psp.out_particles)
+function momenta(
+    psp::PhaseSpacePoint{P,M,D,I,O,E}, ::Incoming
+) where {N,P,M,D,I<:Tuple{Vararg{ParticleStateful,N}},O,E}
+    return NTuple{N,E}(momentum(p) for p in psp.in_particles)
+end
+function momenta(
+    psp::PhaseSpacePoint{P,M,D,I,O,E}, ::Outgoing
+) where {N,P,M,D,I,O<:Tuple{Vararg{ParticleStateful,N}},E}
+    return NTuple{N,E}(momentum(p) for p in psp.out_particles)
+end
 
 """
     Base.getindex(psp::PhaseSpacePoint, dir::Incoming, n::Int)

@@ -31,12 +31,12 @@ function _generate_outgoing_momenta end
 
 """
     _generate_momenta(
-    proc::AbstractProcessDefinition,
-    model::AbstractModelDefinition,
-    phase_space_def::AbstractPhasespaceDefinition,
-    in_phase_space::NTuple{N,T},
-    out_phase_space::NTuple{M,T},
-) where {N,M,T<:Real}
+        proc::AbstractProcessDefinition,
+        model::AbstractModelDefinition,
+        phase_space_def::AbstractPhasespaceDefinition,
+        in_phase_space::NTuple{N,T},
+        out_phase_space::NTuple{M,T},
+    ) where {N,M,T<:Real}
 
 Return four-momenta for incoming and outgoing particles for given coordinate based phase-space points. 
 """

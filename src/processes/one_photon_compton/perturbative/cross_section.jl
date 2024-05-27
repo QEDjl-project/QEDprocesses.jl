@@ -21,7 +21,7 @@ end
     We average over the initial spins and pols, and sum over final.
 """
 function _averaging_norm(proc::Compton)
-    normalizations = number_of_spin_pol.(_in_spin_and_pol(proc))
+    normalizations = multiplicity.(_in_spin_and_pol(proc))
     return inv(prod(normalizations))
 end
 
@@ -74,8 +74,8 @@ end
     in_photon_state = base_state(Photon(), Incoming(), in_photon_mom, proc.in_pol)
 
     out_electron_state = base_state(Electron(), Outgoing(), out_electron_mom, proc.out_spin)
-
     out_photon_state = base_state(Photon(), Outgoing(), out_photon_mom, proc.out_pol)
+
     return _pert_compton_matrix_element(
         in_electron_mom,
         in_electron_state,
@@ -105,23 +105,18 @@ function _pert_compton_matrix_element(
         QEDbase._as_svec(out_photon_state),
     )
 
-    matrix_elements = Vector{ComplexF64}()
-    sizehint!(matrix_elements, length(base_states_comb))
-    for (in_el, in_ph, out_el, out_ph) in base_states_comb
-        push!(
-            matrix_elements,
-            _pert_compton_matrix_element_single(
-                in_electron_mom,
-                in_el,
-                in_photon_mom,
-                in_ph,
-                out_electron_mom,
-                out_el,
-                out_photon_mom,
-                out_ph,
-            ),
-        )
-    end
+    matrix_elements = NTuple{length(base_states_comb),ComplexF64}(
+        _pert_compton_matrix_element_single(
+            in_electron_mom,
+            in_el,
+            in_photon_mom,
+            in_ph,
+            out_electron_mom,
+            out_el,
+            out_photon_mom,
+            out_ph,
+        ) for (in_el, in_ph, out_el, out_ph) in base_states_comb
+    )
 
     return matrix_elements
 end

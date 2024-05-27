@@ -42,3 +42,11 @@ end
 function _furl_moms(moms::NTuple{N,Float64}) where {N}
     return Tuple(_furl_moms(Vector{Float64}([moms...])))
 end
+
+tuple_isapprox(::Tuple{}, ::Tuple{}; atol=0.0, rtol=eps()) = true
+function tuple_isapprox(
+    a::Tuple{<:Number,Vararg}, b::Tuple{<:Number,Vararg}; atol=0.0, rtol=eps()
+)
+    return isapprox(a[1], b[1]; atol=atol, rtol=rtol) &&
+           tuple_isapprox(a[2:end], b[2:end]; atol=atol, rtol=rtol)
+end
