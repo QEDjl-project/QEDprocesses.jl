@@ -16,7 +16,7 @@ Base.show(io::IO, ::QEDbase.AllPol) = print(io, "all polarizations")
 Base.show(io::IO, ::QEDbase.SpinUp) = print(io, "spin up")
 Base.show(io::IO, ::QEDbase.SpinDown) = print(io, "spin down")
 Base.show(io::IO, ::QEDbase.AllSpin) = print(io, "all spins")
- 
+
 #=
 # fix: https://github.com/QEDjl-project/QEDbase.jl/pull/62
 Broadcast.broadcastable(dir::QEDbase.Incoming) = Ref(dir)

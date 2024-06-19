@@ -75,9 +75,7 @@ end
     out_particles_invalid = (out_el, in_ph)
 
     model = TESTMODEL
-    process = TestImplementation.TestProcess(
-        (Electron(), Photon()), (Electron(), Photon())
-    )
+    process = TestImplementation.TestProcess((Electron(), Photon()), (Electron(), Photon()))
     phasespace_def = TESTPSDEF
 
     psp = PhaseSpacePoint(

@@ -77,9 +77,7 @@ end
     in_electron_state = base_state(
         Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin
     )
-    in_photon_state = base_state(
-        Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol
-    )
+    in_photon_state = base_state(Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol)
 
     out_electron_state = base_state(
         Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin
