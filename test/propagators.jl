@@ -11,14 +11,14 @@ function _rand_momentum(rng::AbstractRNG)
     return SFourMomentum(rand(rng, 4))
 end
 
-groundtruth_propagator(::QEDbase.Photon, mom) = one(eltype(mom)) / (mom * mom)
-function groundtruth_propagator(particle::QEDbase.FermionLike, mom)
+groundtruth_propagator(::Photon, mom) = one(eltype(mom)) / (mom * mom)
+function groundtruth_propagator(particle::FermionLike, mom)
     return (slashed(mom) + QEDbase.mass(particle) * one(DiracMatrix)) /
            (mom * mom - QEDbase.mass(particle)^2)
 end
 
 @testset "propagators" begin
-    @testset "$P" for P in (QEDbase.Electron(), QEDbase.Positron(), QEDbase.Photon())
+    @testset "$P" for P in (Electron(), Positron(), Photon())
         mom = _rand_momentum(RNG)
         groundtruth = groundtruth_propagator(P, mom)
         test_prop = propagator(P, mom)

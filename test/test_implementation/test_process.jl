@@ -1,6 +1,6 @@
 # dummy particles
-struct TestParticleFermion <: QEDbase.FermionLike end
-struct TestParticleBoson <: QEDbase.BosonLike end
+struct TestParticleFermion <: FermionLike end
+struct TestParticleBoson <: BosonLike end
 
 const PARTICLE_SET = [TestParticleFermion(), TestParticleBoson()]
 

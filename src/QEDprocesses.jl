@@ -49,8 +49,6 @@ using QEDcore
 using StaticArrays
 using QuadGK
 
-include("restruct_patch.jl")
-
 include("constants.jl")
 include("utils.jl")
 
