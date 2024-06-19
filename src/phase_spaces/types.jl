@@ -49,10 +49,10 @@ ParticleStateful: outgoing photon
 ```
 """
 struct ParticleStateful{
-    DIR<:ParticleDirection,
-    SPECIES<:AbstractParticleType,
+    DIR<:QEDbase.ParticleDirection,
+    SPECIES<:QEDbase.AbstractParticleType,
     ELEMENT<:QEDbase.AbstractFourMomentum,
-} <: AbstractParticle
+} <: QEDbase.AbstractParticle
     dir::DIR
     species::SPECIES
     mom::ELEMENT
@@ -60,8 +60,8 @@ struct ParticleStateful{
     function ParticleStateful(
         dir::DIR, species::SPECIES, mom::ELEMENT
     ) where {
-        DIR<:ParticleDirection,
-        SPECIES<:AbstractParticleType,
+        DIR<:QEDbase.ParticleDirection,
+        SPECIES<:QEDbase.AbstractParticleType,
         ELEMENT<:QEDbase.AbstractFourMomentum,
     }
         return new{DIR,SPECIES,ELEMENT}(dir, species, mom)
@@ -76,19 +76,19 @@ Representation of a point in the phase space of a process. Contains the process 
 The legality of the combination of the given process and the incoming and outgoing particles is checked on construction. If the numbers of particles mismatch, the types of particles mismatch (note that order is important), or incoming particles have an `Outgoing` direction, an error is thrown.
 
 ```jldoctest
-julia> using QEDprocesses; using QEDbase
+julia> using QEDprocesses; import QEDbase; using QEDcore
 
 julia> PhaseSpacePoint(
             Compton(), 
             PerturbativeQED(), 
             PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), 
             (
-                ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0)), 
-                ParticleStateful(Incoming(), Photon(), SFourMomentum(1, 0, 0, 0))
+                ParticleStateful(QEDbase.Incoming(), QEDbase.Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(QEDbase.Incoming(), QEDbase.Photon(), SFourMomentum(1, 0, 0, 0))
             ), 
             (
-                ParticleStateful(Outgoing(), Electron(), SFourMomentum(1, 0, 0, 0)), 
-                ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
+                ParticleStateful(QEDbase.Outgoing(), QEDbase.Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(QEDbase.Outgoing(), QEDbase.Photon(), SFourMomentum(1, 0, 0, 0))
             )
         )
 PhaseSpacePoint:

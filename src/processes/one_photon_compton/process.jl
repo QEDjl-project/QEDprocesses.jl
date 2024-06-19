@@ -8,10 +8,10 @@
 """
 struct Compton{InElectronSpin,InPhotonPol,OutElectronSpin,OutPhotonPol} <:
        AbstractProcessDefinition where {
-    InElectronSpin<:AbstractSpin,
-    InPhotonPol<:AbstractPolarization,
-    OutElectronSpin<:AbstractSpin,
-    OutPhotonPol<:AbstractPolarization,
+    InElectronSpin<:QEDbase.AbstractSpin,
+    InPhotonPol<:QEDbase.AbstractPolarization,
+    OutElectronSpin<:QEDbase.AbstractSpin,
+    OutPhotonPol<:QEDbase.AbstractPolarization,
 }
     in_spin::InElectronSpin
     in_pol::InPhotonPol
@@ -21,12 +21,16 @@ struct Compton{InElectronSpin,InPhotonPol,OutElectronSpin,OutPhotonPol} <:
 end
 
 function Compton()
-    return Compton(AllSpin(), AllPol(), AllSpin(), AllPol())
+    return Compton(QEDbase.AllSpin(), QEDbase.AllPol(), QEDbase.AllSpin(), QEDbase.AllPol())
 end
 
-Compton(in_pol::AbstractPolarization) = Compton(AllSpin(), in_pol, AllSpin(), AllPol())
-function Compton(in_pol::AbstractPolarization, out_pol::AbstractPolarization)
-    return Compton(AllSpin(), in_pol, AllSpin(), out_pol)
+function Compton(in_pol::QEDbase.AbstractPolarization)
+    return Compton(QEDbase.AllSpin(), in_pol, QEDbase.AllSpin(), QEDbase.AllPol())
+end
+function Compton(
+    in_pol::QEDbase.AbstractPolarization, out_pol::QEDbase.AbstractPolarization
+)
+    return Compton(QEDbase.AllSpin(), in_pol, QEDbase.AllSpin(), out_pol)
 end
 
 _polarizations(proc::Compton) = (proc.in_pol, proc.out_pol)
@@ -35,26 +39,26 @@ _in_spin_and_pol(proc::Compton) = (proc.in_spin, proc.in_pol)
 _out_spin_and_pol(proc::Compton) = (proc.out_spin, proc.out_pol)
 
 function QEDprocesses.incoming_particles(::Compton)
-    return (Electron(), Photon())
+    return (QEDbase.Electron(), QEDbase.Photon())
 end
 
 function QEDprocesses.outgoing_particles(::Compton)
-    return (Electron(), Photon())
+    return (QEDbase.Electron(), QEDbase.Photon())
 end
 
-function _spin_or_pol(process::Compton, ::Electron, ::Incoming)
+function _spin_or_pol(process::Compton, ::QEDbase.Electron, ::QEDbase.Incoming)
     return process.in_spin
 end
 
-function _spin_or_pol(process::Compton, ::Electron, ::Outgoing)
+function _spin_or_pol(process::Compton, ::QEDbase.Electron, ::QEDbase.Outgoing)
     return process.out_spin
 end
 
-function _spin_or_pol(process::Compton, ::Photon, ::Incoming)
+function _spin_or_pol(process::Compton, ::QEDbase.Photon, ::QEDbase.Incoming)
     return process.in_pol
 end
 
-function _spin_or_pol(process::Compton, ::Photon, ::Outgoing)
+function _spin_or_pol(process::Compton, ::QEDbase.Photon, ::QEDbase.Outgoing)
     return process.out_pol
 end
 

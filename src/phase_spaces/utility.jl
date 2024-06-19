@@ -1,10 +1,12 @@
 # recursion termination: base case
-@inline _assemble_tuple_type(::Tuple{}, ::ParticleDirection, ::Type) = ()
+@inline _assemble_tuple_type(::Tuple{}, ::QEDbase.ParticleDirection, ::Type) = ()
 
 # function assembling the correct type information for the tuple of ParticleStatefuls in a phasespace point constructed from momenta
 @inline function _assemble_tuple_type(
-    particle_types::Tuple{SPECIES_T,Vararg{AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
-) where {SPECIES_T<:AbstractParticleType,DIR_T<:ParticleDirection}
+    particle_types::Tuple{SPECIES_T,Vararg{QEDbase.AbstractParticleType}},
+    dir::DIR_T,
+    ELTYPE::Type,
+) where {SPECIES_T<:QEDbase.AbstractParticleType,DIR_T<:QEDbase.ParticleDirection}
     return (
         ParticleStateful{DIR_T,SPECIES_T,ELTYPE},
         _assemble_tuple_type(particle_types[2:end], dir, ELTYPE)...,
@@ -12,13 +14,13 @@
 end
 
 # recursion termination: success
-@inline _recursive_type_check(::Tuple{}, ::Tuple{}, ::ParticleDirection) = nothing
+@inline _recursive_type_check(::Tuple{}, ::Tuple{}, ::QEDbase.ParticleDirection) = nothing
 
 # recursion termination: overload for unequal number of particles
 @inline function _recursive_type_check(
     ::Tuple{Vararg{ParticleStateful,N}},
-    ::Tuple{Vararg{AbstractParticleType,M}},
-    dir::ParticleDirection,
+    ::Tuple{Vararg{QEDbase.AbstractParticleType,M}},
+    dir::QEDbase.ParticleDirection,
 ) where {N,M}
     throw(InvalidInputError("expected $(M) $(dir) particles for the process but got $(N)"))
     return nothing
@@ -27,14 +29,14 @@ end
 # recursion termination: overload for invalid types
 @inline function _recursive_type_check(
     ::Tuple{ParticleStateful{DIR_IN_T,SPECIES_IN_T},Vararg{ParticleStateful,N}},
-    ::Tuple{SPECIES_T,Vararg{AbstractParticleType,N}},
+    ::Tuple{SPECIES_T,Vararg{QEDbase.AbstractParticleType,N}},
     dir::DIR_T,
 ) where {
     N,
-    DIR_IN_T<:ParticleDirection,
-    DIR_T<:ParticleDirection,
-    SPECIES_IN_T<:AbstractParticleType,
-    SPECIES_T<:AbstractParticleType,
+    DIR_IN_T<:QEDbase.ParticleDirection,
+    DIR_T<:QEDbase.ParticleDirection,
+    SPECIES_IN_T<:QEDbase.AbstractParticleType,
+    SPECIES_T<:QEDbase.AbstractParticleType,
 }
     throw(
         InvalidInputError(
@@ -46,22 +48,22 @@ end
 
 @inline function _recursive_type_check(
     t::Tuple{ParticleStateful{DIR_T,SPECIES_T},Vararg{ParticleStateful,N}},
-    p::Tuple{SPECIES_T,Vararg{AbstractParticleType,N}},
+    p::Tuple{SPECIES_T,Vararg{QEDbase.AbstractParticleType,N}},
     dir::DIR_T,
-) where {N,DIR_T<:ParticleDirection,SPECIES_T<:AbstractParticleType}
+) where {N,DIR_T<:QEDbase.ParticleDirection,SPECIES_T<:QEDbase.AbstractParticleType}
     return _recursive_type_check(t[2:end], p[2:end], dir)
 end
 
 @inline function _check_psp(
     in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
 ) where {
-    P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
-    P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
+    P_IN_Ts<:Tuple{Vararg{QEDbase.AbstractParticleType}},
+    P_OUT_Ts<:Tuple{Vararg{QEDbase.AbstractParticleType}},
     IN_Ts<:Tuple{Vararg{ParticleStateful}},
     OUT_Ts<:Tuple{},
 }
     # specific overload for InPhaseSpacePoint
-    _recursive_type_check(in_p, in_proc, Incoming())
+    _recursive_type_check(in_p, in_proc, QEDbase.Incoming())
 
     return typeof(in_p[1].mom)
 end
@@ -69,13 +71,13 @@ end
 @inline function _check_psp(
     in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
 ) where {
-    P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
-    P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
+    P_IN_Ts<:Tuple{Vararg{QEDbase.AbstractParticleType}},
+    P_OUT_Ts<:Tuple{Vararg{QEDbase.AbstractParticleType}},
     IN_Ts<:Tuple{},
     OUT_Ts<:Tuple{Vararg{ParticleStateful}},
 }
     # specific overload for OutPhaseSpacePoint
-    _recursive_type_check(out_p, out_proc, Outgoing())
+    _recursive_type_check(out_p, out_proc, QEDbase.Outgoing())
 
     return typeof(out_p[1].mom)
 end
@@ -83,16 +85,16 @@ end
 @inline function _check_psp(
     in_proc::P_IN_Ts, out_proc::P_OUT_Ts, in_p::IN_Ts, out_p::OUT_Ts
 ) where {
-    P_IN_Ts<:Tuple{Vararg{AbstractParticleType}},
-    P_OUT_Ts<:Tuple{Vararg{AbstractParticleType}},
+    P_IN_Ts<:Tuple{Vararg{QEDbase.AbstractParticleType}},
+    P_OUT_Ts<:Tuple{Vararg{QEDbase.AbstractParticleType}},
     IN_Ts<:Tuple{Vararg{ParticleStateful}},
     OUT_Ts<:Tuple{Vararg{ParticleStateful}},
 }
     # in_proc/out_proc contain only species types
     # in_p/out_p contain full ParticleStateful types
 
-    _recursive_type_check(in_p, in_proc, Incoming())
-    _recursive_type_check(out_p, out_proc, Outgoing())
+    _recursive_type_check(in_p, in_proc, QEDbase.Incoming())
+    _recursive_type_check(out_p, out_proc, QEDbase.Outgoing())
 
     return typeof(out_p[1].mom)
 end
@@ -104,7 +106,7 @@ end
 Returns the element type of the [`PhaseSpacePoint`](@ref) object or type, e.g. `SFourMomentum`.
 
 ```jldoctest
-julia> using QEDprocesses; using QEDbase;
+julia> using QEDprocesses; using QEDcore
 
 julia> psp = PhaseSpacePoint(Compton(), PerturbativeQED(), PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), Tuple(rand(SFourMomentum) for _ in 1:2), Tuple(rand(SFourMomentum) for _ in 1:2));
 
@@ -125,7 +127,7 @@ end
 
 # convenience function building a type stable tuple of ParticleStatefuls from the given process, momenta, and direction
 function _build_particle_statefuls(
-    proc::AbstractProcessDefinition, moms::NTuple{N,ELEMENT}, dir::ParticleDirection
+    proc::AbstractProcessDefinition, moms::NTuple{N,ELEMENT}, dir::QEDbase.ParticleDirection
 ) where {N,ELEMENT<:QEDbase.AbstractFourMomentum}
     N == number_particles(proc, dir) || throw(
         InvalidInputError(

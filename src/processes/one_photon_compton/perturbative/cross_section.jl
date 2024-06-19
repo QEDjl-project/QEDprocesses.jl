@@ -4,12 +4,12 @@
 #####
 
 function _incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
-    return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
+    return momentum(in_psp, QEDbase.Incoming(), 1) * momentum(in_psp, QEDbase.Incoming(), 2)
 end
 
 function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momenta(psp, Incoming())
-    out_ps = momenta(psp, Outgoing())
+    in_ps = momenta(psp, QEDbase.Incoming())
+    out_ps = momenta(psp, QEDbase.Outgoing())
     return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
 end
 
@@ -27,24 +27,28 @@ end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
     return @inbounds isapprox(
-            getMass2(momentum(psp, Incoming(), 1)), mass(incoming_particles(psp.proc)[1])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 1)),
+            QEDbase.mass(incoming_particles(psp.proc)[1])^2,
         ) &&
         isapprox(
-            getMass2(momentum(psp, Incoming(), 2)), mass(incoming_particles(psp.proc)[2])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 2)),
+            QEDbase.mass(incoming_particles(psp.proc)[2])^2,
         ) &&
         isapprox(
-            getMass2(momentum(psp, Outgoing(), 1)), mass(outgoing_particles(psp.proc)[1])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 1)),
+            QEDbase.mass(outgoing_particles(psp.proc)[1])^2,
         ) &&
         isapprox(
-            getMass2(momentum(psp, Outgoing(), 2)), mass(outgoing_particles(psp.proc)[2])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 2)),
+            QEDbase.mass(outgoing_particles(psp.proc)[2])^2,
         )
 end
 
 @inline function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,<:PerturbativeQED})
     @inbounds if (
         !isapprox(
-            momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
-            momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
+            momentum(psp, QEDbase.Incoming(), 1) + momentum(psp, QEDbase.Incoming(), 2),
+            momentum(psp, QEDbase.Outgoing(), 1) + momentum(psp, QEDbase.Outgoing(), 2),
         )
     )
         return false
@@ -53,8 +57,8 @@ end
 end
 
 @inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momenta(psp, Incoming())
-    out_ps = momenta(psp, Outgoing())
+    in_ps = momenta(psp, QEDbase.Incoming())
+    out_ps = momenta(psp, QEDbase.Outgoing())
     return _pert_compton_ps_fac(psp.ps_def, in_ps[2], out_ps[2])
 end
 
@@ -70,12 +74,20 @@ end
     out_electron_mom = out_ps[1]
     out_photon_mom = out_ps[2]
 
-    in_electron_state = base_state(Electron(), Incoming(), in_electron_mom, proc.in_spin)
-    in_photon_state = base_state(Photon(), Incoming(), in_photon_mom, proc.in_pol)
+    in_electron_state = base_state(
+        QEDbase.Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin
+    )
+    in_photon_state = base_state(
+        QEDbase.Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol
+    )
 
-    out_electron_state = base_state(Electron(), Outgoing(), out_electron_mom, proc.out_spin)
+    out_electron_state = base_state(
+        QEDbase.Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin
+    )
 
-    out_photon_state = base_state(Photon(), Outgoing(), out_photon_mom, proc.out_pol)
+    out_photon_state = base_state(
+        QEDbase.Photon(), QEDbase.Outgoing(), out_photon_mom, proc.out_pol
+    )
     return _pert_compton_matrix_element(
         in_electron_mom,
         in_electron_state,
@@ -139,8 +151,8 @@ function _pert_compton_matrix_element_single(
     in_ph_slashed = slashed(in_photon_state)
     out_ph_slashed = slashed(out_photon_state)
 
-    prop1 = _fermion_propagator(in_photon_mom + in_electron_mom, mass(Electron()))
-    prop2 = _fermion_propagator(in_electron_mom - out_photon_mom, mass(Electron()))
+    prop1 = _fermion_propagator(in_photon_mom + in_electron_mom, mass(QEDbase.Electron()))
+    prop2 = _fermion_propagator(in_electron_mom - out_photon_mom, mass(QEDbase.Electron()))
 
     # TODO: fermion propagator is not yet in QEDbase
     diagram_1 =
@@ -165,7 +177,7 @@ function _pert_compton_ps_fac(
     in_ps_def::PhasespaceDefinition{inCS,ElectronRestFrame}, in_photon_mom, out_photon_mom
 ) where {inCS}
     # TODO
-    omega = getE(in_photon_mom)
-    omega_prime = getE(out_photon_mom)
-    return omega_prime^2 / (16 * pi^2 * omega * mass(Electron()))
+    omega = QEDbase.getE(in_photon_mom)
+    omega_prime = QEDbase.getE(out_photon_mom)
+    return omega_prime^2 / (16 * pi^2 * omega * mass(QEDbase.Electron()))
 end

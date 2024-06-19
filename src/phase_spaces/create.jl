@@ -62,8 +62,8 @@ function PhaseSpacePoint(
     in_momenta::NTuple{N,ELEMENT},
     out_momenta::NTuple{M,ELEMENT},
 ) where {N,M,ELEMENT<:QEDbase.AbstractFourMomentum}
-    in_particles = _build_particle_statefuls(proc, in_momenta, Incoming())
-    out_particles = _build_particle_statefuls(proc, out_momenta, Outgoing())
+    in_particles = _build_particle_statefuls(proc, in_momenta, QEDbase.Incoming())
+    out_particles = _build_particle_statefuls(proc, out_momenta, QEDbase.Outgoing())
 
     return PhaseSpacePoint(proc, model, ps_def, in_particles, out_particles)
 end
@@ -84,7 +84,7 @@ function InPhaseSpacePoint(
     ps_def::AbstractPhasespaceDefinition,
     in_momenta::NTuple{N,ELEMENT},
 ) where {N,ELEMENT<:QEDbase.AbstractFourMomentum}
-    in_particles = _build_particle_statefuls(proc, in_momenta, Incoming())
+    in_particles = _build_particle_statefuls(proc, in_momenta, QEDbase.Incoming())
 
     return PhaseSpacePoint(proc, model, ps_def, in_particles, ())
 end
@@ -105,7 +105,7 @@ function OutPhaseSpacePoint(
     ps_def::AbstractPhasespaceDefinition,
     out_momenta::NTuple{N,ELEMENT},
 ) where {N,ELEMENT<:QEDbase.AbstractFourMomentum}
-    out_particles = _build_particle_statefuls(proc, out_momenta, Outgoing())
+    out_particles = _build_particle_statefuls(proc, out_momenta, QEDbase.Outgoing())
 
     return PhaseSpacePoint(proc, model, ps_def, (), out_particles)
 end

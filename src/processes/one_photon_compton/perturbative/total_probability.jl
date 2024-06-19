@@ -1,6 +1,6 @@
 
 function _total_probability(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
-    omega = getE(momentum(in_psp[Incoming(), 2]))
+    omega = QEDbase.getE(momentum(in_psp[QEDbase.Incoming(), 2]))
 
     function func(x)
         return unsafe_differential_probability(

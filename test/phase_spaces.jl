@@ -1,6 +1,7 @@
 using Random
 using StaticArrays
-using QEDbase
+using QEDbase: QEDbase
+using QEDcore
 using QEDprocesses
 
 # can be removed when QEDbase exports them
@@ -19,8 +20,8 @@ BUF = IOBuffer()
 end
 
 @testset "Stateful Particle" begin
-    DIRECTIONS = [Incoming(), Outgoing()]
-    SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
+    DIRECTIONS = [QEDbase.Incoming(), QEDbase.Outgoing()]
+    SPECIES = [QEDbase.Electron(), QEDbase.Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
 
     for (species, dir) in Iterators.product(SPECIES, DIRECTIONS)
         mom = rand(RNG, SFourMomentum)
@@ -28,14 +29,15 @@ end
         particle_stateful = ParticleStateful(dir, species, mom)
 
         # particle interface
-        @test is_fermion(particle_stateful) == is_fermion(species)
-        @test is_boson(particle_stateful) == is_boson(species)
-        @test is_particle(particle_stateful) == is_particle(species)
-        @test is_anti_particle(particle_stateful) == is_anti_particle(species)
-        @test is_incoming(particle_stateful) == is_incoming(dir)
-        @test is_outgoing(particle_stateful) == is_outgoing(dir)
-        @test mass(particle_stateful) == mass(species)
-        @test charge(particle_stateful) == charge(species)
+        @test QEDbase.is_fermion(particle_stateful) == QEDbase.is_fermion(species)
+        @test QEDbase.is_boson(particle_stateful) == QEDbase.is_boson(species)
+        @test QEDbase.is_particle(particle_stateful) == QEDbase.is_particle(species)
+        @test QEDbase.is_anti_particle(particle_stateful) ==
+            QEDbase.is_anti_particle(species)
+        @test QEDbase.is_incoming(particle_stateful) == QEDbase.is_incoming(dir)
+        @test QEDbase.is_outgoing(particle_stateful) == QEDbase.is_outgoing(dir)
+        @test QEDbase.mass(particle_stateful) == QEDbase.mass(species)
+        @test QEDbase.charge(particle_stateful) == QEDbase.charge(species)
 
         # accessors
         @test particle_stateful.dir == dir
@@ -61,10 +63,10 @@ end
     out_el_mom = rand(RNG, SFourMomentum)
     out_ph_mom = rand(RNG, SFourMomentum)
 
-    in_el = ParticleStateful(Incoming(), Electron(), in_el_mom)
-    in_ph = ParticleStateful(Incoming(), Photon(), in_ph_mom)
-    out_el = ParticleStateful(Outgoing(), Electron(), out_el_mom)
-    out_ph = ParticleStateful(Outgoing(), Photon(), out_ph_mom)
+    in_el = ParticleStateful(QEDbase.Incoming(), QEDbase.Electron(), in_el_mom)
+    in_ph = ParticleStateful(QEDbase.Incoming(), QEDbase.Photon(), in_ph_mom)
+    out_el = ParticleStateful(QEDbase.Outgoing(), QEDbase.Electron(), out_el_mom)
+    out_ph = ParticleStateful(QEDbase.Outgoing(), QEDbase.Photon(), out_ph_mom)
 
     in_particles_valid = (in_el, in_ph)
     in_particles_invalid = (in_el, out_ph)
@@ -73,7 +75,9 @@ end
     out_particles_invalid = (out_el, in_ph)
 
     model = TESTMODEL
-    process = TestImplementation.TestProcess((Electron(), Photon()), (Electron(), Photon()))
+    process = TestImplementation.TestProcess(
+        (QEDbase.Electron(), QEDbase.Photon()), (QEDbase.Electron(), QEDbase.Photon())
+    )
     phasespace_def = TESTPSDEF
 
     psp = PhaseSpacePoint(
@@ -91,15 +95,15 @@ end
     ) isa RegexMatch
 
     @testset "Accessor" begin
-        @test momentum(psp, Incoming(), 1) == in_el.mom
-        @test momentum(psp, Incoming(), 2) == in_ph.mom
-        @test momentum(psp, Outgoing(), 1) == out_el.mom
-        @test momentum(psp, Outgoing(), 2) == out_ph.mom
+        @test momentum(psp, QEDbase.Incoming(), 1) == in_el.mom
+        @test momentum(psp, QEDbase.Incoming(), 2) == in_ph.mom
+        @test momentum(psp, QEDbase.Outgoing(), 1) == out_el.mom
+        @test momentum(psp, QEDbase.Outgoing(), 2) == out_ph.mom
 
-        @test psp[Incoming(), 1] == in_el
-        @test psp[Incoming(), 2] == in_ph
-        @test psp[Outgoing(), 1] == out_el
-        @test psp[Outgoing(), 2] == out_ph
+        @test psp[QEDbase.Incoming(), 1] == in_el
+        @test psp[QEDbase.Incoming(), 2] == in_ph
+        @test psp[QEDbase.Outgoing(), 1] == out_el
+        @test psp[QEDbase.Outgoing(), 2] == out_ph
     end
 
     @testset "Error handling" begin
@@ -138,15 +142,15 @@ end
             )
         end
 
-        @test_throws BoundsError momentum(psp, Incoming(), -1)
-        @test_throws BoundsError momentum(psp, Outgoing(), -1)
-        @test_throws BoundsError momentum(psp, Incoming(), 4)
-        @test_throws BoundsError momentum(psp, Outgoing(), 4)
+        @test_throws BoundsError momentum(psp, QEDbase.Incoming(), -1)
+        @test_throws BoundsError momentum(psp, QEDbase.Outgoing(), -1)
+        @test_throws BoundsError momentum(psp, QEDbase.Incoming(), 4)
+        @test_throws BoundsError momentum(psp, QEDbase.Outgoing(), 4)
 
-        @test_throws BoundsError psp[Incoming(), -1]
-        @test_throws BoundsError psp[Outgoing(), -1]
-        @test_throws BoundsError psp[Incoming(), 4]
-        @test_throws BoundsError psp[Outgoing(), 4]
+        @test_throws BoundsError psp[QEDbase.Incoming(), -1]
+        @test_throws BoundsError psp[QEDbase.Outgoing(), -1]
+        @test_throws BoundsError psp[QEDbase.Incoming(), 4]
+        @test_throws BoundsError psp[QEDbase.Outgoing(), 4]
 
         @test_throws InvalidInputError PhaseSpacePoint(
             process, model, phasespace_def, in_particles_invalid, out_particles_valid
@@ -174,10 +178,10 @@ end
         @test test_psp.model == model
         @test test_psp.ps_def == phasespace_def
 
-        @test test_psp[Incoming(), 1] == in_el
-        @test test_psp[Incoming(), 2] == in_ph
-        @test test_psp[Outgoing(), 1] == out_el
-        @test test_psp[Outgoing(), 2] == out_ph
+        @test test_psp[QEDbase.Incoming(), 1] == in_el
+        @test test_psp[QEDbase.Incoming(), 2] == in_ph
+        @test test_psp[QEDbase.Outgoing(), 1] == out_el
+        @test test_psp[QEDbase.Outgoing(), 2] == out_ph
     end
 
     @testset "Error handling from momenta" for (i, o) in

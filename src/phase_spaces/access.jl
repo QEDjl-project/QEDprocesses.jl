@@ -28,15 +28,15 @@ momentum(part::ParticleStateful) = part.mom
 
 Return a `Tuple` of all the particles' momenta for the given `ParticleDirection`.
 """
-momenta(psp::PhaseSpacePoint, ::Incoming) = momentum.(psp.in_particles)
-momenta(psp::PhaseSpacePoint, ::Outgoing) = momentum.(psp.out_particles)
+momenta(psp::PhaseSpacePoint, ::QEDbase.Incoming) = momentum.(psp.in_particles)
+momenta(psp::PhaseSpacePoint, ::QEDbase.Outgoing) = momentum.(psp.out_particles)
 
 """
     Base.getindex(psp::PhaseSpacePoint, dir::Incoming, n::Int)
 
 Overload for the array indexing operator `[]`. Returns the nth incoming particle in this phase space point.
 """
-function Base.getindex(psp::PhaseSpacePoint, ::Incoming, n::Int)
+function Base.getindex(psp::PhaseSpacePoint, ::QEDbase.Incoming, n::Int)
     return psp.in_particles[n]
 end
 
@@ -45,7 +45,7 @@ end
 
 Overload for the array indexing operator `[]`. Returns the nth outgoing particle in this phase space point.
 """
-function Base.getindex(psp::PhaseSpacePoint, ::Outgoing, n::Int)
+function Base.getindex(psp::PhaseSpacePoint, ::QEDbase.Outgoing, n::Int)
     return psp.out_particles[n]
 end
 
@@ -54,6 +54,6 @@ end
 
 Returns the momentum of the `n`th particle in the given [`PhaseSpacePoint`](@ref) which has direction `dir`. If `n` is outside the valid range for this phase space point, a `BoundsError` is thrown.
 """
-function momentum(psp::PhaseSpacePoint, dir::ParticleDirection, n::Int)
+function momentum(psp::PhaseSpacePoint, dir::QEDbase.ParticleDirection, n::Int)
     return psp[dir, n].mom
 end
