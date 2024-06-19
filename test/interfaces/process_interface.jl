@@ -1,5 +1,6 @@
 using Random
-using QEDbase
+import QEDbase
+using QEDcore
 using QEDprocesses
 
 RNG = MersenneTwister(137137)

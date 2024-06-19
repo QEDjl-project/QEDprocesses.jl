@@ -155,9 +155,9 @@ end
 
 Convenience function dispatching to [`incoming_particles`](@ref) or [`outgoing_particles`](@ref) depending on the given direction.
 """
-@inline particles(proc_def::AbstractProcessDefinition, ::Incoming) =
+@inline particles(proc_def::AbstractProcessDefinition, ::QEDbase.Incoming) =
     incoming_particles(proc_def)
-@inline particles(proc_def::AbstractProcessDefinition, ::Outgoing) =
+@inline particles(proc_def::AbstractProcessDefinition, ::QEDbase.Outgoing) =
     outgoing_particles(proc_def)
 
 """
@@ -165,9 +165,9 @@ Convenience function dispatching to [`incoming_particles`](@ref) or [`outgoing_p
 
 Convenience function dispatching to [`number_incoming_particles`](@ref) or [`number_outgoing_particles`](@ref) depending on the given direction.
 """
-@inline number_particles(proc_def::AbstractProcessDefinition, ::Incoming) =
+@inline number_particles(proc_def::AbstractProcessDefinition, ::QEDbase.Incoming) =
     number_incoming_particles(proc_def)
-@inline number_particles(proc_def::AbstractProcessDefinition, ::Outgoing) =
+@inline number_particles(proc_def::AbstractProcessDefinition, ::QEDbase.Outgoing) =
     number_outgoing_particles(proc_def)
 
 """
