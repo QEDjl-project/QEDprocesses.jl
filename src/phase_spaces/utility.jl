@@ -3,7 +3,9 @@
 
 # function assembling the correct type information for the tuple of ParticleStatefuls in a phasespace point constructed from momenta
 @inline function _assemble_tuple_type(
-    particle_types::Tuple{SPECIES_T,Vararg{QEDbase.AbstractParticleType}}, dir::DIR_T, ELTYPE::Type
+    particle_types::Tuple{SPECIES_T,Vararg{QEDbase.AbstractParticleType}},
+    dir::DIR_T,
+    ELTYPE::Type,
 ) where {SPECIES_T<:QEDbase.AbstractParticleType,DIR_T<:QEDbase.ParticleDirection}
     return (
         ParticleStateful{DIR_T,SPECIES_T,ELTYPE},

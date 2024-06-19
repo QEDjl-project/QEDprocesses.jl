@@ -17,14 +17,36 @@
 # `base_state` in `QEDbase`, because `QEDcore` adds the implementations to the symbol 
 # `QEDbase.base_state` anyway. 
 
-base_state(p::QEDbase.Fermion,d::QEDbase.Incoming,mom,spin) = BiSpinor(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.AntiFermion,d::QEDbase.Incoming,mom,spin) = AdjointBiSpinor(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.Fermion,d::QEDbase.Outgoing,mom,spin) = AdjointBiSpinor(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.AntiFermion,d::QEDbase.Outgoing,mom,spin) = BiSpinor(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.BosonLike,d::QEDbase.ParticleDirection,mom,spin) = SLorentzVector(QEDbase.base_state(p,d,mom,spin))
+function base_state(p::QEDbase.Fermion, d::QEDbase.Incoming, mom, spin)
+    return BiSpinor(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.AntiFermion, d::QEDbase.Incoming, mom, spin)
+    return AdjointBiSpinor(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.Fermion, d::QEDbase.Outgoing, mom, spin)
+    return AdjointBiSpinor(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.AntiFermion, d::QEDbase.Outgoing, mom, spin)
+    return BiSpinor(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.BosonLike, d::QEDbase.ParticleDirection, mom, spin)
+    return SLorentzVector(QEDbase.base_state(p, d, mom, spin))
+end
 
-base_state(p::QEDbase.Fermion,d::QEDbase.Incoming,mom,spin::QEDbase.AllSpin) = BiSpinor.(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.AntiFermion,d::QEDbase.Incoming,mom,spin::QEDbase.AllSpin) = AdjointBiSpinor.(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.Fermion,d::QEDbase.Outgoing,mom,spin::QEDbase.AllSpin) = AdjointBiSpinor.(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.AntiFermion,d::QEDbase.Outgoing,mom,spin::QEDbase.AllSpin) = BiSpinor.(QEDbase.base_state(p,d,mom,spin))
-base_state(p::QEDbase.BosonLike,d::QEDbase.ParticleDirection,mom,spin::QEDbase.AllPol) = SLorentzVector.(QEDbase.base_state(p,d,mom,spin))
+function base_state(p::QEDbase.Fermion, d::QEDbase.Incoming, mom, spin::QEDbase.AllSpin)
+    return BiSpinor.(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.AntiFermion, d::QEDbase.Incoming, mom, spin::QEDbase.AllSpin)
+    return AdjointBiSpinor.(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.Fermion, d::QEDbase.Outgoing, mom, spin::QEDbase.AllSpin)
+    return AdjointBiSpinor.(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(p::QEDbase.AntiFermion, d::QEDbase.Outgoing, mom, spin::QEDbase.AllSpin)
+    return BiSpinor.(QEDbase.base_state(p, d, mom, spin))
+end
+function base_state(
+    p::QEDbase.BosonLike, d::QEDbase.ParticleDirection, mom, spin::QEDbase.AllPol
+)
+    return SLorentzVector.(QEDbase.base_state(p, d, mom, spin))
+end

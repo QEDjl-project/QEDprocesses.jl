@@ -1,5 +1,5 @@
 using Random
-import QEDbase
+using QEDbase: QEDbase
 using QEDcore
 using QEDprocesses
 

@@ -1,6 +1,6 @@
 using Random
 using StaticArrays
-import QEDbase
+using QEDbase: QEDbase
 using QEDcore
 using QEDprocesses
 
@@ -32,7 +32,8 @@ end
         @test QEDbase.is_fermion(particle_stateful) == QEDbase.is_fermion(species)
         @test QEDbase.is_boson(particle_stateful) == QEDbase.is_boson(species)
         @test QEDbase.is_particle(particle_stateful) == QEDbase.is_particle(species)
-        @test QEDbase.is_anti_particle(particle_stateful) == QEDbase.is_anti_particle(species)
+        @test QEDbase.is_anti_particle(particle_stateful) ==
+            QEDbase.is_anti_particle(species)
         @test QEDbase.is_incoming(particle_stateful) == QEDbase.is_incoming(dir)
         @test QEDbase.is_outgoing(particle_stateful) == QEDbase.is_outgoing(dir)
         @test QEDbase.mass(particle_stateful) == QEDbase.mass(species)
@@ -74,7 +75,9 @@ end
     out_particles_invalid = (out_el, in_ph)
 
     model = TESTMODEL
-    process = TestImplementation.TestProcess((QEDbase.Electron(), QEDbase.Photon()), (QEDbase.Electron(), QEDbase.Photon()))
+    process = TestImplementation.TestProcess(
+        (QEDbase.Electron(), QEDbase.Photon()), (QEDbase.Electron(), QEDbase.Photon())
+    )
     phasespace_def = TESTPSDEF
 
     psp = PhaseSpacePoint(

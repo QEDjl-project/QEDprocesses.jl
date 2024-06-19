@@ -27,16 +27,20 @@ end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
     return @inbounds isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 1)), QEDbase.mass(incoming_particles(psp.proc)[1])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 1)),
+            QEDbase.mass(incoming_particles(psp.proc)[1])^2,
         ) &&
         isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 2)), QEDbase.mass(incoming_particles(psp.proc)[2])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 2)),
+            QEDbase.mass(incoming_particles(psp.proc)[2])^2,
         ) &&
         isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 1)), QEDbase.mass(outgoing_particles(psp.proc)[1])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 1)),
+            QEDbase.mass(outgoing_particles(psp.proc)[1])^2,
         ) &&
         isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 2)), QEDbase.mass(outgoing_particles(psp.proc)[2])^2
+            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 2)),
+            QEDbase.mass(outgoing_particles(psp.proc)[2])^2,
         )
 end
 
@@ -70,12 +74,20 @@ end
     out_electron_mom = out_ps[1]
     out_photon_mom = out_ps[2]
 
-    in_electron_state = base_state(QEDbase.Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin)
-    in_photon_state = base_state(QEDbase.Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol)
+    in_electron_state = base_state(
+        QEDbase.Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin
+    )
+    in_photon_state = base_state(
+        QEDbase.Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol
+    )
 
-    out_electron_state = base_state(QEDbase.Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin)
+    out_electron_state = base_state(
+        QEDbase.Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin
+    )
 
-    out_photon_state = base_state(QEDbase.Photon(), QEDbase.Outgoing(), out_photon_mom, proc.out_pol)
+    out_photon_state = base_state(
+        QEDbase.Photon(), QEDbase.Outgoing(), out_photon_mom, proc.out_pol
+    )
     return _pert_compton_matrix_element(
         in_electron_mom,
         in_electron_state,

@@ -24,8 +24,12 @@ function Compton()
     return Compton(QEDbase.AllSpin(), QEDbase.AllPol(), QEDbase.AllSpin(), QEDbase.AllPol())
 end
 
-Compton(in_pol::QEDbase.AbstractPolarization) = Compton(QEDbase.AllSpin(), in_pol, QEDbase.AllSpin(), QEDbase.AllPol())
-function Compton(in_pol::QEDbase.AbstractPolarization, out_pol::QEDbase.AbstractPolarization)
+function Compton(in_pol::QEDbase.AbstractPolarization)
+    return Compton(QEDbase.AllSpin(), in_pol, QEDbase.AllSpin(), QEDbase.AllPol())
+end
+function Compton(
+    in_pol::QEDbase.AbstractPolarization, out_pol::QEDbase.AbstractPolarization
+)
     return Compton(QEDbase.AllSpin(), in_pol, QEDbase.AllSpin(), out_pol)
 end
 

@@ -44,7 +44,7 @@ export PerturbativeQED
 # specific scattering processes
 export Compton, omega_prime
 
-import QEDbase
+using QEDbase: QEDbase
 using QEDcore
 using StaticArrays
 using QuadGK
