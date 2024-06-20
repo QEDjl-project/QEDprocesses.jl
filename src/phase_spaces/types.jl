@@ -37,13 +37,13 @@ Representation of a particle with a state. It has four fields:
 Overloads for `QEDbase.is_fermion`, `QEDbase.is_boson`, `QEDbase.is_particle`, `QEDbase.is_anti_particle`, `QEDbase.is_incoming`, `QEDbase.is_outgoing`, `QEDbase.mass`, and `QEDbase.charge` are provided, delegating the call to the correct field and thus implementing the `QEDbase.AbstractParticle` interface.
 
 ```jldoctest
-julia> using QEDbase; using QEDprocesses
+julia> import QEDbase; using QEDcore; using QEDprocesses
 
-julia> ParticleStateful(Incoming(), Electron(), SFourMomentum(1, 0, 0, 0))
+julia> ParticleStateful(QEDbase.Incoming(), Electron(), SFourMomentum(1, 0, 0, 0))
 ParticleStateful: incoming electron
     momentum: [1.0, 0.0, 0.0, 0.0]
 
-julia> ParticleStateful(Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
+julia> ParticleStateful(QEDbase.Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
 ParticleStateful: outgoing photon
     momentum: [1.0, 0.0, 0.0, 0.0]
 ```
@@ -83,12 +83,12 @@ julia> PhaseSpacePoint(
             PerturbativeQED(), 
             PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()), 
             (
-                ParticleStateful(QEDbase.Incoming(), QEDbase.Electron(), SFourMomentum(1, 0, 0, 0)), 
-                ParticleStateful(QEDbase.Incoming(), QEDbase.Photon(), SFourMomentum(1, 0, 0, 0))
+                ParticleStateful(QEDbase.Incoming(), Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(QEDbase.Incoming(), Photon(), SFourMomentum(1, 0, 0, 0))
             ), 
             (
-                ParticleStateful(QEDbase.Outgoing(), QEDbase.Electron(), SFourMomentum(1, 0, 0, 0)), 
-                ParticleStateful(QEDbase.Outgoing(), QEDbase.Photon(), SFourMomentum(1, 0, 0, 0))
+                ParticleStateful(QEDbase.Outgoing(), Electron(), SFourMomentum(1, 0, 0, 0)), 
+                ParticleStateful(QEDbase.Outgoing(), Photon(), SFourMomentum(1, 0, 0, 0))
             )
         )
 PhaseSpacePoint:
