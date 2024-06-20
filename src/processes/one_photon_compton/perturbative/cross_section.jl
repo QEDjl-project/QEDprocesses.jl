@@ -75,18 +75,16 @@ end
     out_photon_mom = out_ps[2]
 
     in_electron_state = base_state(
-        QEDbase.Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin
+        Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin
     )
-    in_photon_state = base_state(
-        QEDbase.Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol
-    )
+    in_photon_state = base_state(Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol)
 
     out_electron_state = base_state(
-        QEDbase.Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin
+        Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin
     )
 
     out_photon_state = base_state(
-        QEDbase.Photon(), QEDbase.Outgoing(), out_photon_mom, proc.out_pol
+        Photon(), QEDbase.Outgoing(), out_photon_mom, proc.out_pol
     )
     return _pert_compton_matrix_element(
         in_electron_mom,
@@ -151,8 +149,8 @@ function _pert_compton_matrix_element_single(
     in_ph_slashed = slashed(in_photon_state)
     out_ph_slashed = slashed(out_photon_state)
 
-    prop1 = _fermion_propagator(in_photon_mom + in_electron_mom, mass(QEDbase.Electron()))
-    prop2 = _fermion_propagator(in_electron_mom - out_photon_mom, mass(QEDbase.Electron()))
+    prop1 = _fermion_propagator(in_photon_mom + in_electron_mom, mass(Electron()))
+    prop2 = _fermion_propagator(in_electron_mom - out_photon_mom, mass(Electron()))
 
     # TODO: fermion propagator is not yet in QEDbase
     diagram_1 =
@@ -179,5 +177,5 @@ function _pert_compton_ps_fac(
     # TODO
     omega = QEDbase.getE(in_photon_mom)
     omega_prime = QEDbase.getE(out_photon_mom)
-    return omega_prime^2 / (16 * pi^2 * omega * mass(QEDbase.Electron()))
+    return omega_prime^2 / (16 * pi^2 * omega * mass(Electron()))
 end

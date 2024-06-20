@@ -1,3 +1,7 @@
+
+# TODO: remove after refac
+__precompile__(false)
+
 module QEDprocesses
 
 # constants
@@ -48,8 +52,6 @@ using QEDbase: QEDbase
 using QEDcore
 using StaticArrays
 using QuadGK
-
-include("restruct_patch.jl")
 
 include("constants.jl")
 include("utils.jl")

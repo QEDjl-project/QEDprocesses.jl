@@ -21,7 +21,7 @@ end
 
 @testset "Stateful Particle" begin
     DIRECTIONS = [QEDbase.Incoming(), QEDbase.Outgoing()]
-    SPECIES = [QEDbase.Electron(), QEDbase.Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
+    SPECIES = [Electron(), Positron()] #=, Muon(), AntiMuon(), Tauon(), AntiTauon()=#
 
     for (species, dir) in Iterators.product(SPECIES, DIRECTIONS)
         mom = rand(RNG, SFourMomentum)
@@ -63,10 +63,10 @@ end
     out_el_mom = rand(RNG, SFourMomentum)
     out_ph_mom = rand(RNG, SFourMomentum)
 
-    in_el = ParticleStateful(QEDbase.Incoming(), QEDbase.Electron(), in_el_mom)
-    in_ph = ParticleStateful(QEDbase.Incoming(), QEDbase.Photon(), in_ph_mom)
-    out_el = ParticleStateful(QEDbase.Outgoing(), QEDbase.Electron(), out_el_mom)
-    out_ph = ParticleStateful(QEDbase.Outgoing(), QEDbase.Photon(), out_ph_mom)
+    in_el = ParticleStateful(QEDbase.Incoming(), Electron(), in_el_mom)
+    in_ph = ParticleStateful(QEDbase.Incoming(), Photon(), in_ph_mom)
+    out_el = ParticleStateful(QEDbase.Outgoing(), Electron(), out_el_mom)
+    out_ph = ParticleStateful(QEDbase.Outgoing(), Photon(), out_ph_mom)
 
     in_particles_valid = (in_el, in_ph)
     in_particles_invalid = (in_el, out_ph)
@@ -75,9 +75,7 @@ end
     out_particles_invalid = (out_el, in_ph)
 
     model = TESTMODEL
-    process = TestImplementation.TestProcess(
-        (QEDbase.Electron(), QEDbase.Photon()), (QEDbase.Electron(), QEDbase.Photon())
-    )
+    process = TestImplementation.TestProcess((Electron(), Photon()), (Electron(), Photon()))
     phasespace_def = TESTPSDEF
 
     psp = PhaseSpacePoint(

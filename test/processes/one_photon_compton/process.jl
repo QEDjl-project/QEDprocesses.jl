@@ -12,13 +12,13 @@ BUF = IOBuffer()
 @testset "constructor" begin
     @testset "default" begin
         proc = Compton()
-        @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Incoming()) ==
+        @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Incoming()) ==
             QEDbase.AllPol()
-        @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Incoming()) ==
+        @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Incoming()) ==
             QEDbase.AllSpin()
-        @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Outgoing()) ==
+        @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Outgoing()) ==
             QEDbase.AllPol()
-        @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Outgoing()) ==
+        @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Outgoing()) ==
             QEDbase.AllSpin()
 
         print(BUF, proc)
@@ -32,13 +32,12 @@ BUF = IOBuffer()
     @testset "in_pol" begin
         @testset "$pol" for pol in POLS
             proc = Compton(pol)
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Incoming()) ==
+            @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Incoming()) ==
                 QEDbase.AllSpin()
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Incoming()) ==
-                pol
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Outgoing()) ==
+            @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Incoming()) == pol
+            @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Outgoing()) ==
                 QEDbase.AllSpin()
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Outgoing()) ==
+            @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Outgoing()) ==
                 QEDbase.AllPol()
 
             print(BUF, proc)
@@ -53,14 +52,12 @@ BUF = IOBuffer()
     @testset "in_pol+out_pol" begin
         @testset "$in_pol, $out_pol" for (in_pol, out_pol) in POL_COMBINATIONS
             proc = Compton(in_pol, out_pol)
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Incoming()) ==
+            @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Incoming()) ==
                 QEDbase.AllSpin()
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Incoming()) ==
-                in_pol
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Outgoing()) ==
+            @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Incoming()) == in_pol
+            @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Outgoing()) ==
                 QEDbase.AllSpin()
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Outgoing()) ==
-                out_pol
+            @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Outgoing()) == out_pol
 
             print(BUF, proc)
             @test String(take!(BUF)) == "one-photon Compton scattering"
@@ -75,14 +72,11 @@ BUF = IOBuffer()
             in_spin, in_pol, out_spin, out_pol
         ) in POL_AND_SPIN_COMBINATIONS
             proc = Compton(in_spin, in_pol, out_spin, out_pol)
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Incoming()) ==
-                in_spin
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Incoming()) ==
-                in_pol
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Electron(), QEDbase.Outgoing()) ==
+            @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Incoming()) == in_spin
+            @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Incoming()) == in_pol
+            @test QEDprocesses._spin_or_pol(proc, Electron(), QEDbase.Outgoing()) ==
                 out_spin
-            @test QEDprocesses._spin_or_pol(proc, QEDbase.Photon(), QEDbase.Outgoing()) ==
-                out_pol
+            @test QEDprocesses._spin_or_pol(proc, Photon(), QEDbase.Outgoing()) == out_pol
 
             print(BUF, proc)
             @test String(take!(BUF)) == "one-photon Compton scattering"
@@ -95,8 +89,8 @@ BUF = IOBuffer()
 end
 @testset "particle content" begin
     proc = Compton()
-    @test incoming_particles(proc) == (QEDbase.Electron(), QEDbase.Photon())
-    @test outgoing_particles(proc) == (QEDbase.Electron(), QEDbase.Photon())
+    @test incoming_particles(proc) == (Electron(), Photon())
+    @test outgoing_particles(proc) == (Electron(), Photon())
     @test number_incoming_particles(proc) == 2
     @test number_outgoing_particles(proc) == 2
 end

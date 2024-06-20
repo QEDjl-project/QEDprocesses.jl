@@ -5,9 +5,9 @@
 #############
 
 # fix: https://github.com/QEDjl-project/QEDbase.jl/pull/61
-Base.show(io::IO, ::QEDbase.Electron) = print(io, "electron")
-Base.show(io::IO, ::QEDbase.Positron) = print(io, "positron")
-Base.show(io::IO, ::QEDbase.Photon) = print(io, "photon")
+Base.show(io::IO, ::Electron) = print(io, "electron")
+Base.show(io::IO, ::Positron) = print(io, "positron")
+Base.show(io::IO, ::Photon) = print(io, "photon")
 Base.show(io::IO, ::QEDbase.Incoming) = print(io, "incoming")
 Base.show(io::IO, ::QEDbase.Outgoing) = print(io, "outgoing")
 Base.show(io::IO, ::QEDbase.PolX) = print(io, "x-polarized")
