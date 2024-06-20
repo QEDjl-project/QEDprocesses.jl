@@ -1,3 +1,7 @@
+
+# TODO: remove after refac
+__precompile__(false)
+
 module QEDprocesses
 
 # constants
