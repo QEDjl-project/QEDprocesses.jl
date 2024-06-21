@@ -3,6 +3,9 @@
 # Implementation of the cross section interface
 #####
 
+import QEDbase:
+    _incident_flux, _matrix_element, _averaging_norm, _is_in_phasespace, _phase_space_factor
+
 function _incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
     return momentum(in_psp, QEDbase.Incoming(), 1) * momentum(in_psp, QEDbase.Incoming(), 2)
 end

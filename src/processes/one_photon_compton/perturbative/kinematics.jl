@@ -1,3 +1,5 @@
+import QEDbase: _generate_incoming_momenta, _generate_outgoing_momenta, _generate_momenta
+
 @inline function _pert_omega_prime(omega, cth; mass=1.0)
     return omega / (1 + omega / mass * (1 - cth))
 end

@@ -1,3 +1,4 @@
+import QEDbase: _total_probability
 
 function _total_probability(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
     omega = QEDbase.getE(momentum(in_psp[QEDbase.Incoming(), 2]))
