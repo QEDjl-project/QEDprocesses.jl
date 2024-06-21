@@ -25,14 +25,6 @@ using QuadGK
 include("constants.jl")
 include("utils.jl")
 
-include("phase_spaces/types.jl")
-include("phase_spaces/access.jl")
-include("phase_spaces/create.jl")
-include("phase_spaces/print.jl")
-include("phase_spaces/utility.jl")
-
-include("propagators.jl")
-
 include("cross_section/diff_probability.jl")
 include("cross_section/diff_cross_section.jl")
 include("cross_section/total_probability.jl")
