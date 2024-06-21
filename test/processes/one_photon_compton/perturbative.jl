@@ -139,7 +139,7 @@ end
 
                 IN_COORDS = (omega,)
                 groundtruth = klein_nishina_total_cross_section(IN_COORDS)
-                test_val = @inferred total_cross_section(
+                test_val = @inferred QEDprocesses.total_cross_section(
                     InPhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS)
                 )
                 @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
@@ -148,7 +148,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     OUT_COORDS = (cos_theta, phi)
 
-                    test_val = @inferred total_cross_section(
+                    test_val = @inferred QEDprocesses.total_cross_section(
                         PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS)
                     )
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
@@ -157,7 +157,7 @@ end
                         PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS),
                         QEDbase.Outgoing(),
                     )
-                    @test_throws MethodError total_cross_section(
+                    @test_throws MethodError QEDprocesses.total_cross_section(
                         OutPhaseSpacePoint(PROC, MODEL, PS_DEF, out_moms)
                     )
                 end
