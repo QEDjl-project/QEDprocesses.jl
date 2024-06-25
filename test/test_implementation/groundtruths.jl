@@ -1,5 +1,3 @@
-import QEDbase.AbstractFourMomentum
-
 """
     _groundtruth_incident_flux(in_ps)
 
@@ -59,8 +57,8 @@ end
 Test implementation of the phase space factor. Return the inverse of the product of the energies of all external particles.
 """
 function _groundtruth_phase_space_factor(in_ps, out_ps)
-    en_in = QEDbase.getE.(in_ps)
-    en_out = QEDbase.getE.(out_ps)
+    en_in = getE.(in_ps)
+    en_out = getE.(out_ps)
     return 1 / (prod(en_in) * prod(en_out))
 end
 

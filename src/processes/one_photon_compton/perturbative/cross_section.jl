@@ -7,12 +7,12 @@ import QEDbase:
     _incident_flux, _matrix_element, _averaging_norm, _is_in_phasespace, _phase_space_factor
 
 function _incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
-    return momentum(in_psp, QEDbase.Incoming(), 1) * momentum(in_psp, QEDbase.Incoming(), 2)
+    return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
 function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momenta(psp, QEDbase.Incoming())
-    out_ps = momenta(psp, QEDbase.Outgoing())
+    in_ps = momenta(psp, Incoming())
+    out_ps = momenta(psp, Outgoing())
     return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
 end
 
@@ -30,28 +30,24 @@ end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
     return @inbounds isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 1)),
-            QEDbase.mass(incoming_particles(psp.proc)[1])^2,
+            getMass2(momentum(psp, Incoming(), 1)), mass(incoming_particles(psp.proc)[1])^2
         ) &&
         isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Incoming(), 2)),
-            QEDbase.mass(incoming_particles(psp.proc)[2])^2,
+            getMass2(momentum(psp, Incoming(), 2)), mass(incoming_particles(psp.proc)[2])^2
         ) &&
         isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 1)),
-            QEDbase.mass(outgoing_particles(psp.proc)[1])^2,
+            getMass2(momentum(psp, Outgoing(), 1)), mass(outgoing_particles(psp.proc)[1])^2
         ) &&
         isapprox(
-            QEDbase.getMass2(momentum(psp, QEDbase.Outgoing(), 2)),
-            QEDbase.mass(outgoing_particles(psp.proc)[2])^2,
+            getMass2(momentum(psp, Outgoing(), 2)), mass(outgoing_particles(psp.proc)[2])^2
         )
 end
 
 @inline function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,<:PerturbativeQED})
     @inbounds if (
         !isapprox(
-            momentum(psp, QEDbase.Incoming(), 1) + momentum(psp, QEDbase.Incoming(), 2),
-            momentum(psp, QEDbase.Outgoing(), 1) + momentum(psp, QEDbase.Outgoing(), 2),
+            momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
+            momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
         )
     )
         return false
@@ -60,8 +56,8 @@ end
 end
 
 @inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    in_ps = momenta(psp, QEDbase.Incoming())
-    out_ps = momenta(psp, QEDbase.Outgoing())
+    in_ps = momenta(psp, Incoming())
+    out_ps = momenta(psp, Outgoing())
     return _pert_compton_ps_fac(psp.ps_def, in_ps[2], out_ps[2])
 end
 
@@ -71,24 +67,18 @@ end
 
 @inline function _pert_compton_matrix_element(
     proc::Compton, in_ps::NTuple{N,T}, out_ps::NTuple{M,T}
-) where {N,M,T<:QEDbase.AbstractFourMomentum}
+) where {N,M,T<:AbstractFourMomentum}
     in_electron_mom = in_ps[1]
     in_photon_mom = in_ps[2]
     out_electron_mom = out_ps[1]
     out_photon_mom = out_ps[2]
 
-    in_electron_state = base_state(
-        Electron(), QEDbase.Incoming(), in_electron_mom, proc.in_spin
-    )
-    in_photon_state = base_state(Photon(), QEDbase.Incoming(), in_photon_mom, proc.in_pol)
+    in_electron_state = base_state(Electron(), Incoming(), in_electron_mom, proc.in_spin)
+    in_photon_state = base_state(Photon(), Incoming(), in_photon_mom, proc.in_pol)
 
-    out_electron_state = base_state(
-        Electron(), QEDbase.Outgoing(), out_electron_mom, proc.out_spin
-    )
+    out_electron_state = base_state(Electron(), Outgoing(), out_electron_mom, proc.out_spin)
 
-    out_photon_state = base_state(
-        Photon(), QEDbase.Outgoing(), out_photon_mom, proc.out_pol
-    )
+    out_photon_state = base_state(Photon(), Outgoing(), out_photon_mom, proc.out_pol)
     return _pert_compton_matrix_element(
         in_electron_mom,
         in_electron_state,
@@ -110,12 +100,12 @@ function _pert_compton_matrix_element(
     out_electron_state,
     out_photon_mom::T,
     out_photon_state,
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractFourMomentum}
     base_states_comb = Iterators.product(
-        QEDbase._as_svec(in_electron_state),
-        QEDbase._as_svec(in_photon_state),
-        QEDbase._as_svec(out_electron_state),
-        QEDbase._as_svec(out_photon_state),
+        _as_svec(in_electron_state),
+        _as_svec(in_photon_state),
+        _as_svec(out_electron_state),
+        _as_svec(out_photon_state),
     )
 
     matrix_elements = Vector{ComplexF64}()
@@ -148,7 +138,7 @@ function _pert_compton_matrix_element_single(
     out_electron_state::AdjointBiSpinor,
     out_photon_mom::T,
     out_photon_state::SLorentzVector,
-) where {T<:QEDbase.AbstractFourMomentum}
+) where {T<:AbstractFourMomentum}
     in_ph_slashed = slashed(in_photon_state)
     out_ph_slashed = slashed(out_photon_state)
 
@@ -178,7 +168,7 @@ function _pert_compton_ps_fac(
     in_ps_def::PhasespaceDefinition{inCS,ElectronRestFrame}, in_photon_mom, out_photon_mom
 ) where {inCS}
     # TODO
-    omega = QEDbase.getE(in_photon_mom)
-    omega_prime = QEDbase.getE(out_photon_mom)
+    omega = getE(in_photon_mom)
+    omega_prime = getE(out_photon_mom)
     return omega_prime^2 / (16 * pi^2 * omega * mass(Electron()))
 end

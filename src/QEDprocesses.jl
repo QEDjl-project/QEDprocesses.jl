@@ -1,7 +1,3 @@
-
-# TODO: remove after refac
-__precompile__(false)
-
 module QEDprocesses
 
 # constants
@@ -17,7 +13,15 @@ export PerturbativeQED
 # specific scattering processes
 export Compton, omega_prime
 
-using QEDbase: QEDbase
+# probabilities
+export differential_probability, unsafe_differential_probability
+export total_probability
+
+# differential cross sections
+export differential_cross_section, unsafe_differential_cross_section
+export total_cross_section
+
+using QEDbase
 using QEDcore
 using StaticArrays
 using QuadGK
