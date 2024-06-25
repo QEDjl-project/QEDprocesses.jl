@@ -3,14 +3,11 @@
 # Implementation of the cross section interface
 #####
 
-import QEDbase:
-    _incident_flux, _matrix_element, _averaging_norm, _is_in_phasespace, _phase_space_factor
-
-function _incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
+function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
     return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
-function _matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
     return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
@@ -23,8 +20,8 @@ end
 
     We average over the initial spins and pols, and sum over final.
 """
-function _averaging_norm(proc::Compton)
-    normalizations = number_of_spin_pol.(_in_spin_and_pol(proc))
+function QEDbase._averaging_norm(proc::Compton)
+    normalizations = multiplicity.(_in_spin_and_pol(proc))
     return inv(prod(normalizations))
 end
 
@@ -43,7 +40,9 @@ end
         )
 end
 
-@inline function _is_in_phasespace(psp::PhaseSpacePoint{<:Compton,<:PerturbativeQED})
+@inline function QEDbase._is_in_phasespace(
+    psp::PhaseSpacePoint{<:Compton,<:PerturbativeQED}
+)
     @inbounds if (
         !isapprox(
             momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
@@ -55,7 +54,9 @@ end
     return _all_onshell(psp)
 end
 
-@inline function _phase_space_factor(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+@inline function QEDbase._phase_space_factor(
+    psp::PhaseSpacePoint{<:Compton,PerturbativeQED}
+)
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
     return _pert_compton_ps_fac(psp.ps_def, in_ps[2], out_ps[2])
@@ -102,10 +103,10 @@ function _pert_compton_matrix_element(
     out_photon_state,
 ) where {T<:AbstractFourMomentum}
     base_states_comb = Iterators.product(
-        _as_svec(in_electron_state),
-        _as_svec(in_photon_state),
-        _as_svec(out_electron_state),
-        _as_svec(out_photon_state),
+        QEDbase._as_svec(in_electron_state),
+        QEDbase._as_svec(in_photon_state),
+        QEDbase._as_svec(out_electron_state),
+        QEDbase._as_svec(out_photon_state),
     )
 
     matrix_elements = Vector{ComplexF64}()
@@ -142,8 +143,8 @@ function _pert_compton_matrix_element_single(
     in_ph_slashed = slashed(in_photon_state)
     out_ph_slashed = slashed(out_photon_state)
 
-    prop1 = _fermion_propagator(in_photon_mom + in_electron_mom, mass(Electron()))
-    prop2 = _fermion_propagator(in_electron_mom - out_photon_mom, mass(Electron()))
+    prop1 = QEDcore._fermion_propagator(in_photon_mom + in_electron_mom, mass(Electron()))
+    prop2 = QEDcore._fermion_propagator(in_electron_mom - out_photon_mom, mass(Electron()))
 
     # TODO: fermion propagator is not yet in QEDbase
     diagram_1 =

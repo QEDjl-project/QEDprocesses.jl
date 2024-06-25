@@ -1,5 +1,5 @@
 
-using QEDbase: QEDbase
+using QEDbase
 using QEDcore
 using QEDprocesses
 using Random
@@ -35,7 +35,7 @@ end
                                        Iterators.product(OMEGAS, COS_THETAS, PHIS)
             IN_COORDS = (om,)
             OUT_COORDS = (cth, phi)
-            IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+            IN_PS, OUT_PS = QEDbase._generate_momenta(
                 PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
             )
             in_mom_square = getMass2.(IN_PS)
@@ -60,7 +60,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -82,7 +82,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -104,7 +104,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 

@@ -1,6 +1,6 @@
 using QEDprocesses
 using Random
-using QEDbase: QEDbase
+using QEDbase
 using QEDcore
 
 POLS = [PolX(), PolY(), AllPol()]

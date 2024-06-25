@@ -40,7 +40,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
                 TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
             )
 
-            diffCS_on_psp = unsafe_differential_cross_section(PS_POINT)
+            diffCS_on_psp = QEDprocesses.unsafe_differential_cross_section(PS_POINT)
             groundtruth = TestImplementation._groundtruth_unsafe_diffCS(
                 TESTPROC, p_in_phys, p_out_phys
             )
@@ -52,7 +52,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             for (P_IN, P_OUT) in p_combs
                 PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
 
-                diffCS_on_psp = differential_cross_section(PS_POINT)
+                diffCS_on_psp = QEDprocesses.differential_cross_section(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_safe_diffCS(
                     TESTPROC, P_IN, P_OUT
                 )
@@ -85,7 +85,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             PS_POINT = PhaseSpacePoint(
                 TESTPROC, TESTMODEL, TESTPSDEF, p_in_phys, p_out_phys
             )
-            prop_on_psp = unsafe_differential_probability(PS_POINT)
+            prop_on_psp = QEDprocesses.unsafe_differential_probability(PS_POINT)
             groundtruth = TestImplementation._groundtruth_unsafe_probability(
                 TESTPROC, p_in_phys, p_out_phys
             )
@@ -95,7 +95,7 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
         @testset "safe compute" begin
             for (P_IN, P_OUT) in p_combs
                 PS_POINT = PhaseSpacePoint(TESTPROC, TESTMODEL, TESTPSDEF, P_IN, P_OUT)
-                prop_on_psp = differential_probability(PS_POINT)
+                prop_on_psp = QEDprocesses.differential_probability(PS_POINT)
                 groundtruth = TestImplementation._groundtruth_safe_probability(
                     TESTPROC, P_IN, P_OUT
                 )
@@ -114,8 +114,8 @@ TESTPSDEF = TestImplementation.TestPhasespaceDef()
             )
 
             groundtruth = TestImplementation._groundtruth_total_probability(p_in_phys)
-            totCS_on_moms = total_probability(IN_PS_POINT)
-            totCS_on_coords = total_probability(IN_PS_POINT_COORDS)
+            totCS_on_moms = QEDprocesses.total_probability(IN_PS_POINT)
+            totCS_on_coords = QEDprocesses.total_probability(IN_PS_POINT_COORDS)
 
             @test isapprox(totCS_on_moms, groundtruth, atol=ATOL, rtol=RTOL)
             @test isapprox(totCS_on_coords, groundtruth, atol=ATOL, rtol=RTOL)
