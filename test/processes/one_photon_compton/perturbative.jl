@@ -1,5 +1,5 @@
 
-using QEDbase: QEDbase
+using QEDbase
 using QEDcore
 using QEDprocesses
 using Random
@@ -35,13 +35,13 @@ end
                                        Iterators.product(OMEGAS, COS_THETAS, PHIS)
             IN_COORDS = (om,)
             OUT_COORDS = (cth, phi)
-            IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+            IN_PS, OUT_PS = QEDbase._generate_momenta(
                 PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
             )
-            in_mom_square = QEDbase.getMass2.(IN_PS)
-            out_mom_square = QEDbase.getMass2.(OUT_PS)
-            in_masses = QEDbase.mass.(incoming_particles(PROC)) .^ 2
-            out_masses = QEDbase.mass.(outgoing_particles(PROC)) .^ 2
+            in_mom_square = getMass2.(IN_PS)
+            out_mom_square = getMass2.(OUT_PS)
+            in_masses = mass.(incoming_particles(PROC)) .^ 2
+            out_masses = mass.(outgoing_particles(PROC)) .^ 2
 
             # we need a larger ATOL than eps() here because the error is accumulated over several additions
             @test all(isapprox.(in_mom_square, in_masses, atol=4 * ATOL, rtol=RTOL))
@@ -60,7 +60,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -76,13 +76,13 @@ end
             end
 
             @testset "x-pol and spin summed" begin
-                PROC = Compton(QEDbase.PolX())
+                PROC = Compton(PolX())
 
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -98,13 +98,13 @@ end
             end
 
             @testset "y-pol and spin summed" begin
-                PROC = Compton(QEDbase.PolY())
+                PROC = Compton(PolY())
 
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -155,7 +155,7 @@ end
 
                     out_moms = momenta(
                         PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS),
-                        QEDbase.Outgoing(),
+                        Outgoing(),
                     )
                     @test_throws MethodError QEDprocesses.total_cross_section(
                         OutPhaseSpacePoint(PROC, MODEL, PS_DEF, out_moms)

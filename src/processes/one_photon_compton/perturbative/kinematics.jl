@@ -9,10 +9,10 @@ function generate_momenta(
     in_ps::NTuple{N,T},
     out_ps::NTuple{M,T},
 ) where {N,M,T<:Real}
-    return _generate_momenta(proc, model, in_ps_def, in_ps, out_ps)
+    return QEDbase._generate_momenta(proc, model, in_ps_def, in_ps, out_ps)
 end
 
-function _generate_incoming_momenta(
+function QEDbase._generate_incoming_momenta(
     proc::Compton,
     model::PerturbativeQED,
     in_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},
@@ -26,7 +26,7 @@ function _generate_incoming_momenta(
     return P, K
 end
 
-function _generate_momenta(
+function QEDbase._generate_momenta(
     proc::Compton,
     model::PerturbativeQED,
     in_ps_def::PhasespaceDefinition{SphericalCoordinateSystem,ElectronRestFrame},

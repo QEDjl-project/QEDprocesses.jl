@@ -11,7 +11,7 @@
 Return the differential cross section evaluated on a phase space point without checking if the given phase space is physical.
 """
 function unsafe_differential_cross_section(phase_space_point::PhaseSpacePoint)
-    I = 1 / (4 * _incident_flux(phase_space_point))
+    I = 1 / (4 * QEDbase._incident_flux(phase_space_point))
 
     return I * unsafe_differential_probability(phase_space_point)
 end
@@ -22,8 +22,8 @@ end
 If the given phase spaces are physical, return differential cross section evaluated on a phase space point. Zero otherwise.
 """
 function differential_cross_section(phase_space_point::PhaseSpacePoint)
-    if !_is_in_phasespace(phase_space_point)
-        return zero(eltype(_momentum_type(phase_space_point)))
+    if !QEDbase._is_in_phasespace(phase_space_point)
+        return zero(eltype(QEDcore._momentum_type(phase_space_point)))
     end
 
     return unsafe_differential_cross_section(phase_space_point)
