@@ -13,14 +13,6 @@ export PerturbativeQED
 # specific scattering processes
 export Compton, omega_prime
 
-# probabilities
-export differential_probability, unsafe_differential_probability
-export total_probability
-
-# differential cross sections
-export differential_cross_section, unsafe_differential_cross_section
-export total_cross_section
-
 using QEDbase
 using QEDcore
 using StaticArrays
@@ -28,11 +20,6 @@ using QuadGK
 
 include("constants.jl")
 include("utils.jl")
-
-include("cross_section/diff_probability.jl")
-include("cross_section/diff_cross_section.jl")
-include("cross_section/total_probability.jl")
-include("cross_section/total_cross_section.jl")
 
 include("models/models.jl")
 
