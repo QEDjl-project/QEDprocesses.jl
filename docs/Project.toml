@@ -1,3 +1,5 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
+QEDcore = "35dc0263-cb5f-4c33-a114-1d7f54ab753e"
 QEDprocesses = "46de9c38-1bb3-4547-a1ec-da24d767fdad"
