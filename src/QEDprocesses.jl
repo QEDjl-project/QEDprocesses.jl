@@ -1,23 +1,33 @@
 module QEDprocesses
 
-# Abstract model interface
-export AbstractModelDefinition, fundamental_interaction_type
+# constants
+export ALPHA,
+    ALPHA_SQUARE, ELEMENTARY_CHARGE, ELEMENTARY_CHARGE_SQUARE, ELECTRONMASS, ONE_OVER_FOURPI
 
-# Abstract process interface
-export AbstractProcessDefinition, incoming_particles, outgoing_particles
-export in_phasespace_dimension, out_phasespace_dimension
-export number_incoming_particles, number_outgoing_particles
-export differential_cross_section, total_cross_section
+# propagator
+export propagator
 
-# Abstract setup interface
-export AbstractComputationSetup, InvalidInputError, compute
-export AbstractProcessSetup, scattering_process, physical_model
+# specific compute models
+export PerturbativeQED
 
-using DocStringExtensions
+# specific scattering processes
+export Compton, omega_prime
+
 using QEDbase
+using QEDcore
+using StaticArrays
+using QuadGK
 
+include("constants.jl")
 include("utils.jl")
-include("interfaces/model_interface.jl")
-include("interfaces/process_interface.jl")
-include("interfaces/setup_interface.jl")
+
+include("models/models.jl")
+
+# one photon compton
+include("processes/one_photon_compton/process.jl")
+include("processes/one_photon_compton/perturbative/kinematics.jl")
+include("processes/one_photon_compton/perturbative/cross_section.jl")
+include("processes/one_photon_compton/perturbative/total_probability.jl")
+
+include("patch_QEDbase.jl")
 end
