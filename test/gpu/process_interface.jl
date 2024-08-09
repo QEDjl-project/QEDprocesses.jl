@@ -1,11 +1,13 @@
 using QEDprocesses
 using QEDbase
+using QEDcore
+
 using AMDGPU
 using CUDA
 using Random
 using SafeTestsets
 
-include("../test_implementation/TestImplementation.jl")
+include("../test_implementation/random_coordinates.jl")
 
 GPU_VECTOR_TYPES = Vector{Type}()
 if AMDGPU.functional()
@@ -18,7 +20,7 @@ if CUDA.functional()
 end
 
 if isempty(GPU_VECTOR_TYPES)
-    println("No functional GPUs found!")
+    @warn "No functional GPUs found for testing!"
     return nothing
 end
 
@@ -43,10 +45,7 @@ RNG = Random.MersenneTwister(573)
 
         psps = [
             PhaseSpacePoint(
-                proc,
-                model,
-                ps_def,
-                TestImplementation._rand_coordinates(RNG, proc, model, ps_def)...,
+                proc, model, ps_def, _rand_coordinates(RNG, proc, model, ps_def)...
             ) for _ in 1:N
         ]
         procs = [proc for _ in 1:N]
@@ -69,8 +68,8 @@ RNG = Random.MersenneTwister(573)
         @testset "Private Process Functions" begin
             @test all(
                 isapprox.(
-                    Vector(QEDprocesses._averaging_norm.(gpuprocs)),
-                    QEDprocesses._averaging_norm.(procs),
+                    Vector(QEDbase._averaging_norm.(gpuprocs)),
+                    QEDbase._averaging_norm.(procs),
                 ),
             )
         end
@@ -92,34 +91,33 @@ RNG = Random.MersenneTwister(573)
             @test Vector(number_particles.(gpuprocs, Outgoing())) ==
                 number_particles.(procs, Outgoing())
 
-            @test Vector(in_phase_space_dimension.(gpuprocs, model)) ==
-                in_phase_space_dimension.(procs, model)
-            @test Vector(out_phase_space_dimension.(gpuprocs, model)) ==
-                out_phase_space_dimension.(procs, model)
+            @test Vector(QEDbase.in_phase_space_dimension.(gpuprocs, model)) ==
+                QEDbase.in_phase_space_dimension.(procs, model)
+            @test Vector(QEDbase.out_phase_space_dimension.(gpuprocs, model)) ==
+                QEDbase.out_phase_space_dimension.(procs, model)
         end
 
         @testset "Private PhaseSpacePoint Interface" begin
             @test all(
                 isapprox.(
-                    Vector(QEDprocesses._incident_flux.(gpupsps)),
-                    QEDprocesses._incident_flux.(psps),
+                    Vector(QEDbase._incident_flux.(gpupsps)), QEDbase._incident_flux.(psps)
                 ),
             )
 
             @test all(
-                TestImplementation.tuple_isapprox.(
-                    Vector(QEDprocesses._matrix_element.(gpupsps)),
-                    QEDprocesses._matrix_element.(psps),
+                tuple_isapprox.(
+                    Vector(QEDbase._matrix_element.(gpupsps)),
+                    QEDbase._matrix_element.(psps),
                 ),
             )
 
-            @test Vector(QEDprocesses._is_in_phasespace.(gpupsps)) ==
-                QEDprocesses._is_in_phasespace.(psps)
+            @test Vector(QEDbase._is_in_phasespace.(gpupsps)) ==
+                QEDbase._is_in_phasespace.(psps)
 
             @test all(
                 isapprox.(
-                    Vector(QEDprocesses._phase_space_factor.(gpupsps)),
-                    QEDprocesses._phase_space_factor.(psps),
+                    Vector(QEDbase._phase_space_factor.(gpupsps)),
+                    QEDbase._phase_space_factor.(psps),
                 ),
             )
 
@@ -142,8 +140,8 @@ RNG = Random.MersenneTwister(573)
 
             @test all(
                 isapprox.(
-                    Vector(QEDprocesses._is_in_phasespace.(gpupsps)),
-                    QEDprocesses._is_in_phasespace.(psps),
+                    Vector(QEDbase._is_in_phasespace.(gpupsps)),
+                    QEDbase._is_in_phasespace.(psps),
                 ),
             )
 
