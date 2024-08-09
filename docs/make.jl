@@ -1,5 +1,14 @@
-using QEDprocesses
+using Pkg
+
+# targeting the correct source code
+# this asumes the make.jl script is located in QEDprocesses.jl/docs
+project_path = Base.Filesystem.joinpath(Base.Filesystem.dirname(Base.source_path()), "..")
+Pkg.develop(; path=project_path)
+# temporarily necessary because processes used to have a compat that is gone after the `develop` above
+Pkg.update()
+
 using Documenter
+using QEDprocesses
 
 DocMeta.setdocmeta!(QEDprocesses, :DocTestSetup, :(using QEDprocesses); recursive=true)
 

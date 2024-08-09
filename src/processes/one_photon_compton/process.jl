@@ -24,7 +24,9 @@ function Compton()
     return Compton(AllSpin(), AllPol(), AllSpin(), AllPol())
 end
 
-Compton(in_pol::AbstractPolarization) = Compton(AllSpin(), in_pol, AllSpin(), AllPol())
+function Compton(in_pol::AbstractPolarization)
+    return Compton(AllSpin(), in_pol, AllSpin(), AllPol())
+end
 function Compton(in_pol::AbstractPolarization, out_pol::AbstractPolarization)
     return Compton(AllSpin(), in_pol, AllSpin(), out_pol)
 end

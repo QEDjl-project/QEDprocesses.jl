@@ -1,5 +1,6 @@
 
 using QEDbase
+using QEDcore
 using QEDprocesses
 using Random
 using StaticArrays
@@ -34,7 +35,7 @@ end
                                        Iterators.product(OMEGAS, COS_THETAS, PHIS)
             IN_COORDS = (om,)
             OUT_COORDS = (cth, phi)
-            IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+            IN_PS, OUT_PS = QEDbase._generate_momenta(
                 PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
             )
             in_mom_square = getMass2.(IN_PS)
@@ -59,7 +60,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -81,7 +82,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -103,7 +104,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
-                    IN_PS, OUT_PS = QEDprocesses._generate_momenta(
+                    IN_PS, OUT_PS = QEDbase._generate_momenta(
                         PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS
                     )
 
@@ -138,7 +139,7 @@ end
 
                 IN_COORDS = (omega,)
                 groundtruth = klein_nishina_total_cross_section(IN_COORDS)
-                test_val = @inferred total_cross_section(
+                test_val = @inferred QEDprocesses.total_cross_section(
                     InPhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS)
                 )
                 @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
@@ -147,7 +148,7 @@ end
                                                Iterators.product(COS_THETAS, PHIS)
                     OUT_COORDS = (cos_theta, phi)
 
-                    test_val = @inferred total_cross_section(
+                    test_val = @inferred QEDprocesses.total_cross_section(
                         PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS)
                     )
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
@@ -156,7 +157,7 @@ end
                         PhaseSpacePoint(PROC, MODEL, PS_DEF, IN_COORDS, OUT_COORDS),
                         Outgoing(),
                     )
-                    @test_throws MethodError total_cross_section(
+                    @test_throws MethodError QEDprocesses.total_cross_section(
                         OutPhaseSpacePoint(PROC, MODEL, PS_DEF, out_moms)
                     )
                 end
