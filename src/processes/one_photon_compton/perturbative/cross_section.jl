@@ -21,8 +21,7 @@ end
     We average over the initial spins and pols, and sum over final.
 """
 function QEDbase._averaging_norm(proc::Compton)
-    normalizations = multiplicity.(_in_spin_and_pol(proc))
-    return inv(prod(normalizations))
+    return inv(incoming_multiplicity(proc))
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
