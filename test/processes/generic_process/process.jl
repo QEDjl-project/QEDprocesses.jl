@@ -61,42 +61,27 @@ BUF = IOBuffer()
     @testset "invalid types passed" begin
         struct INVALID_PARTICLE end
 
-        @test_throws "invalid input, provide a tuple of AbstractParticleTypes to construct a GenericQEDProcess" GenericQEDProcess(
-            (INVALID_PARTICLE(), Electron()), (Photon(), Electron())
-        )
-        @test_throws InvalidInputError GenericQEDProcess(
-            (INVALID_PARTICLE(), Electron()), (Photon(), Electron())
-        )
+        @test_throws InvalidInputError(
+            "invalid input, provide a tuple of AbstractParticleTypes to construct a GenericQEDProcess",
+        ) GenericQEDProcess((INVALID_PARTICLE(), Electron()), (Photon(), Electron()))
 
-        @test_throws "invalid input, provide a tuple of AbstractParticleTypes to construct a GenericQEDProcess" GenericQEDProcess(
-            (Photon(), Electron()), (Photon(), INVALID_PARTICLE())
-        )
-        @test_throws InvalidInputError GenericQEDProcess(
-            (Photon(), Electron()), (Photon(), INVALID_PARTICLE())
-        )
+        @test_throws InvalidInputError(
+            "invalid input, provide a tuple of AbstractParticleTypes to construct a GenericQEDProcess",
+        ) GenericQEDProcess((Photon(), Electron()), (Photon(), INVALID_PARTICLE()))
     end
 
     @testset "incompatible spin/pols" begin
-        @test_throws InvalidInputError GenericQEDProcess(
+        @test_throws InvalidInputError(
+            "particle \"electron\" is a fermion and should have a spin, but has \"all polarizations\"",
+        ) GenericQEDProcess(
             (Electron(), Photon()),
             (Electron(), Photon()),
             (AllPol(), AllPol()),
             (AllSpin(), AllPol()),
         )
-        @test_throws "particle \"electron\" is a fermion and should have a spin, but has \"all polarizations\"" GenericQEDProcess(
-            (Electron(), Photon()),
-            (Electron(), Photon()),
-            (AllPol(), AllPol()),
-            (AllSpin(), AllPol()),
-        )
-
-        @test_throws InvalidInputError GenericQEDProcess(
-            (Electron(), Photon()),
-            (Electron(), Photon()),
-            (AllSpin(), AllSpin()),
-            (AllSpin(), AllPol()),
-        )
-        @test_throws "particle \"photon\" is a boson and should have a polarization, but has \"all spins\"" GenericQEDProcess(
+        @test_throws InvalidInputError(
+            "particle \"photon\" is a boson and should have a polarization, but has \"all spins\"",
+        ) GenericQEDProcess(
             (Electron(), Photon()),
             (Electron(), Photon()),
             (AllSpin(), AllSpin()),
@@ -108,57 +93,32 @@ BUF = IOBuffer()
         IN_PARTICLES = Tuple(rand(RNG, PARTICLES, 2))
         OUT_PARTICLES = Tuple(rand(RNG, PARTICLES, 2))
         @testset "2 particles, 1 spin/pol" begin
-            @test_throws InvalidInputError GenericQEDProcess(
+            @test_throws InvalidInputError("more particles than spins/pols given") GenericQEDProcess(
                 IN_PARTICLES,
                 OUT_PARTICLES,
                 _random_spin_pols(RNG, IN_PARTICLES)[1:1],
                 _random_spin_pols(RNG, OUT_PARTICLES),
             )
-            @test_throws "more particles than spins/pols given" GenericQEDProcess(
-                IN_PARTICLES,
-                OUT_PARTICLES,
-                _random_spin_pols(RNG, IN_PARTICLES)[1:1],
-                _random_spin_pols(RNG, OUT_PARTICLES),
-            )
-
-            @test_throws InvalidInputError GenericQEDProcess(
-                IN_PARTICLES,
-                OUT_PARTICLES,
-                _random_spin_pols(RNG, IN_PARTICLES),
-                _random_spin_pols(RNG, OUT_PARTICLES)[1:1],
-            )
-            @test_throws "more particles than spins/pols given" GenericQEDProcess(
+            @test_throws InvalidInputError("more particles than spins/pols given") GenericQEDProcess(
                 IN_PARTICLES,
                 OUT_PARTICLES,
                 _random_spin_pols(RNG, IN_PARTICLES),
                 _random_spin_pols(RNG, OUT_PARTICLES)[1:1],
             )
         end
+
         @testset "2 particles, 3 spin/pols" begin
-            @test_throws InvalidInputError GenericQEDProcess(
+            @test_throws InvalidInputError("more spins/pols than particles given") GenericQEDProcess(
                 IN_PARTICLES,
                 OUT_PARTICLES,
                 (_random_spin_pols(RNG, IN_PARTICLES)..., AllPol()),
                 _random_spin_pols(RNG, OUT_PARTICLES),
             )
-            @test_throws "more spins/pols than particles given" GenericQEDProcess(
-                IN_PARTICLES,
-                OUT_PARTICLES,
-                (_random_spin_pols(RNG, IN_PARTICLES)..., AllSpin()),
-                _random_spin_pols(RNG, OUT_PARTICLES),
-            )
-
-            @test_throws InvalidInputError GenericQEDProcess(
+            @test_throws InvalidInputError("more spins/pols than particles given") GenericQEDProcess(
                 IN_PARTICLES,
                 OUT_PARTICLES,
                 _random_spin_pols(RNG, IN_PARTICLES),
                 (_random_spin_pols(RNG, OUT_PARTICLES)..., AllPol()),
-            )
-            @test_throws "more spins/pols than particles given" GenericQEDProcess(
-                IN_PARTICLES,
-                OUT_PARTICLES,
-                _random_spin_pols(RNG, IN_PARTICLES),
-                (_random_spin_pols(RNG, OUT_PARTICLES)..., AllSpin()),
             )
         end
     end
