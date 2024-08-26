@@ -1,23 +1,8 @@
-_assert_particle_type_tuple(::Tuple{}) = nothing
-function _assert_particle_type_tuple(t::Tuple{AbstractParticleType,Vararg})
-    return _assert_particle_type_tuple(t[2:end])
-end
-function _assert_particle_type_tuple(t::Any)
-    throw(
-        InvalidInputError(
-            "invalid input, provide a tuple of AbstractParticleTypes to construct a GenericQEDProcess",
-        ),
-    )
-end
-
+# recursion success, all particles are compatible with their spin/pol
 _assert_spin_pol_particle_compatability(::Tuple{}, ::Tuple{}) = nothing
-function _assert_spin_pol_particle_compatability(::Tuple{}, ::Tuple{Vararg})
-    throw(InvalidInputError("more spins/pols than particles given"))
-end
-function _assert_spin_pol_particle_compatability(::Tuple{Vararg}, ::Tuple{})
-    throw(InvalidInputError("more particles than spins/pols given"))
-end
 
+# recursion base case: check first particle against first spin/pol, then recurse
+# note: the length of the tuples is expected to be the same, the constructor ensures this by using NTuples
 function _assert_spin_pol_particle_compatability(
     particles::Tuple{AbstractParticleType,Vararg},
     spin_pols::Tuple{AbstractSpinOrPolarization,Vararg},

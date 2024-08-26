@@ -1,7 +1,7 @@
 POLS = [PolX(), PolY(), AllPol()]
 SPINS = [SpinUp(), SpinDown(), AllSpin()]
 
-function _groundtruth_is_physical(proc::GenericQEDProcess)
+function _groundtruth_is_physical(proc::ScatteringProcess, ::PerturbativeQED)
     incoming_electrons = number_particles(proc, Incoming(), Electron())
     incoming_positrons = number_particles(proc, Incoming(), Positron())
     outgoing_electrons = number_particles(proc, Outgoing(), Electron())
