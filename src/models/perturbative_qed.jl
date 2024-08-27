@@ -28,3 +28,17 @@ function Base.show(io::IO, ::PerturbativeQED)
     print(io, "perturbative QED")
     return nothing
 end
+
+"""
+    isphysical(proc::AbstractProcessDefinition, model::PerturbativeQED)
+
+A utility function that returns whether a given `AbstractProcessDefinition` conserves the number and charge of fermions and has at least 2 participating particles.
+"""
+function isphysical(proc::AbstractProcessDefinition, ::PerturbativeQED)
+    return (
+        number_particles(proc, Incoming(), Electron()) +
+        number_particles(proc, Outgoing(), Positron()) ==
+        number_particles(proc, Incoming(), Positron()) +
+        number_particles(proc, Outgoing(), Electron())
+    ) && number_particles(proc, Incoming()) + number_particles(proc, Outgoing()) >= 2
+end
