@@ -17,13 +17,13 @@ julia> Pkg.add("QEDprocesses")
 or you use the Pkg prompt by hitting `]` within the Julia REPL and then type
 
 ```julia
-(@v1.9) pkg> add QEDprocesses
+(@v1.10) pkg> add QEDprocesses
 ```
 
 To install the locally downloaded package on Windows, change to the parent directory and type within the Pkg prompt
 
 ```julia
-(@v1.9) pkg> add ./QEDprocesses.jl
+(@v1.10) pkg> add ./QEDprocesses.jl
 ```
 
 ## Building the documentation locally
