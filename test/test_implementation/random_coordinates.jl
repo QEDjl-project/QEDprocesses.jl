@@ -7,6 +7,8 @@ function _rand_coordinates(
     return ((rand(rng, Float64),), (rand(rng, Float64), rand(rng, Float64)))
 end
 
+tuple_iaspprox(::Tuple{}, ::Tuple{Vararg}; atol=0.0, rtol=eps()) = false
+tuple_iaspprox(::Tuple{Vararg}, ::Tuple{}; atol=0.0, rtol=eps()) = false
 tuple_isapprox(::Tuple{}, ::Tuple{}; atol=0.0, rtol=eps()) = true
 function tuple_isapprox(
     a::Tuple{<:Number,Vararg}, b::Tuple{<:Number,Vararg}; atol=0.0, rtol=eps()

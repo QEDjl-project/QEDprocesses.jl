@@ -24,17 +24,23 @@ if isempty(GPU_VECTOR_TYPES)
     return nothing
 end
 
+DEF_POLS = (PolX(), PolY())
+DEF_SPINS = (SpinUp(), SpinDown())
+
 PROC_DEF_TUPLES = [
     (
         Compton(),
         PerturbativeQED(),
         PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()),
     ),
-    (
-        Compton(SpinUp(), PolX(), SpinDown(), PolY()),
-        PerturbativeQED(),
-        PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()),
-    ),
+    [
+        (
+            Compton(s1, p1, s2, p2),
+            PerturbativeQED(),
+            PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()),
+        ) for
+        (s1, p1, s2, p2) in Iterators.product(DEF_SPINS, DEF_POLS, DEF_SPINS, DEF_POLS)
+    ]...,
 ]
 
 RNG = Random.MersenneTwister(573)
@@ -121,13 +127,13 @@ RNG = Random.MersenneTwister(573)
                 ),
             )
 
-            #= TODO: this is currently broken
+            # this currently throws an exception because QuadGK does not work on the GPU
             @test all(
                 isapprox.(
                     Vector(QEDprocesses._total_probability.(gpupsps)),
                     QEDprocesses._total_probability.(psps),
                 ),
-            )=#
+            ) broken = true
         end
 
         @testset "Public PhaseSpacePoint Interface" begin
@@ -152,10 +158,10 @@ RNG = Random.MersenneTwister(573)
                 ),
             )
 
-            #= TODO: this is currently broken
+            # as above, this currently throws an exception because QuadGK does not work on the GPU
             @test all(
                 isapprox.(Vector(total_cross_section.(gpupsps)), total_cross_section.(psps))
-            )=#
+            ) broken = true
         end
     end
 end
