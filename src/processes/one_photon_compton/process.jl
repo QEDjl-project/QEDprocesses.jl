@@ -36,12 +36,20 @@ _spins(proc::Compton) = (proc.in_spin, proc.out_spin)
 _in_spin_and_pol(proc::Compton) = (proc.in_spin, proc.in_pol)
 _out_spin_and_pol(proc::Compton) = (proc.out_spin, proc.out_pol)
 
-function QEDprocesses.incoming_particles(::Compton)
+function QEDbase.incoming_particles(::Compton)
     return (Electron(), Photon())
 end
 
-function QEDprocesses.outgoing_particles(::Compton)
+function QEDbase.outgoing_particles(::Compton)
     return (Electron(), Photon())
+end
+
+function QEDbase.incoming_spin_pols(proc::Compton)
+    return (proc.in_spin, proc.in_pol)
+end
+
+function QEDbase.outgoing_spin_pols(proc::Compton)
+    return (proc.out_spin, proc.out_pol)
 end
 
 function _spin_or_pol(process::Compton, ::Electron, ::Incoming)
