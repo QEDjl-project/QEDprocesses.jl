@@ -70,10 +70,6 @@ generate_integration_tests:
     - apt update && apt install -y git
     - git clone --depth 1 -b dev https://github.com/QEDjl-project/QuantumElectrodynamics.jl.git /QEDjl
     - cd /QEDjl/.ci/integTestGen/
-    # use local registry of the QED project
-    - julia --project=. -e 'import Pkg; Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/QEDjl-project/registry.git"));'
-    # needs to add General registry again, if local registry was added
-    - julia --project=. -e 'import Pkg; Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/JuliaRegistries/General"));'
     - julia --project=. -e 'import Pkg; Pkg.instantiate()'
     # paths of artifacts are relative to CI_PROJECT_DIR
     - >
