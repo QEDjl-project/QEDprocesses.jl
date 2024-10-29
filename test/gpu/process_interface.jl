@@ -113,7 +113,8 @@ RNG = Random.MersenneTwister(573)
             @test all(
                 tuple_isapprox.(
                     Vector(QEDbase._matrix_element.(gpupsps)),
-                    QEDbase._matrix_element.(psps),
+                    QEDbase._matrix_element.(psps);
+                    rtol=sqrt(eps(Float64)),
                 ),
             )
 
