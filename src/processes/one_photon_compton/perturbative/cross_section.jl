@@ -3,7 +3,7 @@
 # Implementation of the cross section interface
 #####
 
-function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton,<:PerturbativeQED})
+function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton,PerturbativeQED})
     return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
@@ -21,8 +21,7 @@ end
     We average over the initial spins and pols, and sum over final.
 """
 function QEDbase._averaging_norm(proc::Compton)
-    normalizations = multiplicity.(_in_spin_and_pol(proc))
-    return inv(prod(normalizations))
+    return inv(incoming_multiplicity(proc))
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
@@ -40,9 +39,7 @@ end
         )
 end
 
-@inline function QEDbase._is_in_phasespace(
-    psp::PhaseSpacePoint{<:Compton,<:PerturbativeQED}
-)
+@inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
     @inbounds if (
         !isapprox(
             momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
