@@ -7,7 +7,7 @@ authors = [
     "Tom Jungnickel",
     "Anton Reinhard",
 ]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
