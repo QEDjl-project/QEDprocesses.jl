@@ -2,27 +2,8 @@ using QEDprocesses
 using QEDbase
 using QEDcore
 
-using AMDGPU
-using CUDA
 using Random
 using SafeTestsets
-
-include("../test_implementation/random_coordinates.jl")
-
-GPU_VECTOR_TYPES = Vector{Type}()
-if AMDGPU.functional()
-    println("Testing with AMDGPU.jl")
-    push!(GPU_VECTOR_TYPES, ROCVector)
-end
-if CUDA.functional()
-    println("Testing with CUDA.jl")
-    push!(GPU_VECTOR_TYPES, CuVector)
-end
-
-if isempty(GPU_VECTOR_TYPES)
-    @warn "No functional GPUs found for testing!"
-    return nothing
-end
 
 DEF_POLS = (PolX(), PolY())
 DEF_SPINS = (SpinUp(), SpinDown())
@@ -45,7 +26,7 @@ PROC_DEF_TUPLES = [
 
 RNG = Random.MersenneTwister(573)
 
-@testset "Testing with $VECTOR_TYPE" for VECTOR_TYPE in GPU_VECTOR_TYPES
+@testset "Testing with $GPU_MODULE" for (GPU_MODULE, VECTOR_TYPE) in GPUS
     @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
         N = 10_000
 

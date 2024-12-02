@@ -9,14 +9,6 @@ QEDcore = "35dc0263-cb5f-4c33-a114-1d7f54ab753e"
 QuadGK = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
-[weakdeps]
-CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
-
-[extensions]
-AMDGPUExt = "AMDGPU"
-CUDAExt = "CUDA"
-
 [compat]
 QEDbase = "0.4.0"
 QEDcore = "0.3.0"
@@ -31,9 +23,5 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-# these need to be here to support Julia versions < 1.9
-CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-AMDGPU = "21141c5a-9bdb-4563-92ae-f87d6854732e"
-
 [targets]
-test = ["Random", "SafeTestsets", "Test", "CUDA", "AMDGPU"]
+test = ["Random", "SafeTestsets", "Pkg", "Test"]
