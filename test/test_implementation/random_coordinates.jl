@@ -1,3 +1,6 @@
+using QEDcore, QEDprocesses
+using Random
+
 """
 Return a tuple of tuples of incoming and outgoing coordinates for a given process, model and ps_def that make up a physical phase space point.
 """
