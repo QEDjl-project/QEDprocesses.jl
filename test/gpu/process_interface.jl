@@ -30,6 +30,9 @@ RNG = Random.MersenneTwister(573)
     @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
         N = 10_000
 
+        @info "$proc $model $ps_def"
+        flush(stdout)
+
         psps = [
             PhaseSpacePoint(
                 proc, model, ps_def, _rand_coordinates(RNG, proc, model, ps_def)...
@@ -37,10 +40,16 @@ RNG = Random.MersenneTwister(573)
         ]
         procs = [proc for _ in 1:N]
 
+        @info "GPU allocation"
+        flush(stdout)
+
         gpupsps = VECTOR_TYPE(psps)
         gpuprocs = VECTOR_TYPE(procs)
 
         @testset "PSP interface" begin
+            @info "GPU momenta.()"
+            flush(stdout)
+
             in_moms_gpu = Vector(momenta.(gpupsps, Incoming()))
             out_moms_gpu = Vector(momenta.(gpupsps, Outgoing()))
             in_moms = momenta.(psps, Incoming())
@@ -53,6 +62,9 @@ RNG = Random.MersenneTwister(573)
         end
 
         @testset "Private Process Functions" begin
+            @info "GPU _averaging_norm.()"
+            flush(stdout)
+
             @test all(
                 isapprox.(
                     Vector(QEDbase._averaging_norm.(gpuprocs)),
@@ -62,6 +74,9 @@ RNG = Random.MersenneTwister(573)
         end
 
         @testset "Public Process Functions" begin
+            @info "GPU public process functions"
+            flush(stdout)
+
             @test Vector(incoming_particles.(gpuprocs)) == incoming_particles.(procs)
             @test Vector(outgoing_particles.(gpuprocs)) == outgoing_particles.(procs)
 
@@ -85,6 +100,9 @@ RNG = Random.MersenneTwister(573)
         end
 
         @testset "Private PhaseSpacePoint Interface" begin
+            @info "GPU private PSP functions"
+            flush(stdout)
+
             @test all(
                 isapprox.(
                     Vector(QEDbase._incident_flux.(gpupsps)), QEDbase._incident_flux.(psps)
@@ -119,6 +137,9 @@ RNG = Random.MersenneTwister(573)
         end
 
         @testset "Public PhaseSpacePoint Interface" begin
+            @info "GPU public PSP functions"
+            flush(stdout)
+
             @test all(
                 isapprox.(
                     Vector(differential_probability.(gpupsps)),
