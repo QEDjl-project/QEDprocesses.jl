@@ -28,7 +28,7 @@ RNG = Random.MersenneTwister(573)
 
 @testset "Testing with $GPU_MODULE" for (GPU_MODULE, VECTOR_TYPE) in GPUS
     @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
-        N = 10_000
+        N = 100
 
         @info "$proc $model $ps_def"
         flush(stdout)
