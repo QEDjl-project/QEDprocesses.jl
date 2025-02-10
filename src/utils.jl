@@ -8,7 +8,7 @@
 
     _base_component_type(array_of_lv::AbstractArray{LV}) where {LV<:AbstractLorentzVector}
 
-Return the type of the components of given Lorentz vectors, which are by themself elements of an 
+Return the type of the components of given Lorentz vectors, which are by themself elements of an
 `AbstractArray`.
 
 # Examples

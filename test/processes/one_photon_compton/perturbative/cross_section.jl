@@ -12,8 +12,8 @@ const RTOL = sqrt(eps())
 include("groundtruths.jl")
 
 const MODEL = PerturbativeQED()
-const IN_PSL= ComptonRestSystem(Energy(2))
-const OUT_PSL= ComptonSphericalLayout(IN_PSL)
+const IN_PSL = ComptonRestSystem(Energy(2))
+const OUT_PSL = ComptonSphericalLayout(IN_PSL)
 
 const OMEGAS = (1e-6 * rand(RNG), 1e-3 * rand(RNG), rand(RNG), 1e3 * rand(RNG))
 const COS_THETAS = [-1.0, 2 * rand(RNG) - 1, 0.0, 1.0]
@@ -36,7 +36,6 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                     groundtruth = _groundtruth_pert_compton_diffCS_spinsum_polsum_elab_sph(
                         omega, cos_theta, 1.0
                     )
-
 
                     @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
                 end

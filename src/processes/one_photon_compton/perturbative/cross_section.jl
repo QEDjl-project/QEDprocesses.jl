@@ -162,12 +162,9 @@ end
 # Phase space factors
 #######
 
-# TODO: Update this!
-
 function _pert_compton_ps_fac(
-    in_psl::ComptonSphericalLayout{<:ComptonRestSystem},in_photon_mom, out_photon_mom
-) 
-    # TODO
+    in_psl::ComptonSphericalLayout{<:ComptonRestSystem}, in_photon_mom, out_photon_mom
+)
     omega = getE(in_photon_mom)
     omega_prime = getE(out_photon_mom)
     return omega_prime^2 / (16 * pi^2 * omega * mass(Electron()))

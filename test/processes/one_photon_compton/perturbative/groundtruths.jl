@@ -1,6 +1,6 @@
 
-function _pert_omega_prime_elab_sph(om,cth)
-    om/(1+om*(1-cth))
+function _pert_omega_prime_elab_sph(om, cth)
+    return om / (1 + om * (1 - cth))
 end
 
 """
@@ -26,5 +26,7 @@ function _groundtruth_pert_compton_diffCS_spinsum_xpol_elab_sph(omega, ctheta, p
 end
 
 function _groundtruth_pert_compton_diffCS_spinsum_ypol_elab_sph(omega, ctheta, phi, mass)
-    return _groundtruth_pert_compton_diffCS_spinsum_xpol_elab_sph(omega, ctheta, phi + pi / 2, mass)
+    return _groundtruth_pert_compton_diffCS_spinsum_xpol_elab_sph(
+        omega, ctheta, phi + pi / 2, mass
+    )
 end
