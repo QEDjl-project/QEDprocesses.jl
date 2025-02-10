@@ -1,5 +1,5 @@
 
-struct PerturbativeQED <: AbstractModelDefinition end
+struct PerturbativeQED <: AbstractPerturbativeModel end
 
 QEDbase.fundamental_interaction_type(::PerturbativeQED) = :electromagnetic
 

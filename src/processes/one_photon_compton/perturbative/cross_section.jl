@@ -56,7 +56,7 @@ end
 )
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
-    return _pert_compton_ps_fac(psp.ps_def, in_ps[2], out_ps[2])
+    return _pert_compton_ps_fac(psp.psl, in_ps[2], out_ps[2])
 end
 
 #######
@@ -162,9 +162,11 @@ end
 # Phase space factors
 #######
 
+# TODO: Update this!
+
 function _pert_compton_ps_fac(
-    in_ps_def::PhasespaceDefinition{inCS,ElectronRestFrame}, in_photon_mom, out_photon_mom
-) where {inCS}
+    in_psl::ComptonSphericalLayout{<:ComptonRestSystem},in_photon_mom, out_photon_mom
+) 
     # TODO
     omega = getE(in_photon_mom)
     omega_prime = getE(out_photon_mom)
