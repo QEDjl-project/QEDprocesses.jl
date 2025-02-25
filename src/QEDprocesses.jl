@@ -9,6 +9,10 @@ export PerturbativeQED
 
 # specific scattering processes
 export Compton, omega_prime
+export ComptonRestSystem
+export ComptonSphericalLayout
+
+# generic scattering process
 export ScatteringProcess, isphysical
 
 using QEDbase
