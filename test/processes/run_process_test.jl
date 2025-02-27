@@ -6,6 +6,12 @@ end
     include("one_photon_compton/process.jl")
 end
 
-@time @safetestset "perturbative one photon compton" begin
-    include("one_photon_compton/perturbative.jl")
+@testset "perturbative one photon compton" begin
+    @safetestset "kinematics" begin
+        include("one_photon_compton/perturbative/kinematics.jl")
+    end
+
+    @safetestset "cross section" begin
+        include("one_photon_compton/perturbative/cross_section.jl")
+    end
 end
