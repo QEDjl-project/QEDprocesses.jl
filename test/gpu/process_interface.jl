@@ -29,126 +29,146 @@ PROC_DEF_TUPLES = [
 RNG = Random.MersenneTwister(573)
 
 @testset "Testing with $GPU_MODULE" for (GPU_MODULE, VECTOR_TYPE) in GPUS
-    @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
-        N = 100
-
-        @info "Testing $proc $model $ps_def"
-        flush(stdout)
-
-        psps = [
-            PhaseSpacePoint(
-                proc, model, ps_def, _rand_coordinates(RNG, proc, model, ps_def)...
-            ) for _ in 1:N
-        ]
-        procs = [proc for _ in 1:N]
-
-        gpupsps = VECTOR_TYPE(psps)
-        gpuprocs = VECTOR_TYPE(procs)
-
-        @testset "PSP interface" begin
-            in_moms_gpu = Vector(momenta.(gpupsps, Incoming()))
-            out_moms_gpu = Vector(momenta.(gpupsps, Outgoing()))
-            in_moms = momenta.(psps, Incoming())
-            out_moms = momenta.(psps, Outgoing())
-
-            @test getindex.(in_moms_gpu, Ref(1)) == getindex.(in_moms, Ref(1))
-            @test getindex.(in_moms_gpu, Ref(2)) == getindex.(in_moms, Ref(2))
-            @test getindex.(out_moms_gpu, Ref(1)) == getindex.(out_moms, Ref(1))
-            @test getindex.(out_moms_gpu, Ref(2)) == getindex.(out_moms, Ref(2))
+    @testset "Float type $FLOAT_T" for FLOAT_T in GPU_FLOAT_TYPES[GPU_MODULE]
+        if FLOAT_T != Float64
+            @warn "Skipping tests for $FLOAT_T which is currently not supported!"
+            continue
         end
 
-        @testset "Private Process Functions" begin
-            @test all(
-                isapprox.(
-                    Vector(QEDbase._averaging_norm.(gpuprocs)),
-                    QEDbase._averaging_norm.(procs),
-                ),
-            )
-        end
+        @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
+            N = 100
 
-        @testset "Public Process Functions" begin
-            @test Vector(incoming_particles.(gpuprocs)) == incoming_particles.(procs)
-            @test Vector(outgoing_particles.(gpuprocs)) == outgoing_particles.(procs)
+            @info "Testing $proc $model $ps_def ($FLOAT_T)"
+            flush(stdout)
 
-            @test Vector(particles.(gpuprocs, Incoming())) == particles.(procs, Incoming())
-            @test Vector(particles.(gpuprocs, Outgoing())) == particles.(procs, Outgoing())
+            psps = [
+                PhaseSpacePoint(
+                    proc,
+                    model,
+                    ps_def,
+                    _rand_coordinates(RNG, proc, model, ps_def, FLOAT_T)...,
+                ) for _ in 1:N
+            ]
+            procs = [proc for _ in 1:N]
 
-            @test Vector(number_incoming_particles.(gpuprocs)) ==
-                number_incoming_particles.(procs)
-            @test Vector(number_outgoing_particles.(gpuprocs)) ==
-                number_outgoing_particles.(procs)
+            gpupsps = VECTOR_TYPE(psps)
+            gpuprocs = VECTOR_TYPE(procs)
 
-            @test Vector(number_particles.(gpuprocs, Incoming())) ==
-                number_particles.(procs, Incoming())
-            @test Vector(number_particles.(gpuprocs, Outgoing())) ==
-                number_particles.(procs, Outgoing())
+            @testset "PSP interface" begin
+                in_moms_gpu = Vector(momenta.(gpupsps, Incoming()))
+                out_moms_gpu = Vector(momenta.(gpupsps, Outgoing()))
+                in_moms = momenta.(psps, Incoming())
+                out_moms = momenta.(psps, Outgoing())
 
-            @test Vector(QEDbase.in_phase_space_dimension.(gpuprocs, model)) ==
-                QEDbase.in_phase_space_dimension.(procs, model)
-            @test Vector(QEDbase.out_phase_space_dimension.(gpuprocs, model)) ==
-                QEDbase.out_phase_space_dimension.(procs, model)
-        end
+                @test eltype(eltype(eltype(in_moms_gpu))) == FLOAT_T
+                @test eltype(eltype(eltype(out_moms_gpu))) == FLOAT_T
+                @test eltype(eltype(eltype(in_moms))) == FLOAT_T
+                @test eltype(eltype(eltype(out_moms))) == FLOAT_T
 
-        @testset "Private PSP/Process Interface" begin
-            @test all(
-                isapprox.(
-                    Vector(QEDbase._incident_flux.(gpupsps)), QEDbase._incident_flux.(psps)
-                ),
-            )
+                @test getindex.(in_moms_gpu, Ref(1)) == getindex.(in_moms, Ref(1))
+                @test getindex.(in_moms_gpu, Ref(2)) == getindex.(in_moms, Ref(2))
+                @test getindex.(out_moms_gpu, Ref(1)) == getindex.(out_moms, Ref(1))
+                @test getindex.(out_moms_gpu, Ref(2)) == getindex.(out_moms, Ref(2))
+            end
 
-            @test all(
-                tuple_isapprox.(
-                    Vector(QEDbase._matrix_element.(gpupsps)),
-                    QEDbase._matrix_element.(psps);
-                    rtol=sqrt(eps(Float64)),
-                ),
-            )
+            @testset "Private Process Functions" begin
+                @test all(
+                    isapprox.(
+                        Vector(QEDbase._averaging_norm.(gpuprocs)),
+                        QEDbase._averaging_norm.(procs),
+                    ),
+                )
+            end
 
-            @test Vector(QEDbase._is_in_phasespace.(gpupsps)) ==
-                QEDbase._is_in_phasespace.(psps)
+            @testset "Public Process Functions" begin
+                @test Vector(incoming_particles.(gpuprocs)) == incoming_particles.(procs)
+                @test Vector(outgoing_particles.(gpuprocs)) == outgoing_particles.(procs)
 
-            @test all(
-                isapprox.(
-                    Vector(QEDbase._phase_space_factor.(gpupsps)),
-                    QEDbase._phase_space_factor.(psps),
-                ),
-            )
+                @test Vector(particles.(gpuprocs, Incoming())) ==
+                    particles.(procs, Incoming())
+                @test Vector(particles.(gpuprocs, Outgoing())) ==
+                    particles.(procs, Outgoing())
 
-            # this currently throws an exception because QuadGK does not work on the GPU
-            @test all(
-                isapprox.(
-                    Vector(QEDprocesses._total_probability.(gpupsps)),
-                    QEDprocesses._total_probability.(psps),
-                ),
-            ) broken = true
-        end
+                @test Vector(number_incoming_particles.(gpuprocs)) ==
+                    number_incoming_particles.(procs)
+                @test Vector(number_outgoing_particles.(gpuprocs)) ==
+                    number_outgoing_particles.(procs)
 
-        @testset "Public PSP/Process Interface" begin
-            @test all(
-                isapprox.(
-                    Vector(differential_probability.(gpupsps)),
-                    differential_probability.(psps),
-                ),
-            )
+                @test Vector(number_particles.(gpuprocs, Incoming())) ==
+                    number_particles.(procs, Incoming())
+                @test Vector(number_particles.(gpuprocs, Outgoing())) ==
+                    number_particles.(procs, Outgoing())
 
-            @test all(
-                isapprox.(
-                    Vector(QEDbase._is_in_phasespace.(gpupsps)),
-                    QEDbase._is_in_phasespace.(psps),
-                ),
-            )
+                @test Vector(QEDbase.in_phase_space_dimension.(gpuprocs, model)) ==
+                    QEDbase.in_phase_space_dimension.(procs, model)
+                @test Vector(QEDbase.out_phase_space_dimension.(gpuprocs, model)) ==
+                    QEDbase.out_phase_space_dimension.(procs, model)
+            end
 
-            @test all(
-                isapprox.(
-                    Vector(differential_cross_section.(gpupsps)),
-                    differential_cross_section.(psps),
-                ),
-            )
+            @testset "Private PSP/Process Interface" begin
+                @test all(
+                    isapprox.(
+                        Vector(QEDbase._incident_flux.(gpupsps)),
+                        QEDbase._incident_flux.(psps),
+                    ),
+                )
 
-            # as above, this currently throws an exception because QuadGK does not work on the GPU
-            @test all(
-                isapprox.(Vector(total_cross_section.(gpupsps)), total_cross_section.(psps))
-            ) broken = true
+                @test all(
+                    tuple_isapprox.(
+                        Vector(QEDbase._matrix_element.(gpupsps)),
+                        QEDbase._matrix_element.(psps);
+                        rtol=sqrt(eps(FLOAT_T)),
+                    ),
+                )
+
+                @test Vector(QEDbase._is_in_phasespace.(gpupsps)) ==
+                    QEDbase._is_in_phasespace.(psps)
+
+                @test all(
+                    isapprox.(
+                        Vector(QEDbase._phase_space_factor.(gpupsps)),
+                        QEDbase._phase_space_factor.(psps),
+                    ),
+                )
+
+                # this currently throws an exception because QuadGK does not work on the GPU
+                @test all(
+                    isapprox.(
+                        Vector(QEDprocesses._total_probability.(gpupsps)),
+                        QEDprocesses._total_probability.(psps),
+                    ),
+                ) broken = true
+            end
+
+            @testset "Public PSP/Process Interface" begin
+                @test all(
+                    isapprox.(
+                        Vector(differential_probability.(gpupsps)),
+                        differential_probability.(psps),
+                    ),
+                )
+
+                @test all(
+                    isapprox.(
+                        Vector(QEDbase._is_in_phasespace.(gpupsps)),
+                        QEDbase._is_in_phasespace.(psps),
+                    ),
+                )
+
+                @test all(
+                    isapprox.(
+                        Vector(differential_cross_section.(gpupsps)),
+                        differential_cross_section.(psps),
+                    ),
+                )
+
+                # as above, this currently throws an exception because QuadGK does not work on the GPU
+                @test all(
+                    isapprox.(
+                        Vector(total_cross_section.(gpupsps)), total_cross_section.(psps)
+                    ),
+                ) broken = true
+            end
         end
     end
 end

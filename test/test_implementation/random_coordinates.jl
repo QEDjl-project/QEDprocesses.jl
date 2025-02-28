@@ -5,9 +5,9 @@ using Random
 Return a tuple of tuples of incoming and outgoing coordinates for a given process, model and ps_def that make up a physical phase space point.
 """
 function _rand_coordinates(
-    rng::AbstractRNG, ::PROCESS, ::MODEL, ::PSL
+    rng::AbstractRNG, ::PROCESS, ::MODEL, ::PSL, FLOAT_T=Float64
 ) where {PROCESS<:Compton,MODEL<:PerturbativeQED,PSL<:AbstractPhaseSpaceLayout}
-    return ((rand(rng, Float64),), (rand(rng, Float64), rand(rng, Float64)))
+    return ((rand(rng, FLOAT_T),), (rand(rng, FLOAT_T), rand(rng, FLOAT_T)))
 end
 
 tuple_iaspprox(::Tuple{}, ::Tuple{Vararg}; atol=0.0, rtol=eps()) = false
