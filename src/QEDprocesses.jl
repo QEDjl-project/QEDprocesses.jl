@@ -36,5 +36,4 @@ include("processes/one_photon_compton/perturbative/kinematics.jl")
 include("processes/one_photon_compton/perturbative/cross_section.jl")
 include("processes/one_photon_compton/perturbative/total_probability.jl")
 
-include("patch_QEDbase.jl")
 end
