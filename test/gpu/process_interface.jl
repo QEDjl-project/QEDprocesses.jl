@@ -1,3 +1,9 @@
+if isempty(GPUS)
+    @info """No GPU tests are enabled, skipping tests...
+    To test GPU functionality, please use 'TEST_<GPU> = 1 julia ...' for one of GPU=[CUDA, AMDGPU, METAL, ONEAPI]"""
+    return nothing
+end
+
 using QEDprocesses
 using QEDbase
 using QEDcore
@@ -8,18 +14,14 @@ using SafeTestsets
 DEF_POLS = (PolX(), PolY())
 DEF_SPINS = (SpinUp(), SpinDown())
 
+const MODEL = PerturbativeQED()
+const IN_PSL = ComptonRestSystem(Energy(2))
+const OUT_PSL = ComptonSphericalLayout(IN_PSL)
+
 PROC_DEF_TUPLES = [
-    (
-        Compton(),
-        PerturbativeQED(),
-        PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()),
-    ),
+    (Compton(), MODEL, OUT_PSL),
     [
-        (
-            Compton(s1, p1, s2, p2),
-            PerturbativeQED(),
-            PhasespaceDefinition(SphericalCoordinateSystem(), ElectronRestFrame()),
-        ) for
+        (Compton(s1, p1, s2, p2), MODEL, OUT_PSL) for
         (s1, p1, s2, p2) in Iterators.product(DEF_SPINS, DEF_POLS, DEF_SPINS, DEF_POLS)
     ]...,
 ]
@@ -30,7 +32,7 @@ RNG = Random.MersenneTwister(573)
     @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
         N = 100
 
-        @info "$proc $model $ps_def"
+        @info "Testing $proc $model $ps_def"
         flush(stdout)
 
         psps = [
@@ -40,16 +42,10 @@ RNG = Random.MersenneTwister(573)
         ]
         procs = [proc for _ in 1:N]
 
-        @info "GPU allocation"
-        flush(stdout)
-
         gpupsps = VECTOR_TYPE(psps)
         gpuprocs = VECTOR_TYPE(procs)
 
         @testset "PSP interface" begin
-            @info "GPU momenta.()"
-            flush(stdout)
-
             in_moms_gpu = Vector(momenta.(gpupsps, Incoming()))
             out_moms_gpu = Vector(momenta.(gpupsps, Outgoing()))
             in_moms = momenta.(psps, Incoming())
@@ -62,9 +58,6 @@ RNG = Random.MersenneTwister(573)
         end
 
         @testset "Private Process Functions" begin
-            @info "GPU _averaging_norm.()"
-            flush(stdout)
-
             @test all(
                 isapprox.(
                     Vector(QEDbase._averaging_norm.(gpuprocs)),
@@ -74,9 +67,6 @@ RNG = Random.MersenneTwister(573)
         end
 
         @testset "Public Process Functions" begin
-            @info "GPU public process functions"
-            flush(stdout)
-
             @test Vector(incoming_particles.(gpuprocs)) == incoming_particles.(procs)
             @test Vector(outgoing_particles.(gpuprocs)) == outgoing_particles.(procs)
 
@@ -99,10 +89,7 @@ RNG = Random.MersenneTwister(573)
                 QEDbase.out_phase_space_dimension.(procs, model)
         end
 
-        @testset "Private PhaseSpacePoint Interface" begin
-            @info "GPU private PSP functions"
-            flush(stdout)
-
+        @testset "Private PSP/Process Interface" begin
             @test all(
                 isapprox.(
                     Vector(QEDbase._incident_flux.(gpupsps)), QEDbase._incident_flux.(psps)
@@ -136,10 +123,7 @@ RNG = Random.MersenneTwister(573)
             ) broken = true
         end
 
-        @testset "Public PhaseSpacePoint Interface" begin
-            @info "GPU public PSP functions"
-            flush(stdout)
-
+        @testset "Public PSP/Process Interface" begin
             @test all(
                 isapprox.(
                     Vector(differential_probability.(gpupsps)),
