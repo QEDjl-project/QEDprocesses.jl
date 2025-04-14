@@ -111,7 +111,7 @@ function _pert_compton_matrix_element(
         QEDbase._as_svec(out_photon_state),
     )
 
-    matrix_elements::NTuple{length(base_states_comb),ComplexF64} = (
+    matrix_elements::NTuple{length(base_states_comb),Complex{eltype(T)}} = (
         (
             _pert_compton_matrix_element_single(
                 in_electron_mom,

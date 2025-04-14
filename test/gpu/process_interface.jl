@@ -30,23 +30,15 @@ RNG = Random.MersenneTwister(573)
 
 @testset "Testing with $GPU_MODULE" for (GPU_MODULE, VECTOR_TYPE) in GPUS
     @testset "Float type $FLOAT_T" for FLOAT_T in GPU_FLOAT_TYPES[GPU_MODULE]
-        if FLOAT_T != Float64
-            @warn "Skipping tests for $FLOAT_T which is currently not supported!"
-            continue
-        end
+        @testset "$proc $model $psl" for (proc, model, psl) in PROC_DEF_TUPLES
+            N = 128
 
-        @testset "$proc $model $ps_def" for (proc, model, ps_def) in PROC_DEF_TUPLES
-            N = 100
-
-            @info "Testing $proc $model $ps_def ($FLOAT_T)"
+            @info "Testing $proc $model $psl ($FLOAT_T)"
             flush(stdout)
 
             psps = [
                 PhaseSpacePoint(
-                    proc,
-                    model,
-                    ps_def,
-                    _rand_coordinates(RNG, proc, model, ps_def, FLOAT_T)...,
+                    proc, model, psl, _rand_coordinates(RNG, proc, model, psl, FLOAT_T)...
                 ) for _ in 1:N
             ]
             procs = [proc for _ in 1:N]
@@ -72,12 +64,19 @@ RNG = Random.MersenneTwister(573)
             end
 
             @testset "Private Process Functions" begin
-                @test all(
-                    isapprox.(
-                        Vector(QEDbase._averaging_norm.(gpuprocs)),
-                        QEDbase._averaging_norm.(procs),
-                    ),
-                )
+                # TODO: this isn't very pretty but necessary so the return type is stable
+                let FLOAT_T = FLOAT_T
+                    function wrap(::Type{T}) where {T}
+                        function _stable_norm(proc)
+                            return QEDbase._averaging_norm(T, proc)
+                        end
+
+                        @test all(
+                            isapprox.(Vector(_stable_norm.(gpuprocs)), _stable_norm.(procs))
+                        )
+                    end
+                    wrap(FLOAT_T)
+                end
             end
 
             @testset "Public Process Functions" begin
