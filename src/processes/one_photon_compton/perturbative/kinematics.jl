@@ -75,7 +75,7 @@ function QEDbase._build_momenta(
     sth = sqrt(1 - cth^2)
     sphi, cphi = sincos(phi)
 
-    Kp = SFourMomentum(
+    Kp = SFourMomentum{T}(
         omega_prime, omega_prime * sth * cphi, omega_prime * sth * sphi, omega_prime * cth
     )
     Pp = Pt - Kp
