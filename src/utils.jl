@@ -20,6 +20,6 @@ julia> QEDprocesses._base_component_type(v)
 Float64
 ```
 """
-function _base_component_type(::AbstractArray{LV}) where {LV<:AbstractLorentzVector}
+function _base_component_type(::AbstractArray{LV}) where {LV <: AbstractLorentzVector}
     return eltype(LV)
 end

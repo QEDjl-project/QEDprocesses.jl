@@ -6,13 +6,13 @@
         out_pol [= AllPol()]
     )
 """
-struct Compton{InElectronSpin,InPhotonPol,OutElectronSpin,OutPhotonPol} <:
-       AbstractProcessDefinition where {
-    InElectronSpin<:AbstractSpin,
-    InPhotonPol<:AbstractPolarization,
-    OutElectronSpin<:AbstractSpin,
-    OutPhotonPol<:AbstractPolarization,
-}
+struct Compton{InElectronSpin, InPhotonPol, OutElectronSpin, OutPhotonPol} <:
+    AbstractProcessDefinition where {
+        InElectronSpin <: AbstractSpin,
+        InPhotonPol <: AbstractPolarization,
+        OutElectronSpin <: AbstractSpin,
+        OutPhotonPol <: AbstractPolarization,
+    }
     in_spin::InElectronSpin
     in_pol::InPhotonPol
 

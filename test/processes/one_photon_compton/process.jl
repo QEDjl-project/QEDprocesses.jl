@@ -60,8 +60,8 @@ BUF = IOBuffer()
     end
     @testset "all spins+pols" begin
         @testset "$in_spin, $in_pol, $out_spin, $out_pol" for (
-            in_spin, in_pol, out_spin, out_pol
-        ) in POL_AND_SPIN_COMBINATIONS
+                in_spin, in_pol, out_spin, out_pol,
+            ) in POL_AND_SPIN_COMBINATIONS
             proc = Compton(in_spin, in_pol, out_spin, out_pol)
             @test QEDprocesses._spin_or_pol(proc, Electron(), Incoming()) == in_spin
             @test QEDprocesses._spin_or_pol(proc, Photon(), Incoming()) == in_pol
