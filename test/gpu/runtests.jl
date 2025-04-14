@@ -19,7 +19,10 @@ if amdgpu_tests
             "trying to test with AMDGPU.jl but it is not functional (AMDGPU.functional() == false)",
         )
         push!(GPUS, (AMDGPU, ROCVector))
-        GPU_FLOAT_TYPES[AMDGPU] = [Float32, Float64]
+
+        @warn "AMDGPU.jl currently crashes when testing with Float64, so this type is skipped\nSee issue https://github.com/QEDjl-project/QEDprocesses.jl/issues/123"
+
+        GPU_FLOAT_TYPES[AMDGPU] = [Float32]
         @info "Testing with AMDGPU.jl"
     catch e
         @error "failed to run GPU tests, make sure the required libraries are installed\n$(e)"

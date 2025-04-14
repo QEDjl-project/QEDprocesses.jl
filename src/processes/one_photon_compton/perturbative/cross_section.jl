@@ -45,12 +45,10 @@ end
 end
 
 @inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    @inbounds if (
-        !isapprox(
-            momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
-            momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
-        )
-    )
+    residual =
+        momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2) -
+        momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2)
+    if sum(residual .* residual) < eps(momentum_eltype(psp))
         return false
     end
     return _all_onshell(psp)
