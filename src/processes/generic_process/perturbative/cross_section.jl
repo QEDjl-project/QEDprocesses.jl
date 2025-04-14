@@ -10,7 +10,7 @@ function QEDbase._matrix_element_squared(psp::PhaseSpacePoint{<:ScatteringProces
     return proc.matrix_element_squared(psp)
 end
 
-function QEDbase._averaging_norm(proc::<:ScatteringProcess) end
+function QEDbase._averaging_norm(::Type{T}, proc::<:ScatteringProcess) where {T<:Number} end
 
 function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:ScatteringProcess,PerturbativeQED}) end
 

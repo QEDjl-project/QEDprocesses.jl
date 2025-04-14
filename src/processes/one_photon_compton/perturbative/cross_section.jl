@@ -14,14 +14,14 @@ function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED}
 end
 
 """
-    _averaging_norm(proc::Compton)
+    _averaging_norm(::Type{<:Number}, proc::Compton)
 
 !!! note "Convention"
 
     We average over the initial spins and pols, and sum over final.
 """
-function QEDbase._averaging_norm(proc::Compton)
-    return inv(incoming_multiplicity(proc))
+function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T<:Number}
+    return one(T) / incoming_multiplicity(proc)
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
