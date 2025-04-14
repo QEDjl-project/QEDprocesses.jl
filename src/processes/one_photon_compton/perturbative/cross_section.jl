@@ -25,17 +25,22 @@ function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T<:Number}
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
+    T = momentum_eltype(psp)
     return @inbounds isapprox(
-            getMass2(momentum(psp, Incoming(), 1)), mass(incoming_particles(psp.proc)[1])^2
+            getMass2(momentum(psp, Incoming(), 1)),
+            mass(T, incoming_particles(psp.proc)[1])^2,
         ) &&
         isapprox(
-            getMass2(momentum(psp, Incoming(), 2)), mass(incoming_particles(psp.proc)[2])^2
+            getMass2(momentum(psp, Incoming(), 2)),
+            mass(T, incoming_particles(psp.proc)[2])^2,
         ) &&
         isapprox(
-            getMass2(momentum(psp, Outgoing(), 1)), mass(outgoing_particles(psp.proc)[1])^2
+            getMass2(momentum(psp, Outgoing(), 1)),
+            mass(T, outgoing_particles(psp.proc)[1])^2,
         ) &&
         isapprox(
-            getMass2(momentum(psp, Outgoing(), 2)), mass(outgoing_particles(psp.proc)[2])^2
+            getMass2(momentum(psp, Outgoing(), 2)),
+            mass(T, outgoing_particles(psp.proc)[2])^2,
         )
 end
 
@@ -106,7 +111,7 @@ function _pert_compton_matrix_element(
         QEDbase._as_svec(out_photon_state),
     )
 
-    matrix_elements = Vector{ComplexF64}()
+    matrix_elements = Vector{Complex{eltype(T)}}()
     sizehint!(matrix_elements, length(base_states_comb))
     for (in_el, in_ph, out_el, out_ph) in base_states_comb
         push!(
@@ -140,8 +145,12 @@ function _pert_compton_matrix_element_single(
     in_ph_slashed = slashed(in_photon_state)
     out_ph_slashed = slashed(out_photon_state)
 
-    prop1 = QEDcore._fermion_propagator(in_photon_mom + in_electron_mom, mass(Electron()))
-    prop2 = QEDcore._fermion_propagator(in_electron_mom - out_photon_mom, mass(Electron()))
+    prop1 = QEDcore._fermion_propagator(
+        in_photon_mom + in_electron_mom, mass(eltype(T), Electron())
+    )
+    prop2 = QEDcore._fermion_propagator(
+        in_electron_mom - out_photon_mom, mass(eltype(T), Electron())
+    )
 
     # TODO: fermion propagator is not yet in QEDbase
     diagram_1 =
@@ -163,9 +172,10 @@ end
 #######
 
 function _pert_compton_ps_fac(
-    in_psl::ComptonSphericalLayout{<:ComptonRestSystem}, in_photon_mom, out_photon_mom
-)
+    in_psl::ComptonSphericalLayout{<:ComptonRestSystem}, in_photon_mom::T, out_photon_mom::T
+) where {T<:AbstractFourMomentum}
     omega = getE(in_photon_mom)
     omega_prime = getE(out_photon_mom)
-    return omega_prime^2 / (16 * pi^2 * omega * mass(Electron()))
+    return omega_prime^2 /
+           (16 * convert(eltype(T), pi)^2 * omega * mass(eltype(T), Electron()))
 end
