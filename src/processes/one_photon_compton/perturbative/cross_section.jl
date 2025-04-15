@@ -25,30 +25,45 @@ function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T<:Number}
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
+    # we need a non-zero atol since the masses can be 0 in which case isapprox is comparing against 0
+    rtol_atol(::Type{T_}) where {T_} = (eps(T_), sqrt(eps(T_)))
+
     T = momentum_eltype(psp)
-    return @inbounds isapprox(
-            getMass2(momentum(psp, Incoming(), 1)),
-            mass(T, incoming_particles(psp.proc)[1])^2,
-        ) &&
-        isapprox(
-            getMass2(momentum(psp, Incoming(), 2)),
-            mass(T, incoming_particles(psp.proc)[2])^2,
-        ) &&
-        isapprox(
-            getMass2(momentum(psp, Outgoing(), 1)),
-            mass(T, outgoing_particles(psp.proc)[1])^2,
-        ) &&
-        isapprox(
-            getMass2(momentum(psp, Outgoing(), 2)),
-            mass(T, outgoing_particles(psp.proc)[2])^2,
-        )
+    (RTOL, ATOL) = rtol_atol(T)
+
+    return isapprox(
+               getMass2(momentum(psp, Incoming(), 1)),
+               mass(T, incoming_particles(psp.proc)[1])^2;
+               rtol=RTOL,
+               atol=ATOL,
+           ) &&
+           isapprox(
+               getMass2(momentum(psp, Incoming(), 2)),
+               mass(T, incoming_particles(psp.proc)[2])^2;
+               rtol=RTOL,
+               atol=ATOL,
+           ) &&
+           isapprox(
+               getMass2(momentum(psp, Outgoing(), 1)),
+               mass(T, outgoing_particles(psp.proc)[1])^2;
+               rtol=RTOL,
+               atol=ATOL,
+           ) &&
+           isapprox(
+               getMass2(momentum(psp, Outgoing(), 2)),
+               mass(T, outgoing_particles(psp.proc)[2])^2;
+               rtol=RTOL,
+               atol=ATOL,
+           )
 end
 
 @inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
-    residual =
-        momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2) -
-        momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2)
-    if sum(residual .* residual) < eps(momentum_eltype(psp))
+    @inbounds if (
+        !isapprox(
+            momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
+            momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
+        )
+    )
         return false
     end
     return _all_onshell(psp)
