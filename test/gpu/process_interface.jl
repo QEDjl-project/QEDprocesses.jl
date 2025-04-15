@@ -22,7 +22,7 @@ PROC_DEF_TUPLES = [
     (Compton(), MODEL, OUT_PSL),
     [
         (Compton(s1, p1, s2, p2), MODEL, OUT_PSL) for
-        (s1, p1, s2, p2) in Iterators.product(DEF_SPINS, DEF_POLS, DEF_SPINS, DEF_POLS)
+            (s1, p1, s2, p2) in Iterators.product(DEF_SPINS, DEF_POLS, DEF_SPINS, DEF_POLS)
     ]...,
 ]
 
@@ -38,8 +38,8 @@ RNG = Random.MersenneTwister(573)
 
             psps = [
                 PhaseSpacePoint(
-                    proc, model, psl, _rand_coordinates(RNG, proc, model, psl, FLOAT_T)...
-                ) for _ in 1:N
+                        proc, model, psl, _rand_coordinates(RNG, proc, model, psl, FLOAT_T)...
+                    ) for _ in 1:N
             ]
             procs = [proc for _ in 1:N]
 
@@ -116,8 +116,8 @@ RNG = Random.MersenneTwister(573)
                     tuple_isapprox.(
                         Vector(QEDbase._matrix_element.(gpupsps)),
                         QEDbase._matrix_element.(psps);
-                        rtol=sqrt(eps(FLOAT_T)),
-                        atol=eps(FLOAT_T),
+                        rtol = sqrt(eps(FLOAT_T)),
+                        atol = eps(FLOAT_T),
                     ),
                 )
 

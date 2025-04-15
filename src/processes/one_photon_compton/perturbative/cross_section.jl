@@ -24,21 +24,21 @@ function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T <: Number}
     return one(T) / incoming_multiplicity(proc)
 end
 
-@inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T<:Number}
+@inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T <: Number}
     # photons are massless, so use an atol here
-    return isapprox(getMass2(mom), mass(T, Photon())^2; atol=eps(T))
+    return isapprox(getMass2(mom), mass(T, Photon())^2; atol = eps(T))
 end
 @inline function _is_onshell(
-    ::P, mom::AbstractFourMomentum{T}
-) where {P<:AbstractParticleType,T<:Number}
-    return isapprox(getMass2(mom), mass(T, P())^2; rtol=sqrt(eps(T)))
+        ::P, mom::AbstractFourMomentum{T}
+    ) where {P <: AbstractParticleType, T <: Number}
+    return isapprox(getMass2(mom), mass(T, P())^2; rtol = sqrt(eps(T)))
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
     return _is_onshell(incoming_particles(psp.proc)[1], momentum(psp, Incoming(), 1)) &&
-           _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
-           _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
-           _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
+        _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
+        _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
+        _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
 end
 
 @inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
@@ -108,18 +108,18 @@ function _pert_compton_matrix_element(
         QEDbase._as_svec(out_photon_state),
     )
 
-    matrix_elements::NTuple{length(base_states_comb),Complex{eltype(T)}} = (
+    matrix_elements::NTuple{length(base_states_comb), Complex{eltype(T)}} = (
         (
             _pert_compton_matrix_element_single(
-                in_electron_mom,
-                in_el,
-                in_photon_mom,
-                in_ph,
-                out_electron_mom,
-                out_el,
-                out_photon_mom,
-                out_ph,
-            ) for (in_el, in_ph, out_el, out_ph) in base_states_comb
+                    in_electron_mom,
+                    in_el,
+                    in_photon_mom,
+                    in_ph,
+                    out_electron_mom,
+                    out_el,
+                    out_photon_mom,
+                    out_ph,
+                ) for (in_el, in_ph, out_el, out_ph) in base_states_comb
         )...,
     )
 
