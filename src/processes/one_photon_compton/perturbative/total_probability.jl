@@ -18,7 +18,6 @@ function QEDbase._total_probability(in_psp::InPhaseSpacePoint{<:Compton,Perturba
     end
 
     tot_prob, _ = quadgk(func, -1, 1; rtol=sqrt(eps(omega)))
-
     tot_prob *= 2 * pi # phi integration is trivial
     return tot_prob
 end
