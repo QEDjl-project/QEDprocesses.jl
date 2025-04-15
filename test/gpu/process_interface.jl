@@ -117,6 +117,7 @@ RNG = Random.MersenneTwister(573)
                         Vector(QEDbase._matrix_element.(gpupsps)),
                         QEDbase._matrix_element.(psps);
                         rtol=sqrt(eps(FLOAT_T)),
+                        atol=eps(FLOAT_T),
                     ),
                 )
 

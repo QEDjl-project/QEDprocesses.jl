@@ -24,37 +24,21 @@ function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T<:Number}
     return one(T) / incoming_multiplicity(proc)
 end
 
+@inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T<:Number}
+    # photons are massless, so use an atol here
+    return isapprox(getMass2(mom), mass(T, Photon())^2; atol=eps(T))
+end
+@inline function _is_onshell(
+    ::P, mom::AbstractFourMomentum{T}
+) where {P<:AbstractParticleType,T<:Number}
+    return isapprox(getMass2(mom), mass(T, P())^2; rtol=sqrt(eps(T)))
+end
+
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
-    # we need a non-zero atol since the masses can be 0 in which case isapprox is comparing against 0
-    rtol_atol(::Type{T_}) where {T_} = (eps(T_), sqrt(eps(T_)))
-
-    T = momentum_eltype(psp)
-    (RTOL, ATOL) = rtol_atol(T)
-
-    return isapprox(
-               getMass2(momentum(psp, Incoming(), 1)),
-               mass(T, incoming_particles(psp.proc)[1])^2;
-               rtol=RTOL,
-               atol=ATOL,
-           ) &&
-           isapprox(
-               getMass2(momentum(psp, Incoming(), 2)),
-               mass(T, incoming_particles(psp.proc)[2])^2;
-               rtol=RTOL,
-               atol=ATOL,
-           ) &&
-           isapprox(
-               getMass2(momentum(psp, Outgoing(), 1)),
-               mass(T, outgoing_particles(psp.proc)[1])^2;
-               rtol=RTOL,
-               atol=ATOL,
-           ) &&
-           isapprox(
-               getMass2(momentum(psp, Outgoing(), 2)),
-               mass(T, outgoing_particles(psp.proc)[2])^2;
-               rtol=RTOL,
-               atol=ATOL,
-           )
+    return _is_onshell(incoming_particles(psp.proc)[1], momentum(psp, Incoming(), 1)) &&
+           _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
+           _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
+           _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
 end
 
 @inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
