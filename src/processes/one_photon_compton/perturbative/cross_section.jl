@@ -3,11 +3,11 @@
 # Implementation of the cross section interface
 #####
 
-function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton,PerturbativeQED})
+function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton, PerturbativeQED})
     return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
-function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
     return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
@@ -20,42 +20,42 @@ end
 
     We average over the initial spins and pols, and sum over final.
 """
-function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T<:Number}
+function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T <: Number}
     return one(T) / incoming_multiplicity(proc)
 end
 
-@inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T<:Number}
+@inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T <: Number}
     # photons are massless, so use an atol here
-    return isapprox(getMass2(mom), mass(T, Photon())^2; atol=eps(T))
+    return isapprox(getMass2(mom), mass(T, Photon())^2; atol = eps(T))
 end
 @inline function _is_onshell(
-    ::P, mom::AbstractFourMomentum{T}
-) where {P<:AbstractParticleType,T<:Number}
-    return isapprox(getMass2(mom), mass(T, P())^2; rtol=sqrt(eps(T)))
+        ::P, mom::AbstractFourMomentum{T}
+    ) where {P <: AbstractParticleType, T <: Number}
+    return isapprox(getMass2(mom), mass(T, P())^2; rtol = sqrt(eps(T)))
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
     return _is_onshell(incoming_particles(psp.proc)[1], momentum(psp, Incoming(), 1)) &&
-           _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
-           _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
-           _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
+        _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
+        _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
+        _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
 end
 
-@inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton,PerturbativeQED})
+@inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
     @inbounds if (
-        !isapprox(
-            momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
-            momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
+            !isapprox(
+                momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
+                momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
+            )
         )
-    )
         return false
     end
     return _all_onshell(psp)
 end
 
 @inline function QEDbase._phase_space_factor(
-    psp::PhaseSpacePoint{<:Compton,PerturbativeQED}
-)
+        psp::PhaseSpacePoint{<:Compton, PerturbativeQED}
+    )
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
     return _pert_compton_ps_fac(psp.psl, in_ps[2], out_ps[2])
@@ -66,8 +66,8 @@ end
 #######
 
 @inline function _pert_compton_matrix_element(
-    proc::Compton, in_ps::NTuple{N,T}, out_ps::NTuple{M,T}
-) where {N,M,T<:AbstractFourMomentum}
+        proc::Compton, in_ps::NTuple{N, T}, out_ps::NTuple{M, T}
+    ) where {N, M, T <: AbstractFourMomentum}
     in_electron_mom = in_ps[1]
     in_photon_mom = in_ps[2]
     out_electron_mom = out_ps[1]
@@ -92,15 +92,15 @@ end
 end
 
 function _pert_compton_matrix_element(
-    in_electron_mom::T,
-    in_electron_state,
-    in_photon_mom::T,
-    in_photon_state,
-    out_electron_mom::T,
-    out_electron_state,
-    out_photon_mom::T,
-    out_photon_state,
-) where {T<:AbstractFourMomentum}
+        in_electron_mom::T,
+        in_electron_state,
+        in_photon_mom::T,
+        in_photon_state,
+        out_electron_mom::T,
+        out_electron_state,
+        out_photon_mom::T,
+        out_photon_state,
+    ) where {T <: AbstractFourMomentum}
     base_states_comb = Iterators.product(
         QEDbase._as_svec(in_electron_state),
         QEDbase._as_svec(in_photon_state),
@@ -108,18 +108,18 @@ function _pert_compton_matrix_element(
         QEDbase._as_svec(out_photon_state),
     )
 
-    matrix_elements::NTuple{length(base_states_comb),Complex{eltype(T)}} = (
+    matrix_elements::NTuple{length(base_states_comb), Complex{eltype(T)}} = (
         (
             _pert_compton_matrix_element_single(
-                in_electron_mom,
-                in_el,
-                in_photon_mom,
-                in_ph,
-                out_electron_mom,
-                out_el,
-                out_photon_mom,
-                out_ph,
-            ) for (in_el, in_ph, out_el, out_ph) in base_states_comb
+                    in_electron_mom,
+                    in_el,
+                    in_photon_mom,
+                    in_ph,
+                    out_electron_mom,
+                    out_el,
+                    out_photon_mom,
+                    out_ph,
+                ) for (in_el, in_ph, out_el, out_ph) in base_states_comb
         )...,
     )
 
@@ -127,15 +127,15 @@ function _pert_compton_matrix_element(
 end
 
 function _pert_compton_matrix_element_single(
-    in_electron_mom::T,
-    in_electron_state::BiSpinor,
-    in_photon_mom::T,
-    in_photon_state::SLorentzVector,
-    out_electron_mom::T,
-    out_electron_state::AdjointBiSpinor,
-    out_photon_mom::T,
-    out_photon_state::SLorentzVector,
-) where {T<:AbstractFourMomentum}
+        in_electron_mom::T,
+        in_electron_state::BiSpinor,
+        in_photon_mom::T,
+        in_photon_state::SLorentzVector,
+        out_electron_mom::T,
+        out_electron_state::AdjointBiSpinor,
+        out_photon_mom::T,
+        out_photon_state::SLorentzVector,
+    ) where {T <: AbstractFourMomentum}
     in_ph_slashed = slashed(in_photon_state)
     out_ph_slashed = slashed(out_photon_state)
 
@@ -166,10 +166,10 @@ end
 #######
 
 function _pert_compton_ps_fac(
-    in_psl::ComptonSphericalLayout{<:ComptonRestSystem}, in_photon_mom::T, out_photon_mom::T
-) where {T<:AbstractFourMomentum}
+        in_psl::ComptonSphericalLayout{<:ComptonRestSystem}, in_photon_mom::T, out_photon_mom::T
+    ) where {T <: AbstractFourMomentum}
     omega = getE(in_photon_mom)
     omega_prime = getE(out_photon_mom)
     return omega_prime^2 /
-           (16 * convert(eltype(T), pi)^2 * omega * mass(eltype(T), Electron()))
+        (16 * convert(eltype(T), pi)^2 * omega * mass(eltype(T), Electron()))
 end

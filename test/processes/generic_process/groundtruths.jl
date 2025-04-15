@@ -8,7 +8,7 @@ function _groundtruth_is_physical(proc::ScatteringProcess, ::PerturbativeQED)
     outgoing_positrons = number_particles(proc, Outgoing(), Positron())
 
     return incoming_electrons + outgoing_positrons ==
-           outgoing_electrons + incoming_positrons
+        outgoing_electrons + incoming_positrons
 end
 
 function _groundtruth_spin_pols(particles)
