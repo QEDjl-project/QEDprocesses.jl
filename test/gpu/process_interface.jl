@@ -28,6 +28,11 @@ PROC_DEF_TUPLES = [
 
 RNG = Random.MersenneTwister(573)
 
+if !LARGE_TESTS()
+    @info "Skipping large tests...\nEnable them explicitly with an environment variable LARGE_TESTS=1"
+    PROC_DEF_TUPLES = PROC_DEF_TUPLES[1:5]
+end
+
 @testset "Testing with $GPU_MODULE" for (GPU_MODULE, VECTOR_TYPE) in GPUS
     @testset "Float type $FLOAT_T" for FLOAT_T in GPU_FLOAT_TYPES[GPU_MODULE]
         @testset "$proc $model $psl" for (proc, model, psl) in PROC_DEF_TUPLES
