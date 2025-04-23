@@ -41,11 +41,12 @@ end
             @info "Testing $proc ($(incoming_spin_pols(proc)), $(outgoing_spin_pols(proc))) ($FLOAT_T)"
             flush(stdout)
 
-            psps = [
-                PhaseSpacePoint(
-                        proc, model, psl, _rand_coordinates(RNG, proc, model, psl, FLOAT_T)...
-                    ) for _ in 1:N
-            ]
+            coords = [_rand_coordinates(RNG, proc, model, psl, FLOAT_T) for _ in 1:N]
+
+            psps = PhaseSpacePoint.(
+                proc, model, Ref(psl), getindex.(coords, 1), getindex.(coords, 2)
+            )
+
             procs = [proc for _ in 1:N]
 
             gpupsps = VECTOR_TYPE(psps)
@@ -140,6 +141,7 @@ end
                     if !tuple_isapprox(gpu[i], gt[i]; rtol = sqrt(eps(FLOAT_T)))
                         @show gt[i]
                         @show gpu[i]
+                        display(coords[i])
                         display(psps[i])
                     end
                 end
