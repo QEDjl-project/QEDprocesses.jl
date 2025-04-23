@@ -147,14 +147,10 @@ function _pert_compton_matrix_element_single(
     )
 
     # TODO: fermion propagator is not yet in QEDbase
-    diagram_1 =
-        out_electron_state *
-        (out_ph_slashed * (prop1 * (in_ph_slashed * in_electron_state)))
-    diagram_2 =
-        out_electron_state *
-        (in_ph_slashed * (prop2 * (out_ph_slashed * in_electron_state)))
+    inner_diagram_1 = (out_ph_slashed * (prop1 * in_ph_slashed))
+    inner_diagram_2 = (in_ph_slashed * (prop2 * out_ph_slashed))
 
-    result = diagram_1 + diagram_2
+    result = out_electron_state * (inner_diagram_1 + inner_diagram_2) * in_electron_state
 
     # TODO: find (preferably unitful) global provider for physical constants
     # elementary charge
