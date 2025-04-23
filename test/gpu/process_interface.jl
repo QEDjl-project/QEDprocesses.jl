@@ -126,33 +126,25 @@ end
             end
 
             @testset "Private PSP/Process Interface" begin
-                @test sum(
-                    isapprox.(
-                        Vector(QEDbase._incident_flux.(gpupsps)),
-                        QEDbase._incident_flux.(psps),
-                    ),
-                ) == N
+                gpu = Vector(QEDbase._incident_flux.(gpupsps))
+                gt = QEDbase._incident_flux.(psps)
+                @test eltype(gpu) == FLOAT_T
+                @test sum(isapprox.(gpu, gt)) == N
 
-                @test sum(
-                    tuple_isapprox.(
-                        Vector(QEDbase._matrix_element.(gpupsps)),
-                        QEDbase._matrix_element.(psps);
-                        rtol = sqrt(eps(FLOAT_T)),
-                        atol = eps(FLOAT_T),
-                    ),
-                ) == N
+                gpu = Vector(QEDbase._matrix_element.(gpupsps))
+                gt = QEDbase._matrix_element.(psps)
+                @test eltype(eltype(gpu)) == Complex{FLOAT_T}
+                @test sum(tuple_isapprox.(gpu, gt; rtol = sqrt(eps(FLOAT_T)), atol = eps(FLOAT_T))) == N
 
-                @test sum(
-                    Vector(QEDbase._is_in_phasespace.(gpupsps)) .==
-                        QEDbase._is_in_phasespace.(psps)
-                ) == N
+                gpu = Vector(QEDbase._is_in_phasespace.(gpupsps))
+                gt = QEDbase._is_in_phasespace.(psps)
+                @test eltype(gpu) == Bool
+                @test sum(gpu .== gt) == N
 
-                @test sum(
-                    isapprox.(
-                        Vector(QEDbase._phase_space_factor.(gpupsps)),
-                        QEDbase._phase_space_factor.(psps),
-                    ),
-                ) == N
+                gpu = Vector(QEDbase._phase_space_factor.(gpupsps))
+                gt = QEDbase._phase_space_factor.(psps)
+                @test eltype(gpu) == FLOAT_T
+                @test sum(isapprox.(gpu, gt)) == N
 
                 # this currently throws an exception because QuadGK does not work on the GPU
                 @test sum(
@@ -164,26 +156,20 @@ end
             end
 
             @testset "Public PSP/Process Interface" begin
-                @test sum(
-                    isapprox.(
-                        Vector(differential_probability.(gpupsps)),
-                        differential_probability.(psps),
-                    ),
-                ) == N
+                gpu = Vector(differential_probability.(gpupsps))
+                gt = differential_probability.(psps)
+                @test eltype(gpu) == FLOAT_T
+                @test sum(isapprox.(gpu, gt)) == N
 
-                @test sum(
-                    isapprox.(
-                        Vector(QEDbase._is_in_phasespace.(gpupsps)),
-                        QEDbase._is_in_phasespace.(psps),
-                    ),
-                ) == N
+                gpu = Vector(QEDbase._is_in_phasespace.(gpupsps))
+                gt = QEDbase._is_in_phasespace.(psps)
+                @test eltype(gpu) == Bool
+                @test sum(gpu .== gt) == N
 
-                @test sum(
-                    isapprox.(
-                        Vector(differential_cross_section.(gpupsps)),
-                        differential_cross_section.(psps),
-                    ),
-                ) == N
+                gpu = Vector(differential_cross_section.(gpupsps))
+                gt = differential_cross_section.(psps)
+                @test eltype(gpu) == FLOAT_T
+                @test sum(isapprox.(gpu, gt)) == N
 
                 # as above, this currently throws an exception because QuadGK does not work on the GPU
                 @test sum(
