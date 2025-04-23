@@ -35,10 +35,10 @@ end
 
 @testset "Testing with $GPU_MODULE" for (GPU_MODULE, VECTOR_TYPE) in GPUS
     @testset "Float type $FLOAT_T" for FLOAT_T in GPU_FLOAT_TYPES[GPU_MODULE]
-        @testset "$proc $model $psl" for (proc, model, psl) in PROC_DEF_TUPLES
+        @testset "$proc ($(incoming_spin_pols(proc)), $(outgoing_spin_pols(proc)))" for (proc, model, psl) in PROC_DEF_TUPLES
             N = 128
 
-            @info "Testing $proc $model $psl ($FLOAT_T)"
+            @info "Testing $proc ($(incoming_spin_pols(proc)), $(outgoing_spin_pols(proc))) ($FLOAT_T)"
             flush(stdout)
 
             psps = [
@@ -140,7 +140,7 @@ end
                     if !tuple_isapprox(gpu[i], gt[i]; rtol = sqrt(eps(FLOAT_T)))
                         @show gt[i]
                         @show gpu[i]
-                        @show psps[i]
+                        display(psps[i])
                     end
                 end
 
