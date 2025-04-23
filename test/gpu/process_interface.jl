@@ -134,7 +134,15 @@ end
                 gpu = Vector(QEDbase._matrix_element.(gpupsps))
                 gt = QEDbase._matrix_element.(psps)
                 @test eltype(eltype(gpu)) == Complex{FLOAT_T}
-                @test sum(tuple_isapprox.(gpu, gt; rtol = sqrt(eps(FLOAT_T)), atol = eps(FLOAT_T))) == N
+                @test sum(tuple_isapprox.(gpu, gt; rtol = sqrt(eps(FLOAT_T)))) == N
+
+                for i in 1:N
+                    if !tuple_isapprox(gpu[i], gt[i]; rtol = sqrt(eps(FLOAT_T)))
+                        @show gt[i]
+                        @show gpu[i]
+                        @show psps[i]
+                    end
+                end
 
                 gpu = Vector(QEDbase._is_in_phasespace.(gpupsps))
                 gt = QEDbase._is_in_phasespace.(psps)
