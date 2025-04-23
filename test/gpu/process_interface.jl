@@ -76,103 +76,121 @@ end
                             return QEDbase._averaging_norm(T, proc)
                         end
 
-                        @test all(
+                        @test sum(
                             isapprox.(Vector(_stable_norm.(gpuprocs)), _stable_norm.(procs))
-                        )
+                        ) == N
                     end
                     wrap(FLOAT_T)
                 end
             end
 
             @testset "Public Process Functions" begin
-                @test Vector(incoming_particles.(gpuprocs)) == incoming_particles.(procs)
-                @test Vector(outgoing_particles.(gpuprocs)) == outgoing_particles.(procs)
+                @test sum(Vector(incoming_particles.(gpuprocs)) .== incoming_particles.(procs)) == N
+                @test sum(Vector(outgoing_particles.(gpuprocs)) .== outgoing_particles.(procs)) == N
 
-                @test Vector(particles.(gpuprocs, Incoming())) ==
-                    particles.(procs, Incoming())
-                @test Vector(particles.(gpuprocs, Outgoing())) ==
-                    particles.(procs, Outgoing())
+                @test sum(
+                    Vector(particles.(gpuprocs, Incoming())) .==
+                        particles.(procs, Incoming())
+                ) == N
+                @test sum(
+                    Vector(particles.(gpuprocs, Outgoing())) .==
+                        particles.(procs, Outgoing())
+                ) == N
 
-                @test Vector(number_incoming_particles.(gpuprocs)) ==
-                    number_incoming_particles.(procs)
-                @test Vector(number_outgoing_particles.(gpuprocs)) ==
-                    number_outgoing_particles.(procs)
+                @test sum(
+                    Vector(number_incoming_particles.(gpuprocs)) .==
+                        number_incoming_particles.(procs)
+                ) == N
+                @test sum(
+                    Vector(number_outgoing_particles.(gpuprocs)) .==
+                        number_outgoing_particles.(procs)
+                ) == N
 
-                @test Vector(number_particles.(gpuprocs, Incoming())) ==
-                    number_particles.(procs, Incoming())
-                @test Vector(number_particles.(gpuprocs, Outgoing())) ==
-                    number_particles.(procs, Outgoing())
+                @test sum(
+                    Vector(number_particles.(gpuprocs, Incoming())) .==
+                        number_particles.(procs, Incoming())
+                ) == N
+                @test sum(
+                    Vector(number_particles.(gpuprocs, Outgoing())) .==
+                        number_particles.(procs, Outgoing())
+                ) == N
 
-                @test Vector(QEDbase.in_phase_space_dimension.(gpuprocs, model)) ==
-                    QEDbase.in_phase_space_dimension.(procs, model)
-                @test Vector(QEDbase.out_phase_space_dimension.(gpuprocs, model)) ==
-                    QEDbase.out_phase_space_dimension.(procs, model)
+                @test sum(
+                    Vector(QEDbase.in_phase_space_dimension.(gpuprocs, model)) .==
+                        QEDbase.in_phase_space_dimension.(procs, model)
+                ) == N
+                @test sum(
+                    Vector(QEDbase.out_phase_space_dimension.(gpuprocs, model)) .==
+                        QEDbase.out_phase_space_dimension.(procs, model)
+                ) == N
             end
 
             @testset "Private PSP/Process Interface" begin
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(QEDbase._incident_flux.(gpupsps)),
                         QEDbase._incident_flux.(psps),
                     ),
-                )
+                ) == N
 
-                @test all(
+                @test sum(
                     tuple_isapprox.(
                         Vector(QEDbase._matrix_element.(gpupsps)),
                         QEDbase._matrix_element.(psps);
                         rtol = sqrt(eps(FLOAT_T)),
                         atol = eps(FLOAT_T),
                     ),
-                )
+                ) == N
 
-                @test Vector(QEDbase._is_in_phasespace.(gpupsps)) ==
-                    QEDbase._is_in_phasespace.(psps)
+                @test sum(
+                    Vector(QEDbase._is_in_phasespace.(gpupsps)) .==
+                        QEDbase._is_in_phasespace.(psps)
+                ) == N
 
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(QEDbase._phase_space_factor.(gpupsps)),
                         QEDbase._phase_space_factor.(psps),
                     ),
-                )
+                ) == N
 
                 # this currently throws an exception because QuadGK does not work on the GPU
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(QEDprocesses._total_probability.(gpupsps)),
                         QEDprocesses._total_probability.(psps),
                     ),
-                ) broken = true
+                ) == N broken = true
             end
 
             @testset "Public PSP/Process Interface" begin
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(differential_probability.(gpupsps)),
                         differential_probability.(psps),
                     ),
-                )
+                ) == N
 
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(QEDbase._is_in_phasespace.(gpupsps)),
                         QEDbase._is_in_phasespace.(psps),
                     ),
-                )
+                ) == N
 
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(differential_cross_section.(gpupsps)),
                         differential_cross_section.(psps),
                     ),
-                )
+                ) == N
 
                 # as above, this currently throws an exception because QuadGK does not work on the GPU
-                @test all(
+                @test sum(
                     isapprox.(
                         Vector(total_cross_section.(gpupsps)), total_cross_section.(psps)
                     ),
-                ) broken = true
+                ) == N broken = true
             end
         end
     end
