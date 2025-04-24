@@ -7,7 +7,8 @@ Return a tuple of tuples of incoming and outgoing coordinates for a given proces
 function _rand_coordinates(
         rng::AbstractRNG, ::PROCESS, ::MODEL, ::PSL, FLOAT_T = Float64
     ) where {PROCESS <: Compton, MODEL <: PerturbativeQED, PSL <: AbstractPhaseSpaceLayout}
-    return ((rand(rng, FLOAT_T),), (rand(rng, FLOAT_T), rand(rng, FLOAT_T)))
+    # TODO: this adds a small bit to the incoming energy to prevent precision problems that appear when it's close to 0
+    return ((FLOAT_T(0.95) * rand(rng, FLOAT_T) + FLOAT_T(0.05),), (rand(rng, FLOAT_T), rand(rng, FLOAT_T)))
 end
 
 tuple_iaspprox(::Tuple{}, ::Tuple{Vararg}; atol = 0.0, rtol = eps()) = false
