@@ -20,6 +20,8 @@ include("utils.jl")
 
 include("models/models.jl")
 
+include("processes/utils.jl")
+
 # generic qed process
 include("processes/generic_process/utility.jl")
 include("processes/generic_process/process.jl")
