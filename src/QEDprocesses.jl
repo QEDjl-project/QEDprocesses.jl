@@ -11,8 +11,9 @@ export ComptonSphericalLayout
 # generic scattering process
 export ScatteringProcess, isphysical
 
-using QEDbase
-using QEDcore
+using Reexport
+@reexport using QEDbase
+@reexport using QEDcore
 using StaticArrays
 using QuadGK
 
