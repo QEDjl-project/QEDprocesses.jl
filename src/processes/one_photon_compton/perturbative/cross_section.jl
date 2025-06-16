@@ -26,7 +26,7 @@ end
 
 @inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T <: Number}
     # photons are massless, so use an atol here
-    return isapprox(getMass2(mom), mass(T, Photon())^2; atol = eps(T))
+    return isapprox(getMass2(mom), mass(T, Photon())^2; atol = sqrt(eps(T)))
 end
 @inline function _is_onshell(
         ::P, mom::AbstractFourMomentum{T}
@@ -45,7 +45,8 @@ end
     @inbounds if (
             !isapprox(
                 momentum(psp, Incoming(), 1) + momentum(psp, Incoming(), 2),
-                momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2),
+                momentum(psp, Outgoing(), 1) + momentum(psp, Outgoing(), 2);
+                rtol = sqrt(eps(momentum_eltype(psp)))
             )
         )
         return false
