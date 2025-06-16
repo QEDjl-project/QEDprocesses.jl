@@ -43,6 +43,10 @@ struct ScatteringProcess{INT, OUTT, INSP, OUTSP} <:
         _assert_spin_pol_particle_compatability(in_particles, in_spin_pols)
         _assert_spin_pol_particle_compatability(out_particles, out_spin_pols)
 
+        if (I > 2)
+            @warn "scattering processes with more than 2 incoming particles do not have a general formula for the incident flux implemented; therefore, differential and total cross sections are also unimplemented"
+        end
+
         return new{
             typeof(in_particles),
             typeof(out_particles),

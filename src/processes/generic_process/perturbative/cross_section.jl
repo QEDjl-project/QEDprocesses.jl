@@ -54,14 +54,11 @@ function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:ScatteringProcess, Per
         _all_onshell(particles(psp, Outgoing()), momenta(psp, Outgoing()))
 end
 
-#=
-function QEDbase._incident_flux(psp::InPhaseSpacePoint{<:ScatteringProcess,PerturbativeQED}) 
+function QEDbase._incident_flux(psp::InPhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}
+    if incoming_particles(PROC) > 2
+        throw("_incident_flux is unimplemented for general scattering processes with more than 2 incoming particles")
+    end
 
+    # TODO
+    return nothing
 end
-
-function QEDbase._phase_space_factor(
-    psp::PhaseSpacePoint{<:ScatteringProcess,PerturbativeQED}
-)
-
-end
-=#
