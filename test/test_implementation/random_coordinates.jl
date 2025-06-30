@@ -11,8 +11,8 @@ function _rand_coordinates(
     return ((FLOAT_T(0.95) * rand(rng, FLOAT_T) + FLOAT_T(0.05),), (rand(rng, FLOAT_T), rand(rng, FLOAT_T)))
 end
 
-tuple_iaspprox(::Tuple{}, ::Tuple{Vararg}; atol = 0.0, rtol = eps()) = false
-tuple_iaspprox(::Tuple{Vararg}, ::Tuple{}; atol = 0.0, rtol = eps()) = false
+tuple_isapprox(::Tuple{}, ::Tuple{Vararg}; atol = 0.0, rtol = eps()) = false
+tuple_isapprox(::Tuple{Vararg}, ::Tuple{}; atol = 0.0, rtol = eps()) = false
 tuple_isapprox(::Tuple{}, ::Tuple{}; atol = 0.0, rtol = eps()) = true
 function tuple_isapprox(
         a::Tuple{<:Number, Vararg}, b::Tuple{<:Number, Vararg}; atol = 0.0, rtol = eps()
