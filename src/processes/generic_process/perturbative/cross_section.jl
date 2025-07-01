@@ -37,6 +37,11 @@ function QEDbase._matrix_element(psp::PhaseSpacePoint{PROC, PerturbativeQED}) wh
     return sqrt(mat_el_func(psp))
 end
 
+function QEDbase._matrix_element_square(psp::PhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}
+    mat_el_func = _mat_el_func(process(psp), typeof(psp))
+    return mat_el_func(psp)
+end
+
 function QEDbase._averaging_norm(::Type{T}, proc::ScatteringProcess) where {T <: Number}
     return one(T) / incoming_multiplicity(proc)
 end
