@@ -1,5 +1,10 @@
-@time @safetestset "generic process" begin
-    include("generic_process/process.jl")
+@testset "generic process" begin
+    @time @safetestset "general" begin
+        include("generic_process/process.jl")
+    end
+    @time @safetestset "kinematics" begin
+        include("generic_process/kinematics.jl")
+    end
 end
 
 @time @safetestset "general one photon compton" begin

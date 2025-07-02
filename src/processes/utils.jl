@@ -3,9 +3,9 @@
     return isapprox(getMass2(mom), mass(T, Photon())^2; atol = eps(T))
 end
 @inline function _is_onshell(
-        ::P, mom::AbstractFourMomentum{T}
-    ) where {P <: AbstractParticleType, T <: Number}
-    return isapprox(getMass2(mom), mass(T, P())^2; rtol = sqrt(eps(T)))
+        p::P, mom::AbstractFourMomentum{T}
+    ) where {P <: AbstractParticle, T <: Number}
+    return isapprox(getMass2(mom), mass(T, p)^2; rtol = sqrt(eps(T)))
 end
 
 @inline function _all_onshell(

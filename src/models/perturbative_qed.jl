@@ -31,13 +31,9 @@ end
 """
     isphysical(proc::AbstractProcessDefinition, model::PerturbativeQED)
 
-A utility function that returns whether a given `AbstractProcessDefinition` conserves the number and charge of fermions and has at least 2 participating particles.
+A utility function that returns whether a given `AbstractProcessDefinition` is valid in tree-level
+perturbative QED, i.e., whether it has at least one tree-level Feynman diagram.
 """
 function isphysical(proc::AbstractProcessDefinition, ::PerturbativeQED)
-    return (
-        number_particles(proc, Incoming(), Electron()) +
-            number_particles(proc, Outgoing(), Positron()) ==
-            number_particles(proc, Incoming(), Positron()) +
-            number_particles(proc, Outgoing(), Electron())
-    ) && number_particles(proc, Incoming()) + number_particles(proc, Outgoing()) >= 2
+    return number_of_diagrams(proc) != 0
 end
