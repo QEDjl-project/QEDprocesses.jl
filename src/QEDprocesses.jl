@@ -1,9 +1,5 @@
 module QEDprocesses
 
-# constants
-export ALPHA,
-    ALPHA_SQUARE, ELEMENTARY_CHARGE, ELEMENTARY_CHARGE_SQUARE, ELECTRONMASS, ONE_OVER_FOURPI
-
 # specific compute models
 export PerturbativeQED
 
@@ -20,7 +16,6 @@ using QEDcore
 using StaticArrays
 using QuadGK
 
-include("constants.jl")
 include("utils.jl")
 
 include("models/models.jl")
