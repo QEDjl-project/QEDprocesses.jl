@@ -1,3 +1,8 @@
+using QEDFeynmanDiagrams
+using RuntimeGeneratedFunctions
+
+RuntimeGeneratedFunctions.init(@__MODULE__)
+
 """
     ScatteringProcess <: AbstractProcessDefinition
 
@@ -5,9 +10,6 @@ Generic implementation for scattering processes of arbitrary particles. Currentl
 However, this is supposed to describe scattering processes with any number of incoming and outgoing particles, and any combination of spins or polarizations for the particles.
 
 The [`isphysical`](@ref) function can be used to check whether the process is possible in perturbative QED.
-
-!!! warning
-    The computation of cross sections and probabilities is currently unimplemented.
 
 ## Constructors
 
@@ -40,6 +42,10 @@ struct ScatteringProcess{INT, OUTT, INSP, OUTSP} <:
         ) where {I, O}
         _assert_spin_pol_particle_compatability(in_particles, in_spin_pols)
         _assert_spin_pol_particle_compatability(out_particles, out_spin_pols)
+
+        if (I > 2)
+            @warn "scattering processes with more than 2 incoming particles do not have a general formula for the incident flux implemented; therefore, differential and total cross sections are also unimplemented"
+        end
 
         return new{
             typeof(in_particles),

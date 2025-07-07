@@ -24,16 +24,6 @@ function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T <: Number}
     return one(T) / incoming_multiplicity(proc)
 end
 
-@inline function _is_onshell(::Photon, mom::AbstractFourMomentum{T}) where {T <: Number}
-    # photons are massless, so use an atol here
-    return isapprox(getMass2(mom), mass(T, Photon())^2; atol = sqrt(eps(T)))
-end
-@inline function _is_onshell(
-        ::P, mom::AbstractFourMomentum{T}
-    ) where {P <: AbstractParticleType, T <: Number}
-    return isapprox(getMass2(mom), mass(T, P())^2; rtol = sqrt(eps(T)))
-end
-
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
     return _is_onshell(incoming_particles(psp.proc)[1], momentum(psp, Incoming(), 1)) &&
         _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
