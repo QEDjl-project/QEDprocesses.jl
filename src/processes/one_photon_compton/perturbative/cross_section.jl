@@ -7,7 +7,7 @@ function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton, Perturbativ
     return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
-function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
+@inline function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
     return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
@@ -82,7 +82,7 @@ end
     )
 end
 
-function _pert_compton_matrix_element(
+@inline function _pert_compton_matrix_element(
         in_electron_mom::T,
         in_electron_state,
         in_photon_mom::T,
@@ -99,7 +99,12 @@ function _pert_compton_matrix_element(
         QEDbase._as_svec(out_photon_state),
     )
 
-    matrix_elements::NTuple{length(base_states_comb), Complex{eltype(T)}} = (
+    #state_tuple = collect(base_states_comb)
+
+
+    # TODO: replace this with broadcast over spins (or look what Anton does in
+    # ComputableDAGs)
+    @inline matrix_elements::SVector{length(base_states_comb), Complex{eltype(T)}} = (
         (
             _pert_compton_matrix_element_single(
                     in_electron_mom,
@@ -115,6 +120,26 @@ function _pert_compton_matrix_element(
     )
 
     return matrix_elements
+end
+
+@inline function _pert_compton_matrix_element_single(
+        in_electron_mom::T,
+        in_photon_mom::T,
+        out_electron_mom::T,
+        out_photon_mom::T,
+        state_tuple::Tuple
+    ) where {T <: AbstractFourMomentum}
+    in_electron_state, in_photon_state, out_electron_state, out_photon_state = state_tuple
+    return _pert_compton_matrix_element_single(
+        in_electron_mom,
+        in_electron_state,
+        in_photon_mom,
+        in_photon_state,
+        out_electron_mom,
+        out_electron_state,
+        out_photon_mom,
+        out_photon_state
+    )
 end
 
 function _pert_compton_matrix_element_single(

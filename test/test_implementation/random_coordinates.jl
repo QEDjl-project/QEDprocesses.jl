@@ -1,5 +1,6 @@
 using QEDcore, QEDprocesses
 using Random
+using StaticArrays
 
 """
 Return a tuple of tuples of incoming and outgoing coordinates for a given process, model and ps_def that make up a physical phase space point.
@@ -11,8 +12,9 @@ function _rand_coordinates(
     return ((FLOAT_T(0.95) * rand(rng, FLOAT_T) + FLOAT_T(0.05),), (rand(rng, FLOAT_T), rand(rng, FLOAT_T)))
 end
 
-tuple_iaspprox(::Tuple{}, ::Tuple{Vararg}; atol = 0.0, rtol = eps()) = false
-tuple_iaspprox(::Tuple{Vararg}, ::Tuple{}; atol = 0.0, rtol = eps()) = false
+tuple_isapprox(v1::SVector, v2::SVector; kwargs...) = tuple_isapprox(Tuple(v1), Tuple(v2); kwargs...)
+tuple_isapprox(::Tuple{}, ::Tuple{Vararg}; atol = 0.0, rtol = eps()) = false
+tuple_isapprox(::Tuple{Vararg}, ::Tuple{}; atol = 0.0, rtol = eps()) = false
 tuple_isapprox(::Tuple{}, ::Tuple{}; atol = 0.0, rtol = eps()) = true
 function tuple_isapprox(
         a::Tuple{<:Number, Vararg}, b::Tuple{<:Number, Vararg}; atol = 0.0, rtol = eps()
