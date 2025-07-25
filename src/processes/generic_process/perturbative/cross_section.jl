@@ -68,11 +68,13 @@ function QEDbase._incident_flux(psp::InPhaseSpacePoint{PROC, PerturbativeQED}) w
         throw("_incident_flux is not defined for scattering processes with less than 2 incoming particles")
     end
 
-    p1_mass = mass(incoming_particles(proc)[1])
-    p2_mass = mass(incoming_particles(proc)[2])
-
     p1_mom = momentum(psp, Incoming(), Val(1))
     p2_mom = momentum(psp, Incoming(), Val(2))
+
+    EL_TYPE = eltype(p1_mom)
+
+    p1_mass = mass(EL_TYPE, incoming_particles(proc)[1])
+    p2_mass = mass(EL_TYPE, incoming_particles(proc)[2])
 
     return QEDcore.sq_diff_sqrt(p1_mom * p2_mom, p1_mass * p2_mass)
 end
