@@ -50,13 +50,15 @@ function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:ScatteringProcess, Per
     if (
             !isapprox(
                 sum(momenta(psp, Incoming())),
-                sum(momenta(psp, Outgoing())),
+                sum(momenta(psp, Outgoing()));
+                rtol=100*eps(momentum_eltype(psp)),
+                atol=100*eps(momentum_eltype(psp))
             )
         )
         return false
     end
-    return _all_onshell(particles(psp, Incoming()), momenta(psp, Incoming())) &&
-        _all_onshell(particles(psp, Outgoing()), momenta(psp, Outgoing()))
+    return _all_onshell(particle_species.(particles(psp, Incoming())), momenta(psp, Incoming())) &&
+        _all_onshell(particle_species.(particles(psp, Outgoing())), momenta(psp, Outgoing()))
 end
 
 function QEDbase._incident_flux(psp::InPhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}
