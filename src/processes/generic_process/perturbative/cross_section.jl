@@ -1,10 +1,7 @@
 using Memoization
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:ScatteringProcess})
-    return _is_onshell(incoming_particles(psp.proc)[1], momentum(psp, Incoming(), 1)) &&
-        _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
-        _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
-        _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
+    return _all_onshell(particles(psp, Incoming())) && _all_onshell(particles(psp, Outgoing()))
 end
 
 function _scattering_proc_from_type(::Type{ScatteringProcess{IN_T, OUT_T, IN_SP, OUT_SP}}) where {
@@ -57,8 +54,7 @@ function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:ScatteringProcess, Per
         )
         return false
     end
-    return _all_onshell(particle_species.(particles(psp, Incoming())), momenta(psp, Incoming())) &&
-        _all_onshell(particle_species.(particles(psp, Outgoing())), momenta(psp, Outgoing()))
+    return _all_onshell(psp)
 end
 
 function QEDbase._incident_flux(psp::InPhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}

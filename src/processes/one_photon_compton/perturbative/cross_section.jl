@@ -25,10 +25,7 @@ function QEDbase._averaging_norm(::Type{T}, proc::Compton) where {T <: Number}
 end
 
 @inline function _all_onshell(psp::PhaseSpacePoint{<:Compton})
-    return _is_onshell(incoming_particles(psp.proc)[1], momentum(psp, Incoming(), 1)) &&
-        _is_onshell(incoming_particles(psp.proc)[2], momentum(psp, Incoming(), 2)) &&
-        _is_onshell(outgoing_particles(psp.proc)[1], momentum(psp, Outgoing(), 1)) &&
-        _is_onshell(outgoing_particles(psp.proc)[2], momentum(psp, Outgoing(), 2))
+    return _all_onshell(particles(psp, Incoming())) && _all_onshell(particles(psp, Outgoing()))
 end
 
 @inline function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})

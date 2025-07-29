@@ -8,9 +8,13 @@ end
     return isapprox(getMass2(mom), mass(T, p)^2; rtol = sqrt(eps(T)))
 end
 
-@inline function _all_onshell(
-        species::Tuple{P, Vararg}, momenta::Tuple{AbstractFourMomentum{T}, Vararg}
-    ) where {P <: AbstractParticleType, T <: Number}
-    return _is_onshell(species[1], momenta[1]) && _all_onshell(species[2:end], momenta[2:end])
+@inline function _is_onshell(p::AbstractParticleStateful)
+    return _is_onshell(particle_species(p), momentum(p))
 end
-@inline _all_onshell(::Tuple{}, ::Tuple{}) = true
+
+@inline function _all_onshell(
+        particles::Tuple{P, Vararg}
+    ) where {P <: AbstractParticleStateful}
+    return _is_onshell(particles[1]) && _all_onshell(particles[2:end])
+end
+@inline _all_onshell(::Tuple{}) = true
