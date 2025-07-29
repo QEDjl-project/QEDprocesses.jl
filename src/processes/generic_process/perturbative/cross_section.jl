@@ -48,8 +48,8 @@ function QEDbase._is_in_phasespace(psp::PhaseSpacePoint{<:ScatteringProcess, Per
             !isapprox(
                 sum(momenta(psp, Incoming())),
                 sum(momenta(psp, Outgoing()));
-                rtol=100*eps(momentum_eltype(psp)),
-                atol=100*eps(momentum_eltype(psp))
+                rtol = 100 * eps(momentum_eltype(psp)),
+                atol = 100 * eps(momentum_eltype(psp))
             )
         )
         return false
