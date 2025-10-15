@@ -1,7 +1,7 @@
 name = "QEDprocesses"
 uuid = "46de9c38-1bb3-4547-a1ec-da24d767fdad"
 authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>", "Simeon Ehrig", "Klaus Steiniger", "Tom Jungnickel", "Anton Reinhard"]
-version = "0.4.0"
+version = "0.5.0"
 
 [deps]
 Memoization = "6fafb56a-5788-4b4e-91ca-c0cea6611c73"
