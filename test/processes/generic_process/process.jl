@@ -33,8 +33,8 @@ BUF = IOBuffer()
 
     @testset "all spins+pols" begin
         @testset "$in_spin, $in_pol, $out_spin, $out_pol" for (
-            in_spin, in_pol, out_spin, out_pol
-        ) in POL_AND_SPIN_COMBINATIONS
+                in_spin, in_pol, out_spin, out_pol,
+            ) in POL_AND_SPIN_COMBINATIONS
             proc = ScatteringProcess(
                 (Photon(), Electron()),
                 (Photon(), Electron()),

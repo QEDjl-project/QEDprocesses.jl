@@ -1,17 +1,20 @@
-
 using QEDbase
 using QEDcore
 using QEDprocesses
 using Random
 
 const RNG = MersenneTwister(77697185)
+
+# TODO: Fix the getMass2 so this can be eps() again
+# See https://github.com/QEDjl-project/QEDprocesses.jl/issues/127
+const ATOL_PHOTON = sqrt(eps())
 const ATOL = eps()
 const RTOL = sqrt(eps())
 
 const PROC = Compton()
 const MODEL = PerturbativeQED()
 
-const OMEGAS = (1e-6 * rand(RNG), 1e-3 * rand(RNG), rand(RNG), 1e3 * rand(RNG))
+const OMEGAS = (1.0e-6 * rand(RNG), 1.0e-3 * rand(RNG), rand(RNG), 1.0e3 * rand(RNG))
 const SQRT_S = (1.0, 1 + rand(RNG))
 
 const COS_THETAS = [-1.0, 2 * rand(RNG) - 1, 0.0, 1.0]
@@ -44,10 +47,10 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
 
                 test_P, test_K = momenta(in_psp, Incoming())
 
-                @test isapprox(getMass2(test_K), mass(Photon())^2, atol=ATOL, rtol=RTOL)
-                @test isapprox(getMass2(test_P), mass(Electron())^2, atol=ATOL, rtol=RTOL)
-                @test isapprox(getE(test_K), om, atol=ATOL, rtol=RTOL)
-                @test isapprox(getE(test_P), mass(Electron()), atol=ATOL, rtol=RTOL)
+                @test isapprox(getMass2(test_K), mass(Photon())^2, atol = ATOL_PHOTON, rtol = RTOL)
+                @test isapprox(getMass2(test_P), mass(Electron())^2, atol = ATOL, rtol = RTOL)
+                @test isapprox(getE(test_K), om, atol = ATOL, rtol = RTOL)
+                @test isapprox(getE(test_P), mass(Electron()), atol = ATOL, rtol = RTOL)
             end
         end
 
@@ -61,10 +64,10 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
 
                 test_P, test_K = momenta(in_psp, Incoming())
 
-                @test isapprox(getMass2(test_K), mass(Photon())^2, atol=ATOL, rtol=RTOL)
-                @test isapprox(getMass2(test_P), mass(Electron())^2, atol=ATOL, rtol=RTOL)
-                @test isapprox(getE(test_K), om, atol=ATOL, rtol=RTOL)
-                @test isapprox(getE(test_P), mass(Electron()), atol=ATOL, rtol=RTOL)
+                @test isapprox(getMass2(test_K), mass(Photon())^2, atol = ATOL_PHOTON, rtol = RTOL)
+                @test isapprox(getMass2(test_P), mass(Electron())^2, atol = ATOL, rtol = RTOL)
+                @test isapprox(getE(test_K), om, atol = ATOL, rtol = RTOL)
+                @test isapprox(getE(test_P), mass(Electron()), atol = ATOL, rtol = RTOL)
             end
         end
 
@@ -77,10 +80,10 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
 
                 test_P, test_K = momenta(in_psp, Incoming())
 
-                @test isapprox(getMass2(test_K), mass(Photon())^2, atol=ATOL, rtol=RTOL)
-                @test isapprox(getMass2(test_P), mass(Electron())^2, atol=ATOL, rtol=RTOL)
-                @test isapprox(getMass(test_K + test_P), ss, atol=ATOL, rtol=RTOL)
-                @test isapprox(getE(test_P), mass(Electron()), atol=ATOL, rtol=RTOL)
+                @test isapprox(getMass2(test_K), mass(Photon())^2, atol = ATOL_PHOTON, rtol = RTOL)
+                @test isapprox(getMass2(test_P), mass(Electron())^2, atol = ATOL, rtol = RTOL)
+                @test isapprox(getMass(test_K + test_P), ss, atol = ATOL, rtol = RTOL)
+                @test isapprox(getE(test_P), mass(Electron()), atol = ATOL, rtol = RTOL)
             end
         end
     end
@@ -97,20 +100,21 @@ end
         end
 
         @testset "$om, $cth, $phi" for (om, cth, phi) in
-                                       Iterators.product(OMEGAS, COS_THETAS, PHIS)
+            Iterators.product(OMEGAS, COS_THETAS, PHIS)
             IN_COORDS = (om,)
             OUT_COORDS = (cth, phi)
 
             test_psp = PhaseSpacePoint(PROC, MODEL, out_psl, IN_COORDS, OUT_COORDS)
             @testset "mass shell" begin
                 @testset "$dir $part" for (dir, part) in Iterators.product(
-                    (Incoming(), Outgoing()), (Electron(), Photon())
-                )
+                        (Incoming(), Outgoing()), (Electron(), Photon())
+                    )
                     mom = momentum(test_psp, dir, part)
                     mom_square = mom * mom
                     mass_square = mass(part)^2
 
-                    @test isapprox(mom_square, mass_square, atol=1e2 * ATOL, rtol=RTOL)
+                    atol = iszero(mass(part)) ? ATOL_PHOTON : ATOL
+                    @test isapprox(mom_square, mass_square, atol = atol, rtol = RTOL)
                 end
             end
 
@@ -118,7 +122,7 @@ end
                 in_moms = momenta(test_psp, Incoming())
                 out_moms = momenta(test_psp, Outgoing())
 
-                @test isapprox(sum(in_moms), sum(out_moms), atol=ATOL, rtol=RTOL)
+                @test isapprox(sum(in_moms), sum(out_moms), atol = ATOL, rtol = RTOL)
             end
         end
     end

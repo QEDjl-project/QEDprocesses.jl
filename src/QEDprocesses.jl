@@ -1,9 +1,5 @@
 module QEDprocesses
 
-# constants
-export ALPHA,
-    ALPHA_SQUARE, ELEMENTARY_CHARGE, ELEMENTARY_CHARGE_SQUARE, ELECTRONMASS, ONE_OVER_FOURPI
-
 # specific compute models
 export PerturbativeQED
 
@@ -15,15 +11,17 @@ export ComptonSphericalLayout
 # generic scattering process
 export ScatteringProcess, isphysical
 
+using Reexport
 using QEDbase
 using QEDcore
 using StaticArrays
 using QuadGK
 
-include("constants.jl")
 include("utils.jl")
 
 include("models/models.jl")
+
+include("processes/utils.jl")
 
 # generic qed process
 include("processes/generic_process/utility.jl")

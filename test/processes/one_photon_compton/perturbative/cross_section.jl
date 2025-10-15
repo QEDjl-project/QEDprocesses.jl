@@ -15,7 +15,7 @@ const MODEL = PerturbativeQED()
 const IN_PSL = ComptonRestSystem(Energy(2))
 const OUT_PSL = ComptonSphericalLayout(IN_PSL)
 
-const OMEGAS = (1e-6 * rand(RNG), 1e-3 * rand(RNG), rand(RNG), 1e3 * rand(RNG))
+const OMEGAS = (1.0e-6 * rand(RNG), 1.0e-3 * rand(RNG), rand(RNG), 1.0e3 * rand(RNG))
 const COS_THETAS = [-1.0, 2 * rand(RNG) - 1, 0.0, 1.0]
 const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
 
@@ -26,7 +26,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                 PROC = Compton()
 
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
-                                               Iterators.product(COS_THETAS, PHIS)
+                    Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
 
@@ -37,7 +37,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                         omega, cos_theta, 1.0
                     )
 
-                    @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(test_val, groundtruth, atol = ATOL, rtol = RTOL)
                 end
             end
 
@@ -45,7 +45,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                 PROC = Compton(PolX())
 
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
-                                               Iterators.product(COS_THETAS, PHIS)
+                    Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
                     PSP = PhaseSpacePoint(PROC, MODEL, OUT_PSL, IN_COORDS, OUT_COORDS)
@@ -55,7 +55,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                         omega, cos_theta, phi, 1.0
                     )
 
-                    @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(test_val, groundtruth, atol = ATOL, rtol = RTOL)
                 end
             end
 
@@ -63,7 +63,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                 PROC = Compton(PolY())
 
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
-                                               Iterators.product(COS_THETAS, PHIS)
+                    Iterators.product(COS_THETAS, PHIS)
                     IN_COORDS = (omega,)
                     OUT_COORDS = (cos_theta, phi)
                     PSP = PhaseSpacePoint(PROC, MODEL, OUT_PSL, IN_COORDS, OUT_COORDS)
@@ -73,7 +73,7 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                         omega, cos_theta, phi, 1.0
                     )
 
-                    @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(test_val, groundtruth, atol = ATOL, rtol = RTOL)
                 end
             end
         end
@@ -99,16 +99,16 @@ const PHIS = [0, 2 * pi, rand(RNG) * 2 * pi]
                     InPhaseSpacePoint(PROC, MODEL, IN_PSL, IN_COORDS)
                 )
 
-                @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+                @test isapprox(test_val, groundtruth, atol = ATOL, rtol = RTOL)
 
                 @testset "$cos_theta $phi" for (cos_theta, phi) in
-                                               Iterators.product(COS_THETAS, PHIS)
+                    Iterators.product(COS_THETAS, PHIS)
                     OUT_COORDS = (cos_theta, phi)
 
                     test_val = @inferred QEDprocesses.total_cross_section(
                         PhaseSpacePoint(PROC, MODEL, OUT_PSL, IN_COORDS, OUT_COORDS)
                     )
-                    @test isapprox(test_val, groundtruth, atol=ATOL, rtol=RTOL)
+                    @test isapprox(test_val, groundtruth, atol = ATOL, rtol = RTOL)
 
                     out_moms = momenta(
                         PhaseSpacePoint(PROC, MODEL, OUT_PSL, IN_COORDS, OUT_COORDS),

@@ -1,3 +1,8 @@
+using QEDFeynmanDiagrams
+using RuntimeGeneratedFunctions
+
+RuntimeGeneratedFunctions.init(@__MODULE__)
+
 """
     ScatteringProcess <: AbstractProcessDefinition
 
@@ -5,9 +10,6 @@ Generic implementation for scattering processes of arbitrary particles. Currentl
 However, this is supposed to describe scattering processes with any number of incoming and outgoing particles, and any combination of spins or polarizations for the particles.
 
 The [`isphysical`](@ref) function can be used to check whether the process is possible in perturbative QED.
-
-!!! warning
-    The computation of cross sections and probabilities is currently unimplemented.
 
 ## Constructors
 
@@ -24,8 +26,8 @@ The constructor asserts that the particles are compatible with their respective 
 
 The `in_sp` and `out_sp` parameters can be omitted in which case all spins and polarizations will be set to `AllSpin` and `AllPol` for every fermion and boson, respectively.
 """
-struct ScatteringProcess{INT,OUTT,INSP,OUTSP} <:
-       AbstractProcessDefinition where {INT<:Tuple,OUTT<:Tuple,INSP<:Tuple,OUTSP<:Tuple}
+struct ScatteringProcess{INT, OUTT, INSP, OUTSP} <:
+    AbstractProcessDefinition where {INT <: Tuple, OUTT <: Tuple, INSP <: Tuple, OUTSP <: Tuple}
     incoming_particles::INT
     outgoing_particles::OUTT
 
@@ -33,13 +35,17 @@ struct ScatteringProcess{INT,OUTT,INSP,OUTSP} <:
     outgoing_spin_pols::OUTSP
 
     function ScatteringProcess(
-        in_particles::NTuple{I,AbstractParticleType},
-        out_particles::NTuple{O,AbstractParticleType},
-        in_spin_pols::NTuple{I,AbstractSpinOrPolarization},
-        out_spin_pols::NTuple{O,AbstractSpinOrPolarization},
-    ) where {I,O}
+            in_particles::NTuple{I, AbstractParticleType},
+            out_particles::NTuple{O, AbstractParticleType},
+            in_spin_pols::NTuple{I, AbstractSpinOrPolarization},
+            out_spin_pols::NTuple{O, AbstractSpinOrPolarization},
+        ) where {I, O}
         _assert_spin_pol_particle_compatability(in_particles, in_spin_pols)
         _assert_spin_pol_particle_compatability(out_particles, out_spin_pols)
+
+        if (I > 2)
+            @warn "scattering processes with more than 2 incoming particles do not have a general formula for the incident flux implemented; therefore, differential and total cross sections are also unimplemented"
+        end
 
         return new{
             typeof(in_particles),
@@ -53,9 +59,9 @@ struct ScatteringProcess{INT,OUTT,INSP,OUTSP} <:
 end
 
 function ScatteringProcess(
-    in_particles::NTuple{I,AbstractParticleType},
-    out_particles::NTuple{O,AbstractParticleType},
-) where {I,O}
+        in_particles::NTuple{I, AbstractParticleType},
+        out_particles::NTuple{O, AbstractParticleType},
+    ) where {I, O}
     in_spin_pols = ntuple(
         x -> is_fermion(in_particles[x]) ? AllSpin() : AllPolarization(),
         length(in_particles),

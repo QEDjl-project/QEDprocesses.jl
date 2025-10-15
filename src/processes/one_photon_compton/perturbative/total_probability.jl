@@ -1,8 +1,7 @@
-
 _build_sph_out_psl(psl::ComptonSphericalLayout) = psl
 _build_sph_out_psl(psl::AbstractTwoBodyInPhaseSpaceLayout) = ComptonSphericalLayout(psl)
 
-function QEDbase._total_probability(in_psp::InPhaseSpacePoint{<:Compton,PerturbativeQED})
+function QEDbase._total_probability(in_psp::InPhaseSpacePoint{<:Compton, PerturbativeQED})
     omega = getE(momentum(in_psp[Incoming(), 2]))
 
     function func(x)
@@ -17,7 +16,7 @@ function QEDbase._total_probability(in_psp::InPhaseSpacePoint{<:Compton,Perturba
         )
     end
 
-    tot_prob, _ = quadgk(func, -1, 1; rtol=sqrt(eps(omega)))
+    tot_prob, _ = quadgk(func, -1, 1; rtol = sqrt(eps(omega)))
 
     tot_prob *= 2 * pi # phi integration is trivial
     return tot_prob

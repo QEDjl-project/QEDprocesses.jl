@@ -8,7 +8,7 @@
 
     _base_component_type(array_of_lv::AbstractArray{LV}) where {LV<:AbstractLorentzVector}
 
-Return the type of the components of given Lorentz vectors, which are by themself elements of an
+Return the type of the components of given Lorentz vectors, which are by themselves elements of an
 `AbstractArray`.
 
 # Examples
@@ -20,6 +20,6 @@ julia> QEDprocesses._base_component_type(v)
 Float64
 ```
 """
-function _base_component_type(::AbstractArray{LV}) where {LV<:AbstractLorentzVector}
+function _base_component_type(::AbstractArray{LV}) where {LV <: AbstractLorentzVector}
     return eltype(LV)
 end

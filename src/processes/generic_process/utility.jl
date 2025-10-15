@@ -4,9 +4,9 @@ _assert_spin_pol_particle_compatability(::Tuple{}, ::Tuple{}) = nothing
 # recursion base case: check first particle against first spin/pol, then recurse
 # note: the length of the tuples is expected to be the same, the constructor ensures this by using NTuples
 function _assert_spin_pol_particle_compatability(
-    particles::Tuple{AbstractParticleType,Vararg},
-    spin_pols::Tuple{AbstractSpinOrPolarization,Vararg},
-)
+        particles::Tuple{AbstractParticleType, Vararg},
+        spin_pols::Tuple{AbstractSpinOrPolarization, Vararg},
+    )
     if is_fermion(particles[1]) && !(spin_pols[1] isa AbstractSpin)
         throw(
             InvalidInputError(
