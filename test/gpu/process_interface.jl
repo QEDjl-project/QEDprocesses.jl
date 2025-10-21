@@ -189,6 +189,28 @@ end
                     ),
                 ) == N broken = true
             end
+
+            @testset "KernelAbstractions Kernel Interface" begin
+                dest = similar(gpupsps, FLOAT_T)
+                gt = unsafe_differential_cross_section.(psps)
+                unsafe_differential_cross_section!(dest, gpupsps)
+                @test sum(isapprox.(Vector(dest), gt)) == N
+
+                fill!(dest, zero(FLOAT_T))
+                gt = differential_cross_section.(psps)
+                differential_cross_section!(dest, gpupsps)
+                @test sum(isapprox.(Vector(dest), gt)) == N
+
+                fill!(dest, zero(FLOAT_T))
+                gt = unsafe_differential_probability.(psps)
+                unsafe_differential_probability!(dest, gpupsps)
+                @test sum(isapprox.(Vector(dest), gt)) == N
+
+                fill!(dest, zero(FLOAT_T))
+                gt = differential_probability.(psps)
+                differential_probability!(dest, gpupsps)
+                @test sum(isapprox.(Vector(dest), gt)) == N
+            end
         end
     end
 end

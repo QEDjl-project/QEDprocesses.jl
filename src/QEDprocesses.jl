@@ -16,6 +16,7 @@ using QEDbase
 using QEDcore
 using StaticArrays
 using QuadGK
+using KernelAbstractions
 
 include("utils.jl")
 

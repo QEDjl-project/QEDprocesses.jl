@@ -1,5 +1,3 @@
-using Memoization
-
 @inline function _all_onshell(psp::PhaseSpacePoint{<:ScatteringProcess})
     return _all_onshell(particles(psp, Incoming())) && _all_onshell(particles(psp, Outgoing()))
 end
@@ -18,15 +16,6 @@ function _scattering_proc_from_type(::Type{ScatteringProcess{IN_T, OUT_T, IN_SP,
         _ctor(IN_SP),
         _ctor(OUT_SP),
     )
-end
-
-@memoize function _mat_el_func(proc::PROC, ::Type{PSP}) where {
-        PROC <: ScatteringProcess, PSP <: PhaseSpacePoint{PROC, PerturbativeQED},
-    }
-    g = graph(proc)
-    # TODO: there seems to be a bug in 1.12 with ComputableDAGs.jl. Enable this again once it's fixed
-    #optimize_to_fixpoint!(ReductionOptimizer(), g)
-    return get_compute_function(g, proc, cpu_st(), @__MODULE__; closures_size = 1000, concrete_input_type = PSP)
 end
 
 function QEDbase._matrix_element(psp::PhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}
@@ -75,4 +64,10 @@ function QEDbase._incident_flux(psp::InPhaseSpacePoint{PROC, PerturbativeQED}) w
     p2_mass = mass(EL_TYPE, incoming_particles(proc)[2])
 
     return QEDcore.sq_diff_sqrt(p1_mom * p2_mom, p1_mass * p2_mass)
+end
+
+function QEDbase._matrix_element_square_sum(in_psps::AbstractVector{PSP}, out::AbstractVector) where {PSP <: AbstractPhaseSpacePoint}
+    @assert length(in_psps) == length(out)
+
+    return _mat_el_kernel()
 end
