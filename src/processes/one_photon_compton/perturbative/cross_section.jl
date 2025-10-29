@@ -108,26 +108,6 @@ end
     return s
 end
 
-@inline function _pert_compton_matrix_element_single(
-        in_electron_mom::T,
-        in_photon_mom::T,
-        out_electron_mom::T,
-        out_photon_mom::T,
-        state_tuple::Tuple
-    ) where {T <: AbstractFourMomentum}
-    in_electron_state, in_photon_state, out_electron_state, out_photon_state = state_tuple
-    return _pert_compton_matrix_element_single(
-        in_electron_mom,
-        in_electron_state,
-        in_photon_mom,
-        in_photon_state,
-        out_electron_mom,
-        out_electron_state,
-        out_photon_mom,
-        out_photon_state
-    )
-end
-
 function _pert_compton_matrix_element_single(
         in_electron_mom::T,
         in_electron_state::BiSpinor,
