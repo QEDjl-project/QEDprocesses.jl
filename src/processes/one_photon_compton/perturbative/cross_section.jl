@@ -90,7 +90,7 @@ end
         out_photon_state,
     ) where {T <: AbstractFourMomentum}
     s = zero(eltype(T))
-    for in_el in in_electron_state, in_ph in in_photon_state, out_el in out_electron_state, out_ph in out_photon_state
+    for in_el in QEDbase._as_svec(in_electron_state), in_ph in QEDbase._as_svec(in_photon_state), out_el in QEDbase._as_svec(out_electron_state), out_ph in QEDbase._as_svec(out_photon_state)
         @inline s += abs2(
             _pert_compton_matrix_element_single(
                 in_electron_mom,
