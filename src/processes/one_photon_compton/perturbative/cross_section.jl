@@ -7,10 +7,10 @@ function QEDbase._incident_flux(in_psp::InPhaseSpacePoint{<:Compton, Perturbativ
     return momentum(in_psp, Incoming(), 1) * momentum(in_psp, Incoming(), 2)
 end
 
-@inline function QEDbase._matrix_element(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
+@inline function QEDbase._matrix_element_square_sum(psp::PhaseSpacePoint{<:Compton, PerturbativeQED})
     in_ps = momenta(psp, Incoming())
     out_ps = momenta(psp, Outgoing())
-    return _pert_compton_matrix_element(psp.proc, in_ps, out_ps)
+    return _pert_compton_matrix_element_sqsum(psp.proc, in_ps, out_ps)
 end
 
 """
@@ -53,7 +53,7 @@ end
 # Matrix elements
 #######
 
-@inline function _pert_compton_matrix_element(
+@inline function _pert_compton_matrix_element_sqsum(
         proc::Compton, in_ps::NTuple{N, T}, out_ps::NTuple{M, T}
     ) where {N, M, T <: AbstractFourMomentum}
     in_electron_mom = in_ps[1]
@@ -67,7 +67,7 @@ end
     out_electron_state = base_state(Electron(), Outgoing(), out_electron_mom, proc.out_spin)
     out_photon_state = base_state(Photon(), Outgoing(), out_photon_mom, proc.out_pol)
 
-    return _pert_compton_matrix_element(
+    return _pert_compton_matrix_element_sqsum(
         in_electron_mom,
         in_electron_state,
         in_photon_mom,
@@ -79,7 +79,7 @@ end
     )
 end
 
-@inline function _pert_compton_matrix_element(
+@inline function _pert_compton_matrix_element_sqsum(
         in_electron_mom::T,
         in_electron_state,
         in_photon_mom::T,
@@ -89,34 +89,23 @@ end
         out_photon_mom::T,
         out_photon_state,
     ) where {T <: AbstractFourMomentum}
-    base_states_comb = Iterators.product(
-        QEDbase._as_svec(in_electron_state),
-        QEDbase._as_svec(in_photon_state),
-        QEDbase._as_svec(out_electron_state),
-        QEDbase._as_svec(out_photon_state),
-    )
-
-    #state_tuple = collect(base_states_comb)
-
-
-    # TODO: replace this with broadcast over spins (or look what Anton does in
-    # ComputableDAGs)
-    @inline matrix_elements::SVector{length(base_states_comb), Complex{eltype(T)}} = (
-        (
+    s = zero(eltype(T))
+    for in_el in in_electron_state, in_ph in in_photon_state, out_el in out_electron_state, out_ph in out_photon_state
+        @inline s += abs2(
             _pert_compton_matrix_element_single(
-                    in_electron_mom,
-                    in_el,
-                    in_photon_mom,
-                    in_ph,
-                    out_electron_mom,
-                    out_el,
-                    out_photon_mom,
-                    out_ph,
-                ) for (in_el, in_ph, out_el, out_ph) in base_states_comb
-        )...,
-    )
+                in_electron_mom,
+                in_el,
+                in_photon_mom,
+                in_ph,
+                out_electron_mom,
+                out_el,
+                out_photon_mom,
+                out_ph,
+            )
+        )
+    end
 
-    return matrix_elements
+    return s
 end
 
 @inline function _pert_compton_matrix_element_single(
