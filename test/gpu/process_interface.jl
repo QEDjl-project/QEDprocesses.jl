@@ -132,17 +132,18 @@ end
                 @test eltype(gpu) == FLOAT_T
                 @test sum(isapprox.(gpu, gt)) == N
 
-                gpu = Vector(QEDbase._matrix_element.(gpupsps))
-                gt = QEDbase._matrix_element.(psps)
-                @test eltype(eltype(gpu)) == Complex{FLOAT_T}
-                @test sum(tuple_isapprox.(gpu, gt; rtol = sqrt(eps(FLOAT_T)))) == N
+                gpu = Vector(QEDbase._matrix_element_square_sum.(gpupsps))
+                gt = QEDbase._matrix_element_square_sum.(psps)
+                @test eltype(eltype(gpu)) == FLOAT_T
+                @test sum(isapprox.(gpu, gt; rtol = sqrt(eps(FLOAT_T)))) == N
 
                 for i in 1:N
-                    if !tuple_isapprox(gpu[i], gt[i]; rtol = sqrt(eps(FLOAT_T)))
+                    if !isapprox(gpu[i], gt[i]; rtol = sqrt(eps(FLOAT_T)))
                         @show gt[i]
                         @show gpu[i]
                         display(coords[i])
                         display(psps[i])
+                        flush!(stdout)
                     end
                 end
 
