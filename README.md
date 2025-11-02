@@ -2,16 +2,9 @@
 
 [![Doc Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://qedjl-project.github.io/QEDprocesses.jl/stable)
 [![Doc Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://qedjl-project.github.io/QEDprocesses.jl/dev)
-[![][badge-procs-pipeline]][main-procs-pipeline]
-[![][badge-procs-version]][status-procs-version]
 [![code style: runic](https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-black)](https://github.com/fredrikekre/Runic.jl)
 
-[badge-procs-pipeline]: https://img.shields.io/gitlab/pipeline-status/hzdr%2Fqedjl-project%2FQEDprocesses-jl?branch=main&logo=GitLab&label=CI
-[main-procs-pipeline]: https://gitlab.com/hzdr/qedjl-project/QEDprocesses-jl/-/commits/main
-[badge-procs-version]: https://juliahub.com/docs/General/QEDprocesses/stable/version.svg
-[status-procs-version]: https://juliahub.com/ui/Packages/General/QEDprocesses
-
-**QEDprocesses.jl** is a Julia package for modeling scattering processes in quantum electrodynamics (QED).
+QEDprocesses.jl\*\* is a Julia package for modeling scattering processes in quantum electrodynamics (QED).
 It is part of the [`QuantumElectrodynamics.jl`](https://qedjl-project.github.io/QuantumElectrodynamics.jl/dev/) ecosystem,
 which provides a modular framework for simulating QED interactions.
 
@@ -74,4 +67,4 @@ Special thanks to the following individuals for their support and contributions:
 
 ## License
 
-`QEDprocesses.jl` is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) © Uwe Hernandez Acosta
