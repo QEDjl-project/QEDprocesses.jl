@@ -1,6 +1,12 @@
 name = "QEDprocesses"
 uuid = "46de9c38-1bb3-4547-a1ec-da24d767fdad"
-authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>", "Simeon Ehrig", "Klaus Steiniger", "Tom Jungnickel", "Anton Reinhard"]
+authors = [
+    "Uwe Hernandez Acosta <u.hernandez@hzdr.de>",
+    "Simeon Ehrig",
+    "Klaus Steiniger",
+    "Tom Jungnickel",
+    "Anton Reinhard",
+]
 version = "0.5.0"
 
 [deps]
@@ -15,7 +21,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 Memoization = "0.2.2"
-QEDFeynmanDiagrams = "0.1.0"
+QEDFeynmanDiagrams = "0.1"
 QEDbase = "0.5.0"
 QEDcore = "0.4.0"
 QuadGK = "2"
