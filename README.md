@@ -4,7 +4,7 @@
 [![Doc Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://qedjl-project.github.io/QEDprocesses.jl/dev)
 [![code style: runic](https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-black)](https://github.com/fredrikekre/Runic.jl)
 
-QEDprocesses.jl\*\* is a Julia package for modeling scattering processes in quantum electrodynamics (QED).
+**QEDprocesses.jl** is a Julia package for modeling scattering processes in quantum electrodynamics (QED).
 It is part of the [`QuantumElectrodynamics.jl`](https://qedjl-project.github.io/QuantumElectrodynamics.jl/dev/) ecosystem,
 which provides a modular framework for simulating QED interactions.
 
