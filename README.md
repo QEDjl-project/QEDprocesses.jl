@@ -67,4 +67,4 @@ Special thanks to the following individuals for their support and contributions:
 
 ## License
 
-`QEDprocesses.jl` is licensed under the [MIT License](LICENSE).
+[MIT](LICENSE) © Uwe Hernandez Acosta
