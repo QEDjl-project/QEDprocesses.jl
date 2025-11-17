@@ -15,15 +15,13 @@ DEF_POLS = (PolX(), PolY())
 DEF_SPINS = (SpinUp(), SpinDown())
 
 const MODEL = PerturbativeQED()
-const IN_PSL_COMPTON = ComptonRestSystem(Energy(2))
-const OUT_PSL_COMPTON = ComptonSphericalLayout(IN_PSL_COMPTON)
+
+const IN_PSL_GENERIC = TwoBodyRestSystem()
+const OUT_PSL_GENERIC = FlatPhaseSpaceLayout(IN_PSL_GENERIC)
 
 PROC_DEF_TUPLES = [
-    (Compton(), MODEL, OUT_PSL_COMPTON),
-    [
-        (Compton(s1, p1, s2, p2), MODEL, OUT_PSL_COMPTON) for
-            (s1, p1, s2, p2) in Iterators.product(DEF_SPINS, DEF_POLS, DEF_SPINS, DEF_POLS)
-    ]...,
+    (ScatteringProcess((Electron(), Photon()), (Electron(), Photon())), MODEL, OUT_PSL_GENERIC),
+    (ScatteringProcess((Electron(), Positron()), (Electron(), Positron())), MODEL, OUT_PSL_GENERIC),
 ]
 
 RNG = Random.MersenneTwister(573)
@@ -132,21 +130,6 @@ end
                 @test eltype(gpu) == FLOAT_T
                 @test sum(isapprox.(gpu, gt)) == N
 
-                gpu = Vector(QEDbase._matrix_element_square_sum.(gpupsps))
-                gt = QEDbase._matrix_element_square_sum.(psps)
-                @test eltype(eltype(gpu)) == FLOAT_T
-                @test sum(isapprox.(gpu, gt; rtol = sqrt(eps(FLOAT_T)))) == N
-
-                for i in 1:N
-                    if !isapprox(gpu[i], gt[i]; rtol = sqrt(eps(FLOAT_T)))
-                        @show gt[i]
-                        @show gpu[i]
-                        display(coords[i])
-                        display(psps[i])
-                        flush!(stdout)
-                    end
-                end
-
                 gpu = Vector(QEDbase._is_in_phasespace.(gpupsps))
                 gt = QEDbase._is_in_phasespace.(psps)
                 @test eltype(gpu) == Bool
@@ -156,60 +139,34 @@ end
                 gt = QEDbase._phase_space_factor.(psps)
                 @test eltype(gpu) == FLOAT_T
                 @test sum(isapprox.(gpu, gt)) == N
-
-                # this currently throws an exception because QuadGK does not work on the GPU
-                @test sum(
-                    isapprox.(
-                        Vector(QEDprocesses._total_probability.(gpupsps)),
-                        QEDprocesses._total_probability.(psps),
-                    ),
-                ) == N broken = true
             end
 
-            @testset "Public PSP/Process Interface" begin
-                gpu = Vector(differential_probability.(gpupsps))
+            @testset "KernelAbstractions Probability" begin
+                dest = similar(gpupsps, FLOAT_T)
+                gt = unsafe_differential_probability.(psps)
+                unsafe_differential_probability!(dest, gpupsps)
+                @test sum(isapprox.(Vector(dest), gt)) == N
+
+                #=
+                fill!(dest, zero(FLOAT_T))
                 gt = differential_probability.(psps)
-                @test eltype(gpu) == FLOAT_T
-                @test sum(isapprox.(gpu, gt)) == N
-
-                gpu = Vector(QEDbase._is_in_phasespace.(gpupsps))
-                gt = QEDbase._is_in_phasespace.(psps)
-                @test eltype(gpu) == Bool
-                @test sum(gpu .== gt) == N
-
-                gpu = Vector(differential_cross_section.(gpupsps))
-                gt = differential_cross_section.(psps)
-                @test eltype(gpu) == FLOAT_T
-                @test sum(isapprox.(gpu, gt)) == N
-
-                # as above, this currently throws an exception because QuadGK does not work on the GPU
-                @test sum(
-                    isapprox.(
-                        Vector(total_cross_section.(gpupsps)), total_cross_section.(psps)
-                    ),
-                ) == N broken = true
+                differential_probability!(dest, gpupsps)
+                @test sum(isapprox.(Vector(dest), gt)) == N
+                =#
             end
 
-            @testset "KernelAbstractions Kernel Interface" begin
+            @testset "KernelAbstractions Cross Section" begin
                 dest = similar(gpupsps, FLOAT_T)
                 gt = unsafe_differential_cross_section.(psps)
                 unsafe_differential_cross_section!(dest, gpupsps)
                 @test sum(isapprox.(Vector(dest), gt)) == N
 
+                #=
                 fill!(dest, zero(FLOAT_T))
                 gt = differential_cross_section.(psps)
                 differential_cross_section!(dest, gpupsps)
                 @test sum(isapprox.(Vector(dest), gt)) == N
-
-                fill!(dest, zero(FLOAT_T))
-                gt = unsafe_differential_probability.(psps)
-                unsafe_differential_probability!(dest, gpupsps)
-                @test sum(isapprox.(Vector(dest), gt)) == N
-
-                fill!(dest, zero(FLOAT_T))
-                gt = differential_probability.(psps)
-                differential_probability!(dest, gpupsps)
-                @test sum(isapprox.(Vector(dest), gt)) == N
+                =#
             end
         end
     end

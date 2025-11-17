@@ -66,8 +66,22 @@ function QEDbase._incident_flux(psp::InPhaseSpacePoint{PROC, PerturbativeQED}) w
     return QEDcore.sq_diff_sqrt(p1_mom * p2_mom, p1_mass * p2_mass)
 end
 
-function QEDbase._matrix_element_square_sum(in_psps::AbstractVector{PSP}, out::AbstractVector) where {PSP <: AbstractPhaseSpacePoint}
-    @assert length(in_psps) == length(out)
+function QEDbase.unsafe_differential_cross_section!(dest::AbstractVector, in_psps::AbstractVector{PSP}) where {
+        MODEL <: PerturbativeQED,
+        PROC <: ScatteringProcess,
+        PSP <: AbstractPhaseSpacePoint{PROC, MODEL},
+    }
+    @assert length(in_psps) == length(dest)
+    @show k = _diff_cs_kernel(_scattering_proc_from_type(PROC), PSP)
+    return k(get_backend(dest))(dest, in_psps; ndrange = length(dest))
+end
 
-    return _mat_el_kernel()
+function QEDbase.unsafe_differential_probability!(dest::AbstractVector, in_psps::AbstractVector{PSP}) where {
+        MODEL <: PerturbativeQED,
+        PROC <: ScatteringProcess,
+        PSP <: AbstractPhaseSpacePoint{PROC, MODEL},
+    }
+    @assert length(in_psps) == length(dest)
+    @show k = _diff_prob_kernel(_scattering_proc_from_type(PROC), PSP)
+    return k(get_backend(dest))(dest, in_psps; ndrange = length(dest))
 end

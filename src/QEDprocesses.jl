@@ -17,6 +17,9 @@ using QEDcore
 using StaticArrays
 using QuadGK
 using KernelAbstractions
+using ComputableDAGs
+ComputableDAGs.init(@__MODULE__)
+ComputableDAGs.init_kernel(@__MODULE__)
 
 include("utils.jl")
 
@@ -28,6 +31,7 @@ include("processes/utils.jl")
 include("processes/generic_process/utility.jl")
 include("processes/generic_process/process.jl")
 include("processes/generic_process/perturbative/cross_section.jl")
+include("processes/generic_process/gen_func.jl")
 
 # one photon compton
 include("processes/one_photon_compton/process.jl")
