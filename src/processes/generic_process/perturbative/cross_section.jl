@@ -19,12 +19,12 @@ function _scattering_proc_from_type(::Type{ScatteringProcess{IN_T, OUT_T, IN_SP,
 end
 
 function QEDbase._matrix_element(psp::PhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}
-    mat_el_func = _mat_el_func(process(psp), typeof(psp))
+    mat_el_func = _mat_el_sq_sum_func(process(psp), typeof(psp))
     return sqrt(mat_el_func(psp))
 end
 
 function QEDbase._matrix_element_square_sum(psp::PhaseSpacePoint{PROC, PerturbativeQED}) where {PROC <: ScatteringProcess}
-    mat_el_func = _mat_el_func(process(psp), typeof(psp))
+    mat_el_func = _mat_el_sq_sum_func(process(psp), typeof(psp))
     return mat_el_func(psp)
 end
 
