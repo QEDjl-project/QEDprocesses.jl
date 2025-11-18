@@ -9,7 +9,6 @@ using QEDbase
 using QEDcore
 
 using Random
-using SafeTestsets
 
 DEF_POLS = (PolX(), PolY())
 DEF_SPINS = (SpinUp(), SpinDown())
@@ -22,6 +21,11 @@ const OUT_PSL_GENERIC = FlatPhaseSpaceLayout(IN_PSL_GENERIC)
 PROC_DEF_TUPLES = [
     (ScatteringProcess((Electron(), Photon()), (Electron(), Photon())), MODEL, OUT_PSL_GENERIC),
     (ScatteringProcess((Electron(), Positron()), (Electron(), Positron())), MODEL, OUT_PSL_GENERIC),
+    (ScatteringProcess((Electron(), Positron()), (Electron(), Positron(), Photon())), MODEL, OUT_PSL_GENERIC),
+    # this is currently producing invalid code on GPUs
+    # See https://github.com/ComputableDAGs/ComputableDAGs.jl/issues/48
+    # or some other workaround
+    #(ScatteringProcess((Electron(), Positron()), (Electron(), Electron(), Positron(), Positron())), MODEL, OUT_PSL_GENERIC),
 ]
 
 RNG = Random.MersenneTwister(573)
@@ -146,13 +150,6 @@ end
                 gt = unsafe_differential_probability.(psps)
                 unsafe_differential_probability!(dest, gpupsps)
                 @test sum(isapprox.(Vector(dest), gt)) == N
-
-                #=
-                fill!(dest, zero(FLOAT_T))
-                gt = differential_probability.(psps)
-                differential_probability!(dest, gpupsps)
-                @test sum(isapprox.(Vector(dest), gt)) == N
-                =#
             end
 
             @testset "KernelAbstractions Cross Section" begin
@@ -161,12 +158,6 @@ end
                 unsafe_differential_cross_section!(dest, gpupsps)
                 @test sum(isapprox.(Vector(dest), gt)) == N
 
-                #=
-                fill!(dest, zero(FLOAT_T))
-                gt = differential_cross_section.(psps)
-                differential_cross_section!(dest, gpupsps)
-                @test sum(isapprox.(Vector(dest), gt)) == N
-                =#
             end
         end
     end

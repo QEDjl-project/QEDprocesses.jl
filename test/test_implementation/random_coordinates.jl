@@ -16,7 +16,7 @@ function _rand_coordinates(
         rng::AbstractRNG, proc::PROCESS, model::MODEL, psl::PSL, FLOAT_T = Float64
     ) where {PROCESS <: ScatteringProcess, MODEL <: PerturbativeQED, PSL <: AbstractPhaseSpaceLayout}
     return (
-        ntuple(_ -> number_outgoing_particles(proc) + rand(rng, FLOAT_T), QEDbase.phase_space_dimension(proc, model, in_phase_space_layout(psl))),
+        ntuple(_ -> 5 * number_outgoing_particles(proc) + rand(rng, FLOAT_T), QEDbase.phase_space_dimension(proc, model, in_phase_space_layout(psl))),
         ntuple(_ -> rand(rng, FLOAT_T), QEDbase.phase_space_dimension(proc, model, psl)),
     )
 end
