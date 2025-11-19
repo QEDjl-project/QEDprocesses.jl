@@ -17,7 +17,7 @@ end
 """
     _mat_el_sq_sum_func(proc::ScatteringProcess, target::Symbol)
 
-Returns the generated compute function ready to be called on a [`PhaseSpacePoint`](@extref QEDcore.PhaseSpacePoint), returning the square sum of matrix elements.
+Returns the generated compute function ready to be called on a `PhaseSpacePoint`, returning the square sum of matrix elements.
 
 !!! note
     This function is memoized so it will cache the result for a unique set of arguments and not reevaluate.
