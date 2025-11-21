@@ -12,6 +12,15 @@ function _rand_coordinates(
     return ((FLOAT_T(0.95) * rand(rng, FLOAT_T) + FLOAT_T(0.05),), (rand(rng, FLOAT_T), rand(rng, FLOAT_T)))
 end
 
+function _rand_coordinates(
+        rng::AbstractRNG, proc::PROCESS, model::MODEL, psl::PSL, FLOAT_T = Float64
+    ) where {PROCESS <: ScatteringProcess, MODEL <: PerturbativeQED, PSL <: AbstractPhaseSpaceLayout}
+    return (
+        ntuple(_ -> 5 * number_outgoing_particles(proc) + rand(rng, FLOAT_T), QEDbase.phase_space_dimension(proc, model, in_phase_space_layout(psl))),
+        ntuple(_ -> rand(rng, FLOAT_T), QEDbase.phase_space_dimension(proc, model, psl)),
+    )
+end
+
 tuple_isapprox(v1::SVector, v2::SVector; kwargs...) = tuple_isapprox(Tuple(v1), Tuple(v2); kwargs...)
 tuple_isapprox(::Tuple{}, ::Tuple{Vararg}; atol = 0.0, rtol = eps()) = false
 tuple_isapprox(::Tuple{Vararg}, ::Tuple{}; atol = 0.0, rtol = eps()) = false

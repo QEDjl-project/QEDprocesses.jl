@@ -98,7 +98,7 @@ if metal_tests
 end
 
 include("../test_implementation/random_coordinates.jl")
-include("../utils.jl")
 
 # from here on, we cannot use safe test sets or we would unload the GPU libraries again
 include("process_interface.jl")
+include("generic_process.jl")

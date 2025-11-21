@@ -1,9 +1,11 @@
 name = "QEDprocesses"
 uuid = "46de9c38-1bb3-4547-a1ec-da24d767fdad"
-authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>", "Simeon Ehrig", "Klaus Steiniger", "Tom Jungnickel", "Anton Reinhard"]
 version = "0.5.1"
+authors = ["Uwe Hernandez Acosta <u.hernandez@hzdr.de>", "Simeon Ehrig", "Klaus Steiniger", "Tom Jungnickel", "Anton Reinhard"]
 
 [deps]
+ComputableDAGs = "62933717-1c9d-4a3f-b06f-7ab7f17ca32d"
+KernelAbstractions = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
 Memoization = "6fafb56a-5788-4b4e-91ca-c0cea6611c73"
 QEDFeynmanDiagrams = "3232ad24-8ec1-4588-843e-e2ed2eae1ff3"
 QEDbase = "10e22c08-3ccb-4172-bfcf-7d7aa3d04d93"
@@ -14,6 +16,8 @@ RuntimeGeneratedFunctions = "7e49a35a-f44a-4d26-94aa-eba1b4ca6b47"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
+ComputableDAGs = "0.5.0"
+KernelAbstractions = "0.9.38"
 Memoization = "0.2.2"
 QEDFeynmanDiagrams = "0.1"
 QEDbase = "0.5.0"
