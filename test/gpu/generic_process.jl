@@ -60,10 +60,10 @@ RNG = Random.MersenneTwister(573)
                 @test eltype(eltype(eltype(in_moms))) == FLOAT_T
                 @test eltype(eltype(eltype(out_moms))) == FLOAT_T
 
-                @test getindex.(in_moms_gpu, Ref(1)) == getindex.(in_moms, Ref(1))
-                @test getindex.(in_moms_gpu, Ref(2)) == getindex.(in_moms, Ref(2))
-                @test getindex.(out_moms_gpu, Ref(1)) == getindex.(out_moms, Ref(1))
-                @test getindex.(out_moms_gpu, Ref(2)) == getindex.(out_moms, Ref(2))
+                @test getindex.(in_moms_gpu, 1) == getindex.(in_moms, 1)
+                @test getindex.(in_moms_gpu, 2) == getindex.(in_moms, 2)
+                @test getindex.(out_moms_gpu, 1) == getindex.(out_moms, 1)
+                @test getindex.(out_moms_gpu, 2) == getindex.(out_moms, 2)
             end
 
             @testset "Private Process Functions" begin

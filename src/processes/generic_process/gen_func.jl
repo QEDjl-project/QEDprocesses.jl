@@ -1,5 +1,3 @@
-using Memoization
-
 """
     _generic_proc_graph(proc::ScatteringProcess, target::Symbol)
 
@@ -15,9 +13,9 @@ Returns the generated DAG for the given [`ScatteringProcess`](@ref) and the spec
 end
 
 """
-    _mat_el_sq_sum_func(proc::ScatteringProcess, target::Symbol)
+    _mat_el_sq_sum_func(proc::ScatteringProcess, ::Type{PSP})
 
-Returns the generated compute function ready to be called on a `PhaseSpacePoint`, returning the square sum of matrix elements.
+Returns the generated compute function ready to be called on a `PhaseSpacePoint::PSP`, returning the square sum of matrix elements.
 
 !!! note
     This function is memoized so it will cache the result for a unique set of arguments and not reevaluate.
@@ -30,10 +28,10 @@ Returns the generated compute function ready to be called on a `PhaseSpacePoint`
 end
 
 """
-    _diff_cs_kernel(proc::ScatteringProcess, target::Symbol)
+    _diff_cs_kernel(proc::ScatteringProcess, ::Type{PSP})
 
 Returns a generated KernelAbstractions.jl kernel ready to be called to compute differential cross sections on any of KernelAbstractions.jl's backends.
-The function signature is `diff_cs(out::AbstractVector{FLOAT_T}, in::AbstractVector{PhaseSpacePoint{...}})`, where the phase space points' underlying float type must be convertible to `FLOAT_T`.
+The function signature is `diff_cs(out::AbstractVector{FLOAT_T}, in::AbstractVector{PhaseSpacePoint{...}})`, where the phase space point must be of type `PSP` and its underlying float type must be convertible to `FLOAT_T`.
 
 !!! note
     This function is memoized so it will cache the result for a unique set of arguments and not reevaluate.
@@ -48,10 +46,10 @@ See also: [`_diff_prob_kernel`](@ref)
 end
 
 """
-    _diff_prob_kernel(proc::ScatteringProcess, target::Symbol)
+    _diff_prob_kernel(proc::ScatteringProcess, ::Type{PSP})
 
 Returns a generated KernelAbstractions.jl kernel ready to be called to compute differential probability on any of KernelAbstractions.jl's backends.
-The function signature is `diff_cs(out::AbstractVector{FLOAT_T}, in::AbstractVector{PhaseSpacePoint{...}})`, where the phase space points' underlying float type must be convertible to `FLOAT_T`.
+The function signature is `diff_cs(out::AbstractVector{FLOAT_T}, in::AbstractVector{PhaseSpacePoint{...}})`, where the phase space point must be of type `PSP` and its underlying float type must be convertible to `FLOAT_T`.
 
 !!! note
     This function is memoized so it will cache the result for a unique set of arguments and not reevaluate.

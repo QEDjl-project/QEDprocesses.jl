@@ -16,6 +16,7 @@ using QEDbase
 using QEDcore
 using StaticArrays
 using QuadGK
+using Memoization
 using KernelAbstractions
 using ComputableDAGs
 ComputableDAGs.init(@__MODULE__)
